@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { tierBadgeClass, tierClasses, type Tier } from "@/lib/tier";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { haversineKm, glacierLakeAssocScore, glacierStatusWeight } from "@/lib/geo";
-import { DriverBadge } from "./glaciers.$glacierId";
+import { DriverBadge, DriverLegend } from "./glaciers.$glacierId";
 
 export const Route = createFileRoute("/lakes/$lakeId")({
   head: ({ params }) => ({
@@ -144,6 +144,9 @@ function LakeDetail() {
             Associated glaciers <span className="text-xs font-normal text-muted-foreground">· nearest + highest hazard</span>
           </h2>
           <p className="text-xs text-muted-foreground">Ranked by proximity to this lake and glacier status (surging / retreating weigh higher).</p>
+          <div className="mt-2">
+            <DriverLegend include={["distance", "status"]} />
+          </div>
         </div>
         <ul className="divide-y divide-border text-sm">
           {(associatedGlaciers ?? []).map((g) => (
