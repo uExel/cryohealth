@@ -214,7 +214,7 @@ function GlacierDetail() {
             <DriverLegend />
           </div>
           <ul className="divide-y divide-border text-sm">
-            {(relatedLakes ?? []).map((l) => (
+            {(relatedLakes ?? []).map((l, idx) => (
               <li key={l.id} className="flex items-center justify-between px-5 py-3">
                 <div>
                   <div className="flex items-center gap-2">
@@ -224,12 +224,11 @@ function GlacierDetail() {
                   <div className="text-xs text-muted-foreground">
                     {l.distanceKm.toFixed(1)} km · {(l.district as { name?: string } | null)?.name ?? "—"} · {l.downstream_population.toLocaleString()} downstream · score {Number(l.current_risk_score).toFixed(0)}
                   </div>
-                  <div className="mt-1 text-[11px] text-muted-foreground/80">
-                    Rank {(l.assoc * 100).toFixed(0)}/100 ·{" "}
+                  <BreakdownDetails defaultOpen={idx === 0} rank={l.assoc}>
                     <span className={l.driver === "distance" ? "font-semibold text-foreground" : ""}>distance {(l.proximity * 100).toFixed(0)}</span> +{" "}
                     <span className={l.driver === "status" ? "font-semibold text-foreground" : ""}>status {glacier.status}</span> +{" "}
                     <span className={l.driver === "risk" ? "font-semibold text-foreground" : ""}>lake risk {(l.riskNorm * 100).toFixed(0)}</span>
-                  </div>
+                  </BreakdownDetails>
                 </div>
                 <span className={tierBadgeClass(l.current_tier as Tier)}>{l.current_tier}</span>
               </li>
@@ -294,6 +293,32 @@ export function DriverBadge({ driver }: { driver: "distance" | "status" | "risk"
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ${m.cls}`}>
       {m.label}
     </span>
+  );
+}
+
+export function BreakdownDetails({
+  defaultOpen = false,
+  rank,
+  children,
+}: {
+  defaultOpen?: boolean;
+  rank: number;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="mt-1 text-[11px] text-muted-foreground/80">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="inline-flex items-center gap-1 hover:text-foreground"
+      >
+        <span>Rank {(rank * 100).toFixed(0)}/100</span>
+        <span className="font-mono text-[10px]">{open ? "− hide" : "+ breakdown"}</span>
+      </button>
+      {open && <div className="mt-0.5">{children}</div>}
+    </div>
   );
 }
 

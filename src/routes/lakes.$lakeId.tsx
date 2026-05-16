@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { tierBadgeClass, tierClasses, type Tier } from "@/lib/tier";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { haversineKm, glacierLakeAssocScore, glacierStatusWeight } from "@/lib/geo";
-import { DriverBadge, DriverLegend } from "./glaciers.$glacierId";
+import { BreakdownDetails, DriverBadge, DriverLegend } from "./glaciers.$glacierId";
 
 export const Route = createFileRoute("/lakes/$lakeId")({
   head: ({ params }) => ({
@@ -149,7 +149,7 @@ function LakeDetail() {
           </div>
         </div>
         <ul className="divide-y divide-border text-sm">
-          {(associatedGlaciers ?? []).map((g) => (
+          {(associatedGlaciers ?? []).map((g, idx) => (
             <li key={g.id} className="flex items-center justify-between px-5 py-3">
               <div>
                 <div className="flex items-center gap-2">
@@ -159,11 +159,10 @@ function LakeDetail() {
                 <div className="text-xs text-muted-foreground">
                   {g.distanceKm.toFixed(1)} km away · {(g.district as { name?: string } | null)?.name ?? "—"} · {g.area_km2 ? `${Number(g.area_km2).toFixed(1)} km²` : "—"}
                 </div>
-                <div className="mt-1 text-[11px] text-muted-foreground/80">
-                  Rank {(g.assoc * 100).toFixed(0)}/100 ·{" "}
+                <BreakdownDetails defaultOpen={idx === 0} rank={g.assoc}>
                   <span className={g.driver === "distance" ? "font-semibold text-foreground" : ""}>distance {(g.proximity * 100).toFixed(0)}</span> +{" "}
                   <span className={g.driver === "status" ? "font-semibold text-foreground" : ""}>status {g.status} ({(g.hazard * 100).toFixed(0)})</span>
-                </div>
+                </BreakdownDetails>
               </div>
               <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-foreground">{g.status}</span>
             </li>
