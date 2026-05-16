@@ -209,6 +209,9 @@ function GlacierDetail() {
                   <div className="text-xs text-muted-foreground">
                     {l.distanceKm.toFixed(1)} km · {(l.district as { name?: string } | null)?.name ?? "—"} · {l.downstream_population.toLocaleString()} downstream · score {Number(l.current_risk_score).toFixed(0)}
                   </div>
+                  <div className="mt-1 text-[11px] text-muted-foreground/80">
+                    Rank {(l.assoc * 100).toFixed(0)}/100 = proximity {(l.proximity * 100).toFixed(0)} (glacier {glacier.status}) × 50% + lake risk {(l.riskNorm * 100).toFixed(0)} × 50%
+                  </div>
                 </div>
                 <span className={tierBadgeClass(l.current_tier as Tier)}>{l.current_tier}</span>
               </li>
