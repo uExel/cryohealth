@@ -66,7 +66,8 @@ function LakeDetail() {
       const ranked = (data ?? [])
         .map((g) => {
           const distanceKm = haversineKm({ lat: lake!.lat, lng: lake!.lng }, { lat: g.lat, lng: g.lng });
-          return { ...g, distanceKm, assoc: glacierLakeAssocScore(distanceKm, g.status) };
+          const proximity = 1 / (1 + distanceKm / 25);
+          return { ...g, distanceKm, assoc: glacierLakeAssocScore(distanceKm, g.status), proximity };
         })
         .sort((a, b) => b.assoc - a.assoc)
         .slice(0, 6);
