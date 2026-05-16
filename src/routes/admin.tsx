@@ -158,7 +158,11 @@ function CryosphereInventory() {
               )}
               {filteredGlaciers.map((g) => (
                 <tr key={g.id} className="hover:bg-secondary/40">
-                  <td className="px-3 py-2 font-medium text-foreground">{g.name}</td>
+                  <td className="px-3 py-2 font-medium text-foreground">
+                    <Link to="/glaciers/$glacierId" params={{ glacierId: g.id }} className="hover:underline">
+                      {g.name}
+                    </Link>
+                  </td>
                   <td className="px-3 py-2 text-muted-foreground">{districtById[g.district_id ?? ""]?.name ?? "—"}</td>
                   <td className="px-3 py-2 text-foreground">{g.area_km2 ? Number(g.area_km2).toFixed(1) : "—"}</td>
                   <td className="px-3 py-2 text-foreground">{g.length_km ? Number(g.length_km).toFixed(1) : "—"}</td>
