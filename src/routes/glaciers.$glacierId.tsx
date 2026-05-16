@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
 
-export const Route = createFileRoute("/glaciers/")({
+export const Route = createFileRoute("/glaciers/$glacierId")({
   head: ({ params }) => ({
     meta: [
       { title: `Glacier ${params.glacierId.slice(0, 6)} — CryoHealth` },

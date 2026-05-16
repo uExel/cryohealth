@@ -17,7 +17,7 @@ import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LakesLakeIdRouteImport } from './routes/lakes.$lakeId'
-import { Route as GlaciersRouteImport } from './routes/glaciers.'
+import { Route as GlaciersGlacierIdRouteImport } from './routes/glaciers.$glacierId'
 import { Route as ApiPublicLakesRouteImport } from './routes/api/public/lakes'
 import { Route as ApiPublicKpisRouteImport } from './routes/api/public/kpis'
 import { Route as ApiPublicAlertsRouteImport } from './routes/api/public/alerts'
@@ -62,9 +62,9 @@ const LakesLakeIdRoute = LakesLakeIdRouteImport.update({
   path: '/$lakeId',
   getParentRoute: () => LakesRoute,
 } as any)
-const GlaciersRoute = GlaciersRouteImport.update({
-  id: '/glaciers/',
-  path: '/glaciers/',
+const GlaciersGlacierIdRoute = GlaciersGlacierIdRouteImport.update({
+  id: '/glaciers/$glacierId',
+  path: '/glaciers/$glacierId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicLakesRoute = ApiPublicLakesRouteImport.update({
@@ -91,7 +91,7 @@ export interface FileRoutesByFullPath {
   '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
-  '/glaciers/': typeof GlaciersRoute
+  '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
   '/api/public/kpis': typeof ApiPublicKpisRoute
@@ -105,7 +105,7 @@ export interface FileRoutesByTo {
   '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
-  '/glaciers': typeof GlaciersRoute
+  '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
   '/api/public/kpis': typeof ApiPublicKpisRoute
@@ -120,7 +120,7 @@ export interface FileRoutesById {
   '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
-  '/glaciers/': typeof GlaciersRoute
+  '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
   '/api/public/kpis': typeof ApiPublicKpisRoute
@@ -136,7 +136,7 @@ export interface FileRouteTypes {
     | '/data'
     | '/lakes'
     | '/login'
-    | '/glaciers/'
+    | '/glaciers/$glacierId'
     | '/lakes/$lakeId'
     | '/api/public/alerts'
     | '/api/public/kpis'
@@ -150,7 +150,7 @@ export interface FileRouteTypes {
     | '/data'
     | '/lakes'
     | '/login'
-    | '/glaciers'
+    | '/glaciers/$glacierId'
     | '/lakes/$lakeId'
     | '/api/public/alerts'
     | '/api/public/kpis'
@@ -164,7 +164,7 @@ export interface FileRouteTypes {
     | '/data'
     | '/lakes'
     | '/login'
-    | '/glaciers/'
+    | '/glaciers/$glacierId'
     | '/lakes/$lakeId'
     | '/api/public/alerts'
     | '/api/public/kpis'
@@ -179,7 +179,7 @@ export interface RootRouteChildren {
   DataRoute: typeof DataRoute
   LakesRoute: typeof LakesRouteWithChildren
   LoginRoute: typeof LoginRoute
-  GlaciersRoute: typeof GlaciersRoute
+  GlaciersGlacierIdRoute: typeof GlaciersGlacierIdRoute
   ApiPublicAlertsRoute: typeof ApiPublicAlertsRoute
   ApiPublicKpisRoute: typeof ApiPublicKpisRoute
   ApiPublicLakesRoute: typeof ApiPublicLakesRoute
@@ -243,11 +243,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LakesLakeIdRouteImport
       parentRoute: typeof LakesRoute
     }
-    '/glaciers/': {
-      id: '/glaciers/'
-      path: '/glaciers'
-      fullPath: '/glaciers/'
-      preLoaderRoute: typeof GlaciersRouteImport
+    '/glaciers/$glacierId': {
+      id: '/glaciers/$glacierId'
+      path: '/glaciers/$glacierId'
+      fullPath: '/glaciers/$glacierId'
+      preLoaderRoute: typeof GlaciersGlacierIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/lakes': {
@@ -292,7 +292,7 @@ const rootRouteChildren: RootRouteChildren = {
   DataRoute: DataRoute,
   LakesRoute: LakesRouteWithChildren,
   LoginRoute: LoginRoute,
-  GlaciersRoute: GlaciersRoute,
+  GlaciersGlacierIdRoute: GlaciersGlacierIdRoute,
   ApiPublicAlertsRoute: ApiPublicAlertsRoute,
   ApiPublicKpisRoute: ApiPublicKpisRoute,
   ApiPublicLakesRoute: ApiPublicLakesRoute,
@@ -300,3 +300,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
