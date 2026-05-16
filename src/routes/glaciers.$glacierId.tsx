@@ -63,8 +63,11 @@ function GlacierDetail() {
         .map((l) => {
           const distanceKm = haversineKm({ lat: glacier!.lat, lng: glacier!.lng }, { lat: l.lat, lng: l.lng });
           // proximity weighted by lake risk score (0-100)
-          const assoc = glacierLakeAssocScore(distanceKm, glacier!.status) * 0.5 + (Number(l.current_risk_score ?? 0) / 100) * 0.5;
-          return { ...l, distanceKm, assoc };
+          const proximity = 1 / (1 + distanceKm / 25);
+          const base = glacierLakeAssocScore(distanceKm, glacier!.status);
+          const riskNorm = Number(l.current_risk_score ?? 0) / 100;
+          const assoc = base * 0.5 + riskNorm * 0.5;
+          return { ...l, distanceKm, assoc, proximity, riskNorm };
         })
         .sort((a, b) => b.assoc - a.assoc)
         .slice(0, 8);
@@ -205,6 +208,9 @@ function GlacierDetail() {
                   <Link to="/lakes/$lakeId" params={{ lakeId: l.id }} className="font-medium text-foreground hover:underline">{l.name}</Link>
                   <div className="text-xs text-muted-foreground">
                     {l.distanceKm.toFixed(1)} km · {(l.district as { name?: string } | null)?.name ?? "—"} · {l.downstream_population.toLocaleString()} downstream · score {Number(l.current_risk_score).toFixed(0)}
+                  </div>
+                  <div className="mt-1 text-[11px] text-muted-foreground/80">
+                    Rank {(l.assoc * 100).toFixed(0)}/100 = proximity {(l.proximity * 100).toFixed(0)} (glacier {glacier.status}) × 50% + lake risk {(l.riskNorm * 100).toFixed(0)} × 50%
                   </div>
                 </div>
                 <span className={tierBadgeClass(l.current_tier as Tier)}>{l.current_tier}</span>

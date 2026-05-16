@@ -66,7 +66,8 @@ function LakeDetail() {
       const ranked = (data ?? [])
         .map((g) => {
           const distanceKm = haversineKm({ lat: lake!.lat, lng: lake!.lng }, { lat: g.lat, lng: g.lng });
-          return { ...g, distanceKm, assoc: glacierLakeAssocScore(distanceKm, g.status) };
+          const proximity = 1 / (1 + distanceKm / 25);
+          return { ...g, distanceKm, assoc: glacierLakeAssocScore(distanceKm, g.status), proximity };
         })
         .sort((a, b) => b.assoc - a.assoc)
         .slice(0, 6);
@@ -147,6 +148,9 @@ function LakeDetail() {
                 <Link to="/glaciers/$glacierId" params={{ glacierId: g.id }} className="font-medium text-foreground hover:underline">{g.name}</Link>
                 <div className="text-xs text-muted-foreground">
                   {g.distanceKm.toFixed(1)} km away · {(g.district as { name?: string } | null)?.name ?? "—"} · {g.area_km2 ? `${Number(g.area_km2).toFixed(1)} km²` : "—"}
+                </div>
+                <div className="mt-1 text-[11px] text-muted-foreground/80">
+                  Rank {(g.assoc * 100).toFixed(0)}/100 = proximity {(g.proximity * 100).toFixed(0)} × 60% + status hazard ({g.status}) × 40%
                 </div>
               </div>
               <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-foreground">{g.status}</span>
