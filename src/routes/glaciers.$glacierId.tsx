@@ -296,7 +296,13 @@ export function DriverBadge({ driver }: { driver: "distance" | "status" | "risk"
   );
 }
 
-export function DriverLegend({ include = ["distance", "status", "risk"] as Array<"distance" | "status" | "risk"> }: { include?: Array<"distance" | "status" | "risk"> }) {
+export function DriverLegend({
+  include = ["distance", "status", "risk"] as Array<"distance" | "status" | "risk">,
+  formula = "glacier",
+}: {
+  include?: Array<"distance" | "status" | "risk">;
+  formula?: "glacier" | "lake" | "none";
+}) {
   const copy: Record<string, string> = {
     distance: "Glacier and lake are physically close (≤25 km soft radius).",
     status: "Glacier is surging or retreating, raising downstream hazard.",
@@ -313,6 +319,27 @@ export function DriverLegend({ include = ["distance", "status", "risk"] as Array
           </li>
         ))}
       </ul>
+      {formula !== "none" && (
+        <div className="mt-3 border-t border-border/70 pt-2 text-[11px] text-muted-foreground">
+          <div className="font-semibold uppercase tracking-wide">Rank formula</div>
+          <div className="mt-1 font-mono leading-relaxed">
+            <div><span className="text-foreground">proximity</span> = 1 / (1 + distance_km / 25)</div>
+            <div><span className="text-foreground">hazard</span> = status weight (surging 1.0 · retreating 0.85 · advancing 0.6 · unknown 0.4 · stable 0.3)</div>
+            {formula === "glacier" ? (
+              <>
+                <div><span className="text-foreground">base</span> = proximity × 0.6 + hazard × 0.4</div>
+                <div><span className="text-foreground">rank</span> = base × 0.5 + (lake_risk / 100) × 0.5</div>
+                <div className="mt-1 text-muted-foreground/80">Driver contributions: distance ≈ proximity × 0.30 · status ≈ hazard × 0.20 · risk ≈ lake_risk/100 × 0.50</div>
+              </>
+            ) : (
+              <>
+                <div><span className="text-foreground">rank</span> = proximity × 0.6 + hazard × 0.4</div>
+                <div className="mt-1 text-muted-foreground/80">Driver contributions: distance = proximity × 0.60 · status = hazard × 0.40</div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
