@@ -145,7 +145,7 @@ function LakeDetail() {
           </h2>
           <p className="text-xs text-muted-foreground">Ranked by proximity to this lake and glacier status (surging / retreating weigh higher).</p>
           <div className="mt-2">
-            <DriverLegend include={["distance", "status"]} />
+            <DriverLegend include={["distance", "status"]} formula="lake" />
           </div>
         </div>
         <ul className="divide-y divide-border text-sm">
