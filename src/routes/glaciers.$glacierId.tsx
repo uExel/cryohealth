@@ -209,6 +209,9 @@ function GlacierDetail() {
           <h2 className="border-b border-border px-5 py-3 text-sm font-semibold text-foreground">
             Associated glacial lakes <span className="text-xs font-normal text-muted-foreground">· nearest + highest risk</span>
           </h2>
+          <div className="px-5 pt-3">
+            <DriverLegend />
+          </div>
           <ul className="divide-y divide-border text-sm">
             {(relatedLakes ?? []).map((l) => (
               <li key={l.id} className="flex items-center justify-between px-5 py-3">
@@ -290,5 +293,26 @@ export function DriverBadge({ driver }: { driver: "distance" | "status" | "risk"
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ${m.cls}`}>
       {m.label}
     </span>
+  );
+}
+
+export function DriverLegend({ include = ["distance", "status", "risk"] as Array<"distance" | "status" | "risk"> }: { include?: Array<"distance" | "status" | "risk"> }) {
+  const copy: Record<string, string> = {
+    distance: "Glacier and lake are physically close (≤25 km soft radius).",
+    status: "Glacier is surging or retreating, raising downstream hazard.",
+    risk: "Lake's current GLOF risk score is elevated.",
+  };
+  return (
+    <div className="mt-2 rounded-lg border border-border bg-secondary/40 p-3">
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Why this ranking</div>
+      <ul className="mt-2 space-y-1.5 text-xs text-muted-foreground">
+        {include.map((d) => (
+          <li key={d} className="flex items-start gap-2">
+            <DriverBadge driver={d} />
+            <span className="flex-1">{copy[d]}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
