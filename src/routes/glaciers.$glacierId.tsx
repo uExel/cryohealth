@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
 import { haversineKm, glacierLakeAssocScore } from "@/lib/geo";
+import { glacierStatusWeight } from "@/lib/geo";
 
 export const Route = createFileRoute("/glaciers/$glacierId")({
   head: ({ params }) => ({
@@ -67,7 +68,14 @@ function GlacierDetail() {
           const base = glacierLakeAssocScore(distanceKm, glacier!.status);
           const riskNorm = Number(l.current_risk_score ?? 0) / 100;
           const assoc = base * 0.5 + riskNorm * 0.5;
-          return { ...l, distanceKm, assoc, proximity, riskNorm };
+          const hazard = glacierStatusWeight[glacier!.status ?? "unknown"] ?? 0.4;
+          const contributions = {
+            distance: proximity * 0.3,
+            status: hazard * 0.2,
+            risk: riskNorm * 0.5,
+          };
+          const driver = (Object.entries(contributions).sort((a, b) => b[1] - a[1])[0][0]) as "distance" | "status" | "risk";
+          return { ...l, distanceKm, assoc, proximity, riskNorm, driver };
         })
         .sort((a, b) => b.assoc - a.assoc)
         .slice(0, 8);
