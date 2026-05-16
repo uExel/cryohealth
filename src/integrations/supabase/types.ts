@@ -301,6 +301,77 @@ export type Database = {
           },
         ]
       }
+      glaciers: {
+        Row: {
+          area_km2: number | null
+          created_at: string
+          district_id: string | null
+          elevation_max_m: number | null
+          elevation_min_m: number | null
+          glims_id: string | null
+          id: string
+          last_observed: string | null
+          lat: number
+          length_km: number | null
+          lng: number
+          name: string
+          notes: string | null
+          rgi_id: string | null
+          source: string
+          status: Database["public"]["Enums"]["glacier_status"]
+          terminus_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          area_km2?: number | null
+          created_at?: string
+          district_id?: string | null
+          elevation_max_m?: number | null
+          elevation_min_m?: number | null
+          glims_id?: string | null
+          id?: string
+          last_observed?: string | null
+          lat: number
+          length_km?: number | null
+          lng: number
+          name: string
+          notes?: string | null
+          rgi_id?: string | null
+          source?: string
+          status?: Database["public"]["Enums"]["glacier_status"]
+          terminus_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          area_km2?: number | null
+          created_at?: string
+          district_id?: string | null
+          elevation_max_m?: number | null
+          elevation_min_m?: number | null
+          glims_id?: string | null
+          id?: string
+          last_observed?: string | null
+          lat?: number
+          length_km?: number | null
+          lng?: number
+          name?: string
+          notes?: string | null
+          rgi_id?: string | null
+          source?: string
+          status?: Database["public"]["Enums"]["glacier_status"]
+          terminus_type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "glaciers_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lake_risk_scores: {
         Row: {
           confidence: number
@@ -462,6 +533,12 @@ export type Database = {
     Enums: {
       app_role: "chw" | "facility_admin" | "ndma" | "public_viewer"
       case_outcome: "treat_at_home" | "refer" | "emergency"
+      glacier_status:
+        | "stable"
+        | "retreating"
+        | "advancing"
+        | "surging"
+        | "unknown"
       risk_tier: "NORMAL" | "WATCH" | "HIGH" | "CRITICAL"
     }
     CompositeTypes: {
@@ -592,6 +669,13 @@ export const Constants = {
     Enums: {
       app_role: ["chw", "facility_admin", "ndma", "public_viewer"],
       case_outcome: ["treat_at_home", "refer", "emergency"],
+      glacier_status: [
+        "stable",
+        "retreating",
+        "advancing",
+        "surging",
+        "unknown",
+      ],
       risk_tier: ["NORMAL", "WATCH", "HIGH", "CRITICAL"],
     },
   },

@@ -21,7 +21,38 @@ type Facility = {
   vulnerability: string;
 };
 
-export function HazardMap({ lakes, facilities = [] }: { lakes: Lake[]; facilities?: Facility[] }) {
+type Glacier = {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  area_km2: number | null;
+  length_km: number | null;
+  status: string;
+  elevation_max_m: number | null;
+};
+
+const glacierStatusColor: Record<string, string> = {
+  stable: "#2563eb",
+  retreating: "#dc2626",
+  advancing: "#16a34a",
+  surging: "#9333ea",
+  unknown: "#64748b",
+};
+
+export function HazardMap({
+  lakes,
+  facilities = [],
+  glaciers = [],
+  showGibs = false,
+  height = 480,
+}: {
+  lakes: Lake[];
+  facilities?: Facility[];
+  glaciers?: Glacier[];
+  showGibs?: boolean;
+  height?: number;
+}) {
   const [Mod, setMod] = useState<typeof import("react-leaflet") | null>(null);
 
   useEffect(() => {
@@ -38,26 +69,59 @@ export function HazardMap({ lakes, facilities = [] }: { lakes: Lake[]; facilitie
 
   if (!Mod) {
     return (
-      <div className="flex h-[480px] items-center justify-center rounded-xl border border-border bg-secondary/40 text-sm text-muted-foreground">
+      <div style={{ height }} className="flex items-center justify-center rounded-xl border border-border bg-secondary/40 text-sm text-muted-foreground">
         Loading map…
       </div>
     );
   }
 
   const { MapContainer, TileLayer, CircleMarker, Tooltip, Popup } = Mod;
+  const gibsDate = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="overflow-hidden rounded-xl border border-border">
       <MapContainer
         center={[36.2, 74.5] as [number, number]}
-        zoom={8}
-        style={{ height: 480, width: "100%" }}
+        zoom={7}
+        style={{ height, width: "100%" }}
         scrollWheelZoom={false}
       >
-        <TileLayer
-          attribution='&copy; OpenStreetMap'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        {showGibs ? (
+          <TileLayer
+            attribution='Imagery &copy; NASA EOSDIS GIBS · MODIS Terra'
+            url={`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${gibsDate}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`}
+            maxNativeZoom={9}
+            maxZoom={12}
+          />
+        ) : (
+          <TileLayer
+            attribution='&copy; OpenStreetMap'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+        )}
+        {glaciers.map((g) => {
+          const color = glacierStatusColor[g.status] ?? glacierStatusColor.unknown;
+          const r = g.area_km2 && g.area_km2 > 200 ? 11 : g.area_km2 && g.area_km2 > 50 ? 8 : 6;
+          return (
+            <CircleMarker
+              key={g.id}
+              center={[g.lat, g.lng] as [number, number]}
+              radius={r}
+              pathOptions={{ color, fillColor: color, fillOpacity: 0.55, weight: 1.5, dashArray: "3 2" }}
+            >
+              <Tooltip>{g.name} · {g.status}</Tooltip>
+              <Popup>
+                <div className="space-y-1 text-xs">
+                  <div className="font-semibold">{g.name}</div>
+                  <div>Status: {g.status}</div>
+                  {g.area_km2 != null && <div>Area: {Number(g.area_km2).toFixed(1)} km²</div>}
+                  {g.length_km != null && <div>Length: {Number(g.length_km).toFixed(1)} km</div>}
+                  {g.elevation_max_m != null && <div>Max elev: {g.elevation_max_m} m</div>}
+                </div>
+              </Popup>
+            </CircleMarker>
+          );
+        })}
         {lakes.map((l) => {
           const c = tierClasses[l.current_tier];
           const radius = l.current_tier === "CRITICAL" ? 14 : l.current_tier === "HIGH" ? 11 : l.current_tier === "WATCH" ? 8 : 6;
@@ -109,6 +173,18 @@ export function HazardMap({ lakes, facilities = [] }: { lakes: Lake[]; facilitie
             <span className="inline-block h-2.5 w-2.5 rounded-full bg-blue-700" />
             Health facility
           </span>
+        )}
+        {glaciers.length > 0 && (
+          <>
+            <span className="mx-1 text-border">|</span>
+            <span className="font-medium text-foreground">Glaciers:</span>
+            {Object.entries(glacierStatusColor).map(([k, v]) => (
+              <span key={k} className="inline-flex items-center gap-1">
+                <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: v }} />
+                {k}
+              </span>
+            ))}
+          </>
         )}
       </div>
     </div>
