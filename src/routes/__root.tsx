@@ -9,6 +9,11 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { I18nProvider } from "@/lib/i18n";
+import { AuthProvider } from "@/lib/auth";
+import { SiteHeader } from "@/components/cryohealth/SiteHeader";
+import { DemoBanner } from "@/components/cryohealth/DemoBanner";
+import { Toaster } from "sonner";
 
 function NotFoundComponent() {
   return (
@@ -113,7 +118,14 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <AuthProvider>
+        <I18nProvider>
+          <DemoBanner />
+          <SiteHeader />
+          <Outlet />
+          <Toaster richColors position="top-right" />
+        </I18nProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
