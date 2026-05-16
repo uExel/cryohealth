@@ -277,3 +277,18 @@ function Meta({ k, v }: { k: string; v: React.ReactNode }) {
     </div>
   );
 }
+
+const driverMeta: Record<string, { label: string; cls: string }> = {
+  distance: { label: "Distance-driven", cls: "bg-blue-100 text-blue-800 ring-blue-200" },
+  status: { label: "Status-driven", cls: "bg-purple-100 text-purple-800 ring-purple-200" },
+  risk: { label: "Risk-driven", cls: "bg-red-100 text-red-800 ring-red-200" },
+};
+
+export function DriverBadge({ driver }: { driver: "distance" | "status" | "risk" }) {
+  const m = driverMeta[driver];
+  return (
+    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ${m.cls}`}>
+      {m.label}
+    </span>
+  );
+}
