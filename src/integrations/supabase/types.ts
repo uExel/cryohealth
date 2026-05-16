@@ -301,6 +301,53 @@ export type Database = {
           },
         ]
       }
+      glacier_observations: {
+        Row: {
+          area_km2: number | null
+          created_at: string
+          glacier_id: string
+          id: string
+          length_km: number | null
+          notes: string | null
+          observed_at: string
+          source: string
+          status: Database["public"]["Enums"]["glacier_status"] | null
+          terminus_change_m: number | null
+        }
+        Insert: {
+          area_km2?: number | null
+          created_at?: string
+          glacier_id: string
+          id?: string
+          length_km?: number | null
+          notes?: string | null
+          observed_at: string
+          source?: string
+          status?: Database["public"]["Enums"]["glacier_status"] | null
+          terminus_change_m?: number | null
+        }
+        Update: {
+          area_km2?: number | null
+          created_at?: string
+          glacier_id?: string
+          id?: string
+          length_km?: number | null
+          notes?: string | null
+          observed_at?: string
+          source?: string
+          status?: Database["public"]["Enums"]["glacier_status"] | null
+          terminus_change_m?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "glacier_observations_glacier_id_fkey"
+            columns: ["glacier_id"]
+            isOneToOne: false
+            referencedRelation: "glaciers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       glaciers: {
         Row: {
           area_km2: number | null
