@@ -143,9 +143,18 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
       toast.error("Title and English body are required");
       return;
     }
+    if (!lakeId && !districtId) {
+      toast.error("Select a target lake or district");
+      return;
+    }
+    const lakeDistrict = lakes?.find((l) => l.id === lakeId)?.district_id ?? null;
+    if (lakeId && districtId && lakeDistrict && lakeDistrict !== districtId) {
+      toast.error("Selected lake belongs to a different district. Clear one to resolve the conflict.");
+      return;
+    }
     setSubmitting(true);
     const resolvedDistrict =
-      districtId || lakes?.find((l) => l.id === lakeId)?.district_id || null;
+      districtId || lakeDistrict || null;
     const { error } = await supabase.from("alerts").insert({
       title: title.trim(),
       body_en: bodyEn.trim(),
