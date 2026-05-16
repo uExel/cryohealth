@@ -16,8 +16,9 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
-  const { isAdmin, loading } = useAuth();
-  if (loading) return <main className="mx-auto max-w-3xl px-4 py-10 text-sm text-muted-foreground">Loading…</main>;
+  const { isAdmin, loading, rolesLoaded, user } = useAuth();
+  if (loading || (user && !rolesLoaded))
+    return <main className="mx-auto max-w-3xl px-4 py-10 text-sm text-muted-foreground">Loading…</main>;
   if (!isAdmin)
     return (
       <main className="mx-auto max-w-md px-4 py-10 text-center text-sm text-muted-foreground">

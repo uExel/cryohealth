@@ -11,6 +11,7 @@ type AuthCtx = {
   isAdmin: boolean;
   isCHW: boolean;
   loading: boolean;
+  rolesLoaded: boolean;
   signOut: () => Promise<void>;
 };
 
@@ -21,6 +22,7 @@ const Ctx = createContext<AuthCtx>({
   isAdmin: false,
   isCHW: false,
   loading: true,
+  rolesLoaded: false,
   signOut: async () => {},
 });
 
@@ -29,21 +31,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
+  const [rolesLoaded, setRolesLoaded] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
+        setRolesLoaded(false);
         setTimeout(() => loadRoles(s.user.id), 0);
       } else {
         setRoles([]);
+        setRolesLoaded(true);
       }
     });
     supabase.auth.getSession().then(async ({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
-      if (data.session?.user) await loadRoles(data.session.user.id);
+      if (data.session?.user) {
+        await loadRoles(data.session.user.id);
+      } else {
+        setRolesLoaded(true);
+      }
       setLoading(false);
     });
     return () => subscription.unsubscribe();
@@ -52,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function loadRoles(uid: string) {
     const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
     setRoles((data?.map((r) => r.role as Role)) ?? []);
+    setRolesLoaded(true);
   }
 
   const isAdmin = roles.includes("ndma") || roles.includes("facility_admin");
@@ -66,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         isCHW,
         loading,
+        rolesLoaded,
         signOut: async () => {
           await supabase.auth.signOut();
         },
