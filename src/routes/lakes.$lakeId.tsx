@@ -149,6 +149,9 @@ function LakeDetail() {
                 <div className="text-xs text-muted-foreground">
                   {g.distanceKm.toFixed(1)} km away · {(g.district as { name?: string } | null)?.name ?? "—"} · {g.area_km2 ? `${Number(g.area_km2).toFixed(1)} km²` : "—"}
                 </div>
+                <div className="mt-1 text-[11px] text-muted-foreground/80">
+                  Rank {(g.assoc * 100).toFixed(0)}/100 = proximity {(g.proximity * 100).toFixed(0)} × 60% + status hazard ({g.status}) × 40%
+                </div>
               </div>
               <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-foreground">{g.status}</span>
             </li>
