@@ -209,6 +209,9 @@ function GlacierDetail() {
           <h2 className="border-b border-border px-5 py-3 text-sm font-semibold text-foreground">
             Associated glacial lakes <span className="text-xs font-normal text-muted-foreground">· nearest + highest risk</span>
           </h2>
+          <div className="px-5 pt-3">
+            <DriverLegend />
+          </div>
           <ul className="divide-y divide-border text-sm">
             {(relatedLakes ?? []).map((l) => (
               <li key={l.id} className="flex items-center justify-between px-5 py-3">
