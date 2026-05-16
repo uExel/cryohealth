@@ -296,6 +296,32 @@ export function DriverBadge({ driver }: { driver: "distance" | "status" | "risk"
   );
 }
 
+export function BreakdownDetails({
+  defaultOpen = false,
+  rank,
+  children,
+}: {
+  defaultOpen?: boolean;
+  rank: number;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="mt-1 text-[11px] text-muted-foreground/80">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="inline-flex items-center gap-1 hover:text-foreground"
+      >
+        <span>Rank {(rank * 100).toFixed(0)}/100</span>
+        <span className="font-mono text-[10px]">{open ? "− hide" : "+ breakdown"}</span>
+      </button>
+      {open && <div className="mt-0.5">{children}</div>}
+    </div>
+  );
+}
+
 export function DriverLegend({
   include = ["distance", "status", "risk"] as Array<"distance" | "status" | "risk">,
   formula = "glacier",
