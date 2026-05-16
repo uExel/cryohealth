@@ -9,38 +9,64 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LakesRouteImport } from './routes/lakes'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LakesLakeIdRouteImport } from './routes/lakes.$lakeId'
 
+const LakesRoute = LakesRouteImport.update({
+  id: '/lakes',
+  path: '/lakes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LakesLakeIdRoute = LakesLakeIdRouteImport.update({
+  id: '/$lakeId',
+  path: '/$lakeId',
+  getParentRoute: () => LakesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/lakes': typeof LakesRouteWithChildren
+  '/lakes/$lakeId': typeof LakesLakeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/lakes': typeof LakesRouteWithChildren
+  '/lakes/$lakeId': typeof LakesLakeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/lakes': typeof LakesRouteWithChildren
+  '/lakes/$lakeId': typeof LakesLakeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/lakes' | '/lakes/$lakeId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/lakes' | '/lakes/$lakeId'
+  id: '__root__' | '/' | '/lakes' | '/lakes/$lakeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LakesRoute: typeof LakesRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/lakes': {
+      id: '/lakes'
+      path: '/lakes'
+      fullPath: '/lakes'
+      preLoaderRoute: typeof LakesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +74,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lakes/$lakeId': {
+      id: '/lakes/$lakeId'
+      path: '/$lakeId'
+      fullPath: '/lakes/$lakeId'
+      preLoaderRoute: typeof LakesLakeIdRouteImport
+      parentRoute: typeof LakesRoute
+    }
   }
 }
 
+interface LakesRouteChildren {
+  LakesLakeIdRoute: typeof LakesLakeIdRoute
+}
+
+const LakesRouteChildren: LakesRouteChildren = {
+  LakesLakeIdRoute: LakesLakeIdRoute,
+}
+
+const LakesRouteWithChildren = LakesRoute._addFileChildren(LakesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LakesRoute: LakesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
