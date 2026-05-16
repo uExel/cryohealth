@@ -63,8 +63,11 @@ function GlacierDetail() {
         .map((l) => {
           const distanceKm = haversineKm({ lat: glacier!.lat, lng: glacier!.lng }, { lat: l.lat, lng: l.lng });
           // proximity weighted by lake risk score (0-100)
-          const assoc = glacierLakeAssocScore(distanceKm, glacier!.status) * 0.5 + (Number(l.current_risk_score ?? 0) / 100) * 0.5;
-          return { ...l, distanceKm, assoc };
+          const proximity = 1 / (1 + distanceKm / 25);
+          const base = glacierLakeAssocScore(distanceKm, glacier!.status);
+          const riskNorm = Number(l.current_risk_score ?? 0) / 100;
+          const assoc = base * 0.5 + riskNorm * 0.5;
+          return { ...l, distanceKm, assoc, proximity, riskNorm };
         })
         .sort((a, b) => b.assoc - a.assoc)
         .slice(0, 8);
