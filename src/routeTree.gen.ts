@@ -9,13 +9,46 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as LakesRouteImport } from './routes/lakes'
+import { Route as DataRouteImport } from './routes/data'
+import { Route as ChwRouteImport } from './routes/chw'
+import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LakesLakeIdRouteImport } from './routes/lakes.$lakeId'
+import { Route as ApiPublicLakesRouteImport } from './routes/api/public/lakes'
+import { Route as ApiPublicKpisRouteImport } from './routes/api/public/kpis'
+import { Route as ApiPublicAlertsRouteImport } from './routes/api/public/alerts'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LakesRoute = LakesRouteImport.update({
   id: '/lakes',
   path: '/lakes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataRoute = DataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChwRoute = ChwRouteImport.update({
+  id: '/chw',
+  path: '/chw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlertsRoute = AlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,43 +61,159 @@ const LakesLakeIdRoute = LakesLakeIdRouteImport.update({
   path: '/$lakeId',
   getParentRoute: () => LakesRoute,
 } as any)
+const ApiPublicLakesRoute = ApiPublicLakesRouteImport.update({
+  id: '/api/public/lakes',
+  path: '/api/public/lakes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicKpisRoute = ApiPublicKpisRouteImport.update({
+  id: '/api/public/kpis',
+  path: '/api/public/kpis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAlertsRoute = ApiPublicAlertsRouteImport.update({
+  id: '/api/public/alerts',
+  path: '/api/public/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/alerts': typeof AlertsRoute
+  '/chw': typeof ChwRoute
+  '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
+  '/login': typeof LoginRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
+  '/api/public/alerts': typeof ApiPublicAlertsRoute
+  '/api/public/kpis': typeof ApiPublicKpisRoute
+  '/api/public/lakes': typeof ApiPublicLakesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/alerts': typeof AlertsRoute
+  '/chw': typeof ChwRoute
+  '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
+  '/login': typeof LoginRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
+  '/api/public/alerts': typeof ApiPublicAlertsRoute
+  '/api/public/kpis': typeof ApiPublicKpisRoute
+  '/api/public/lakes': typeof ApiPublicLakesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/alerts': typeof AlertsRoute
+  '/chw': typeof ChwRoute
+  '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
+  '/login': typeof LoginRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
+  '/api/public/alerts': typeof ApiPublicAlertsRoute
+  '/api/public/kpis': typeof ApiPublicKpisRoute
+  '/api/public/lakes': typeof ApiPublicLakesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lakes' | '/lakes/$lakeId'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/alerts'
+    | '/chw'
+    | '/data'
+    | '/lakes'
+    | '/login'
+    | '/lakes/$lakeId'
+    | '/api/public/alerts'
+    | '/api/public/kpis'
+    | '/api/public/lakes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lakes' | '/lakes/$lakeId'
-  id: '__root__' | '/' | '/lakes' | '/lakes/$lakeId'
+  to:
+    | '/'
+    | '/admin'
+    | '/alerts'
+    | '/chw'
+    | '/data'
+    | '/lakes'
+    | '/login'
+    | '/lakes/$lakeId'
+    | '/api/public/alerts'
+    | '/api/public/kpis'
+    | '/api/public/lakes'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/alerts'
+    | '/chw'
+    | '/data'
+    | '/lakes'
+    | '/login'
+    | '/lakes/$lakeId'
+    | '/api/public/alerts'
+    | '/api/public/kpis'
+    | '/api/public/lakes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  AlertsRoute: typeof AlertsRoute
+  ChwRoute: typeof ChwRoute
+  DataRoute: typeof DataRoute
   LakesRoute: typeof LakesRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  ApiPublicAlertsRoute: typeof ApiPublicAlertsRoute
+  ApiPublicKpisRoute: typeof ApiPublicKpisRoute
+  ApiPublicLakesRoute: typeof ApiPublicLakesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lakes': {
       id: '/lakes'
       path: '/lakes'
       fullPath: '/lakes'
       preLoaderRoute: typeof LakesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data': {
+      id: '/data'
+      path: '/data'
+      fullPath: '/data'
+      preLoaderRoute: typeof DataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chw': {
+      id: '/chw'
+      path: '/chw'
+      fullPath: '/chw'
+      preLoaderRoute: typeof ChwRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alerts': {
+      id: '/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -81,6 +230,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LakesLakeIdRouteImport
       parentRoute: typeof LakesRoute
     }
+    '/api/public/lakes': {
+      id: '/api/public/lakes'
+      path: '/api/public/lakes'
+      fullPath: '/api/public/lakes'
+      preLoaderRoute: typeof ApiPublicLakesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/kpis': {
+      id: '/api/public/kpis'
+      path: '/api/public/kpis'
+      fullPath: '/api/public/kpis'
+      preLoaderRoute: typeof ApiPublicKpisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/alerts': {
+      id: '/api/public/alerts'
+      path: '/api/public/alerts'
+      fullPath: '/api/public/alerts'
+      preLoaderRoute: typeof ApiPublicAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -96,7 +266,15 @@ const LakesRouteWithChildren = LakesRoute._addFileChildren(LakesRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  AlertsRoute: AlertsRoute,
+  ChwRoute: ChwRoute,
+  DataRoute: DataRoute,
   LakesRoute: LakesRouteWithChildren,
+  LoginRoute: LoginRoute,
+  ApiPublicAlertsRoute: ApiPublicAlertsRoute,
+  ApiPublicKpisRoute: ApiPublicKpisRoute,
+  ApiPublicLakesRoute: ApiPublicLakesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
