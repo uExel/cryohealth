@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
 import { haversineKm, glacierLakeAssocScore } from "@/lib/geo";
+import { glacierStatusWeight } from "@/lib/geo";
 
 export const Route = createFileRoute("/glaciers/$glacierId")({
   head: ({ params }) => ({
@@ -67,7 +68,14 @@ function GlacierDetail() {
           const base = glacierLakeAssocScore(distanceKm, glacier!.status);
           const riskNorm = Number(l.current_risk_score ?? 0) / 100;
           const assoc = base * 0.5 + riskNorm * 0.5;
-          return { ...l, distanceKm, assoc, proximity, riskNorm };
+          const hazard = glacierStatusWeight[glacier!.status ?? "unknown"] ?? 0.4;
+          const contributions = {
+            distance: proximity * 0.3,
+            status: hazard * 0.2,
+            risk: riskNorm * 0.5,
+          };
+          const driver = (Object.entries(contributions).sort((a, b) => b[1] - a[1])[0][0]) as "distance" | "status" | "risk";
+          return { ...l, distanceKm, assoc, proximity, riskNorm, driver };
         })
         .sort((a, b) => b.assoc - a.assoc)
         .slice(0, 8);
@@ -205,12 +213,18 @@ function GlacierDetail() {
             {(relatedLakes ?? []).map((l) => (
               <li key={l.id} className="flex items-center justify-between px-5 py-3">
                 <div>
-                  <Link to="/lakes/$lakeId" params={{ lakeId: l.id }} className="font-medium text-foreground hover:underline">{l.name}</Link>
+                  <div className="flex items-center gap-2">
+                    <Link to="/lakes/$lakeId" params={{ lakeId: l.id }} className="font-medium text-foreground hover:underline">{l.name}</Link>
+                    <DriverBadge driver={l.driver} />
+                  </div>
                   <div className="text-xs text-muted-foreground">
                     {l.distanceKm.toFixed(1)} km · {(l.district as { name?: string } | null)?.name ?? "—"} · {l.downstream_population.toLocaleString()} downstream · score {Number(l.current_risk_score).toFixed(0)}
                   </div>
                   <div className="mt-1 text-[11px] text-muted-foreground/80">
-                    Rank {(l.assoc * 100).toFixed(0)}/100 = proximity {(l.proximity * 100).toFixed(0)} (glacier {glacier.status}) × 50% + lake risk {(l.riskNorm * 100).toFixed(0)} × 50%
+                    Rank {(l.assoc * 100).toFixed(0)}/100 ·{" "}
+                    <span className={l.driver === "distance" ? "font-semibold text-foreground" : ""}>distance {(l.proximity * 100).toFixed(0)}</span> +{" "}
+                    <span className={l.driver === "status" ? "font-semibold text-foreground" : ""}>status {glacier.status}</span> +{" "}
+                    <span className={l.driver === "risk" ? "font-semibold text-foreground" : ""}>lake risk {(l.riskNorm * 100).toFixed(0)}</span>
                   </div>
                 </div>
                 <span className={tierBadgeClass(l.current_tier as Tier)}>{l.current_tier}</span>
@@ -261,5 +275,20 @@ function Meta({ k, v }: { k: string; v: React.ReactNode }) {
       <dt className="text-xs uppercase text-muted-foreground">{k}</dt>
       <dd className="font-mono text-xs text-foreground">{v ?? "—"}</dd>
     </div>
+  );
+}
+
+const driverMeta: Record<string, { label: string; cls: string }> = {
+  distance: { label: "Distance-driven", cls: "bg-blue-100 text-blue-800 ring-blue-200" },
+  status: { label: "Status-driven", cls: "bg-purple-100 text-purple-800 ring-purple-200" },
+  risk: { label: "Risk-driven", cls: "bg-red-100 text-red-800 ring-red-200" },
+};
+
+export function DriverBadge({ driver }: { driver: "distance" | "status" | "risk" }) {
+  const m = driverMeta[driver];
+  return (
+    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ${m.cls}`}>
+      {m.label}
+    </span>
   );
 }

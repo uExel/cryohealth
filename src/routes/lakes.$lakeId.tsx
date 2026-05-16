@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { tierBadgeClass, tierClasses, type Tier } from "@/lib/tier";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
-import { haversineKm, glacierLakeAssocScore } from "@/lib/geo";
+import { haversineKm, glacierLakeAssocScore, glacierStatusWeight } from "@/lib/geo";
+import { DriverBadge } from "./glaciers.$glacierId";
 
 export const Route = createFileRoute("/lakes/$lakeId")({
   head: ({ params }) => ({
@@ -67,7 +68,10 @@ function LakeDetail() {
         .map((g) => {
           const distanceKm = haversineKm({ lat: lake!.lat, lng: lake!.lng }, { lat: g.lat, lng: g.lng });
           const proximity = 1 / (1 + distanceKm / 25);
-          return { ...g, distanceKm, assoc: glacierLakeAssocScore(distanceKm, g.status), proximity };
+          const hazard = glacierStatusWeight[g.status ?? "unknown"] ?? 0.4;
+          const contributions = { distance: proximity * 0.6, status: hazard * 0.4 };
+          const driver = (contributions.distance >= contributions.status ? "distance" : "status") as "distance" | "status";
+          return { ...g, distanceKm, assoc: glacierLakeAssocScore(distanceKm, g.status), proximity, hazard, driver };
         })
         .sort((a, b) => b.assoc - a.assoc)
         .slice(0, 6);
@@ -145,12 +149,17 @@ function LakeDetail() {
           {(associatedGlaciers ?? []).map((g) => (
             <li key={g.id} className="flex items-center justify-between px-5 py-3">
               <div>
-                <Link to="/glaciers/$glacierId" params={{ glacierId: g.id }} className="font-medium text-foreground hover:underline">{g.name}</Link>
+                <div className="flex items-center gap-2">
+                  <Link to="/glaciers/$glacierId" params={{ glacierId: g.id }} className="font-medium text-foreground hover:underline">{g.name}</Link>
+                  <DriverBadge driver={g.driver} />
+                </div>
                 <div className="text-xs text-muted-foreground">
                   {g.distanceKm.toFixed(1)} km away · {(g.district as { name?: string } | null)?.name ?? "—"} · {g.area_km2 ? `${Number(g.area_km2).toFixed(1)} km²` : "—"}
                 </div>
                 <div className="mt-1 text-[11px] text-muted-foreground/80">
-                  Rank {(g.assoc * 100).toFixed(0)}/100 = proximity {(g.proximity * 100).toFixed(0)} × 60% + status hazard ({g.status}) × 40%
+                  Rank {(g.assoc * 100).toFixed(0)}/100 ·{" "}
+                  <span className={g.driver === "distance" ? "font-semibold text-foreground" : ""}>distance {(g.proximity * 100).toFixed(0)}</span> +{" "}
+                  <span className={g.driver === "status" ? "font-semibold text-foreground" : ""}>status {g.status} ({(g.hazard * 100).toFixed(0)})</span>
                 </div>
               </div>
               <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-foreground">{g.status}</span>
