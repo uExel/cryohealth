@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
@@ -319,13 +320,29 @@ export function DriverLegend({
           </li>
         ))}
       </ul>
-      {formula !== "none" && (
-        <div className="mt-3 border-t border-border/70 pt-2 text-[11px] text-muted-foreground">
-          <div className="font-semibold uppercase tracking-wide">Rank formula</div>
-          <div className="mt-1 font-mono leading-relaxed">
+      {formula !== "none" && <RankFormula variant={formula} />}
+    </div>
+  );
+}
+
+function RankFormula({ variant }: { variant: "glacier" | "lake" }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-3 border-t border-border/70 pt-2 text-[11px] text-muted-foreground">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between font-semibold uppercase tracking-wide hover:text-foreground"
+      >
+        <span>Rank formula</span>
+        <span className="font-mono text-[10px]">{open ? "− hide" : "+ show"}</span>
+      </button>
+      {open && (
+        <div className="mt-2 font-mono leading-relaxed">
             <div><span className="text-foreground">proximity</span> = 1 / (1 + distance_km / 25)</div>
             <div><span className="text-foreground">hazard</span> = status weight (surging 1.0 · retreating 0.85 · advancing 0.6 · unknown 0.4 · stable 0.3)</div>
-            {formula === "glacier" ? (
+          {variant === "glacier" ? (
               <>
                 <div><span className="text-foreground">base</span> = proximity × 0.6 + hazard × 0.4</div>
                 <div><span className="text-foreground">rank</span> = base × 0.5 + (lake_risk / 100) × 0.5</div>
@@ -338,7 +355,6 @@ export function DriverLegend({
               </>
             )}
           </div>
-        </div>
       )}
     </div>
   );
