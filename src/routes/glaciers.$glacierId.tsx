@@ -292,3 +292,24 @@ export function DriverBadge({ driver }: { driver: "distance" | "status" | "risk"
     </span>
   );
 }
+
+export function DriverLegend({ include = ["distance", "status", "risk"] as Array<"distance" | "status" | "risk"> }: { include?: Array<"distance" | "status" | "risk"> }) {
+  const copy: Record<string, string> = {
+    distance: "Glacier and lake are physically close (≤25 km soft radius).",
+    status: "Glacier is surging or retreating, raising downstream hazard.",
+    risk: "Lake's current GLOF risk score is elevated.",
+  };
+  return (
+    <div className="mt-2 rounded-lg border border-border bg-secondary/40 p-3">
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Why this ranking</div>
+      <ul className="mt-2 space-y-1.5 text-xs text-muted-foreground">
+        {include.map((d) => (
+          <li key={d} className="flex items-start gap-2">
+            <DriverBadge driver={d} />
+            <span className="flex-1">{copy[d]}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
