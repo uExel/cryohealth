@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { tierBadgeClass, tierClasses, type Tier } from "@/lib/tier";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import { haversineKm, glacierLakeAssocScore } from "@/lib/geo";
 
 export const Route = createFileRoute("/lakes/$lakeId")({
   head: ({ params }) => ({
@@ -52,6 +53,24 @@ function LakeDetail() {
         .order("created_at", { ascending: false })
         .limit(10);
       return data ?? [];
+    },
+  });
+
+  const { data: associatedGlaciers } = useQuery({
+    queryKey: ["lake-glaciers", lakeId, lake?.lat, lake?.lng],
+    enabled: !!lake?.lat && !!lake?.lng,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("glaciers")
+        .select("id,name,status,lat,lng,area_km2,elevation_max_m,district:districts(name)");
+      const ranked = (data ?? [])
+        .map((g) => {
+          const distanceKm = haversineKm({ lat: lake!.lat, lng: lake!.lng }, { lat: g.lat, lng: g.lng });
+          return { ...g, distanceKm, assoc: glacierLakeAssocScore(distanceKm, g.status) };
+        })
+        .sort((a, b) => b.assoc - a.assoc)
+        .slice(0, 6);
+      return ranked;
     },
   });
 
@@ -111,6 +130,31 @@ function LakeDetail() {
             </li>
           ))}
           {alerts && alerts.length === 0 && <li className="py-3 text-muted-foreground">No alerts yet.</li>}
+        </ul>
+      </section>
+
+      <section className="mt-6 rounded-xl border border-border bg-card">
+        <div className="border-b border-border px-5 py-3">
+          <h2 className="text-sm font-semibold text-foreground">
+            Associated glaciers <span className="text-xs font-normal text-muted-foreground">· nearest + highest hazard</span>
+          </h2>
+          <p className="text-xs text-muted-foreground">Ranked by proximity to this lake and glacier status (surging / retreating weigh higher).</p>
+        </div>
+        <ul className="divide-y divide-border text-sm">
+          {(associatedGlaciers ?? []).map((g) => (
+            <li key={g.id} className="flex items-center justify-between px-5 py-3">
+              <div>
+                <Link to="/glaciers/$glacierId" params={{ glacierId: g.id }} className="font-medium text-foreground hover:underline">{g.name}</Link>
+                <div className="text-xs text-muted-foreground">
+                  {g.distanceKm.toFixed(1)} km away · {(g.district as { name?: string } | null)?.name ?? "—"} · {g.area_km2 ? `${Number(g.area_km2).toFixed(1)} km²` : "—"}
+                </div>
+              </div>
+              <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-foreground">{g.status}</span>
+            </li>
+          ))}
+          {associatedGlaciers && associatedGlaciers.length === 0 && (
+            <li className="px-5 py-6 text-center text-muted-foreground">No glaciers indexed.</li>
+          )}
         </ul>
       </section>
     </main>

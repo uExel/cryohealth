@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
+import { haversineKm, glacierLakeAssocScore } from "@/lib/geo";
 
 export const Route = createFileRoute("/glaciers/$glacierId")({
   head: ({ params }) => ({
@@ -52,15 +53,22 @@ function GlacierDetail() {
   const districtId = (glacier?.district as { id?: string } | null)?.id;
 
   const { data: relatedLakes } = useQuery({
-    queryKey: ["glacier-lakes", districtId],
-    enabled: !!districtId,
+    queryKey: ["glacier-lakes-assoc", glacierId, glacier?.lat, glacier?.lng],
+    enabled: !!glacier?.lat && !!glacier?.lng,
     queryFn: async () => {
       const { data } = await supabase
         .from("lakes")
-        .select("id,name,current_tier,current_risk_score,downstream_population")
-        .eq("district_id", districtId!)
-        .order("current_risk_score", { ascending: false });
-      return data ?? [];
+        .select("id,name,current_tier,current_risk_score,downstream_population,lat,lng,district:districts(name)");
+      const ranked = (data ?? [])
+        .map((l) => {
+          const distanceKm = haversineKm({ lat: glacier!.lat, lng: glacier!.lng }, { lat: l.lat, lng: l.lng });
+          // proximity weighted by lake risk score (0-100)
+          const assoc = glacierLakeAssocScore(distanceKm, glacier!.status) * 0.5 + (Number(l.current_risk_score ?? 0) / 100) * 0.5;
+          return { ...l, distanceKm, assoc };
+        })
+        .sort((a, b) => b.assoc - a.assoc)
+        .slice(0, 8);
+      return ranked;
     },
   });
 
@@ -188,20 +196,22 @@ function GlacierDetail() {
       <section className="mt-6 grid gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-border bg-card">
           <h2 className="border-b border-border px-5 py-3 text-sm font-semibold text-foreground">
-            Downstream glacial lakes <span className="text-xs font-normal text-muted-foreground">· same district</span>
+            Associated glacial lakes <span className="text-xs font-normal text-muted-foreground">· nearest + highest risk</span>
           </h2>
           <ul className="divide-y divide-border text-sm">
             {(relatedLakes ?? []).map((l) => (
               <li key={l.id} className="flex items-center justify-between px-5 py-3">
                 <div>
                   <Link to="/lakes/$lakeId" params={{ lakeId: l.id }} className="font-medium text-foreground hover:underline">{l.name}</Link>
-                  <div className="text-xs text-muted-foreground">{l.downstream_population.toLocaleString()} downstream · score {Number(l.current_risk_score).toFixed(0)}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {l.distanceKm.toFixed(1)} km · {(l.district as { name?: string } | null)?.name ?? "—"} · {l.downstream_population.toLocaleString()} downstream · score {Number(l.current_risk_score).toFixed(0)}
+                  </div>
                 </div>
                 <span className={tierBadgeClass(l.current_tier as Tier)}>{l.current_tier}</span>
               </li>
             ))}
             {relatedLakes && relatedLakes.length === 0 && (
-              <li className="px-5 py-6 text-center text-muted-foreground">No monitored lakes in {districtName}.</li>
+              <li className="px-5 py-6 text-center text-muted-foreground">No monitored lakes indexed.</li>
             )}
           </ul>
         </div>
