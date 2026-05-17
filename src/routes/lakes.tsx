@@ -10,7 +10,12 @@ export const Route = createFileRoute("/lakes")({
     meta: [
       { title: "Hazard Map — CryoHealth" },
       { name: "description", content: "Live risk map for monitored glacial lakes across Gilgit Baltistan." },
+      { property: "og:title", content: "Hazard Map — CryoHealth" },
+      { property: "og:description", content: "Interactive map of glacial lakes with current hazard tiers and downstream populations." },
+      { property: "og:url", content: "https://cryohealth.life/lakes" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://cryohealth.life/lakes" }],
   }),
   component: LakesPage,
 });
