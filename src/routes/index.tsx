@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
 import logo from "@/assets/cryohealth-logo.png";
+import { PipelineDiagram } from "@/components/cryohealth/PipelineDiagram";
 
 const GITHUB_REPO_URL = "https://github.com/cryohealth/cryohealth";
 const SITE_URL = "https://cryohealth.life";
@@ -143,6 +144,9 @@ function Landing() {
             <p className="mt-3 text-base text-muted-foreground">
               Each layer is designed to keep working when bandwidth, electricity, or roads do not.
             </p>
+          </div>
+          <div className="mt-12">
+            <PipelineDiagram />
           </div>
           <ol className="mt-12 grid gap-6 md:grid-cols-4">
             <Step
