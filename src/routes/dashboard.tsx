@@ -95,8 +95,11 @@ function Index() {
       <section className="rounded-2xl border border-border bg-gradient-to-br from-primary to-[oklch(0.38_0.1_240)] p-8 text-primary-foreground">
         <p className="text-xs uppercase tracking-widest text-accent">Open source · Seeking funding partners</p>
         <h1 className="mt-2 text-4xl font-semibold leading-tight md:text-5xl">
-          From satellite to bedside in under 3 minutes.
+          Health &amp; Hazard Dashboard
         </h1>
+        <p className="mt-2 text-sm uppercase tracking-widest text-accent">
+          From satellite to bedside in under 3 minutes
+        </p>
         <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80">
           Integrated glacial lake outburst flood (GLOF) early warning and offline AI health assistant for community
           health workers across Gilgit Baltistan, Pakistan and the wider Hindu Kush–Himalaya region.
