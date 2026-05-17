@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LakesRouteImport } from './routes/lakes'
 import { Route as DataRouteImport } from './routes/data'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ChwRouteImport } from './routes/chw'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -35,6 +36,11 @@ const LakesRoute = LakesRouteImport.update({
 const DataRoute = DataRouteImport.update({
   id: '/data',
   path: '/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChwRoute = ChwRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/chw': typeof ChwRoute
+  '/dashboard': typeof DashboardRoute
   '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/chw': typeof ChwRoute
+  '/dashboard': typeof DashboardRoute
   '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/chw': typeof ChwRoute
+  '/dashboard': typeof DashboardRoute
   '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/alerts'
     | '/chw'
+    | '/dashboard'
     | '/data'
     | '/lakes'
     | '/login'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/alerts'
     | '/chw'
+    | '/dashboard'
     | '/data'
     | '/lakes'
     | '/login'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/alerts'
     | '/chw'
+    | '/dashboard'
     | '/data'
     | '/lakes'
     | '/login'
@@ -176,6 +188,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AlertsRoute: typeof AlertsRoute
   ChwRoute: typeof ChwRoute
+  DashboardRoute: typeof DashboardRoute
   DataRoute: typeof DataRoute
   LakesRoute: typeof LakesRouteWithChildren
   LoginRoute: typeof LoginRoute
@@ -206,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/data'
       fullPath: '/data'
       preLoaderRoute: typeof DataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chw': {
@@ -289,6 +309,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AlertsRoute: AlertsRoute,
   ChwRoute: ChwRoute,
+  DashboardRoute: DashboardRoute,
   DataRoute: DataRoute,
   LakesRoute: LakesRouteWithChildren,
   LoginRoute: LoginRoute,
@@ -300,3 +321,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
