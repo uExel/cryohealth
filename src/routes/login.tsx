@@ -4,7 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Sign in — CryoHealth" }] }),
+  head: () => ({
+    meta: [
+      { title: "Sign in — CryoHealth" },
+      { name: "description", content: "Sign in to the CryoHealth platform as a community health worker or admin." },
+      { property: "og:title", content: "Sign in — CryoHealth" },
+      { property: "og:description", content: "Authentication for CryoHealth community health workers, facility admins, and CryoHealth admins." },
+      { property: "og:url", content: "https://cryohealth.life/login" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [{ rel: "canonical", href: "https://cryohealth.life/login" }],
+  }),
   component: LoginPage,
 });
 

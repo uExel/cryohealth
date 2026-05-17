@@ -5,7 +5,18 @@ import { useAuth } from "@/lib/auth";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
 
 export const Route = createFileRoute("/chw")({
-  head: () => ({ meta: [{ title: "CHW Workspace — CryoHealth" }] }),
+  head: () => ({
+    meta: [
+      { title: "CHW Workspace — CryoHealth" },
+      { name: "description", content: "Offline-first case capture and AI triage workspace for community health workers." },
+      { property: "og:title", content: "CHW Workspace — CryoHealth" },
+      { property: "og:description", content: "Capture cases offline and get AI-assisted triage, dosing, and referral guidance in the field." },
+      { property: "og:url", content: "https://cryohealth.life/chw" },
+      { property: "og:type", content: "website" },
+      { name: "robots", content: "noindex" },
+    ],
+    links: [{ rel: "canonical", href: "https://cryohealth.life/chw" }],
+  }),
   component: CHWHome,
 });
 

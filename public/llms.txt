@@ -1,0 +1,19 @@
+# CryoHealth
+
+> A scalable, open-source platform that links satellite-based glacial lake outburst flood (GLOF) early warning with an offline AI health assistant for community health workers in glacier-dependent regions, starting with Gilgit Baltistan and the Hindu Kush–Himalaya.
+
+CryoHealth is built in the open under the MIT License. It fuses near-real-time hazard intelligence (Sentinel-1/2, MODIS) with tiered alerts (WATCH / HIGH / CRITICAL) and a phone-based offline AI assistant that guides triage, drug dosing, and referrals when bandwidth, electricity, or roads are not available. Any government agency, NGO, or research group can fork, deploy, and extend it.
+
+## Pages
+
+- [Home](/): What CryoHealth is, how the pipeline works, and how to get started.
+- [Dashboard](/dashboard): Live KPIs, priority glacial lakes, and recent alerts.
+- [Hazard Map](/lakes): Interactive map of monitored glacial lakes with current risk tiers.
+- [Alerts](/alerts): Chronological feed of issued GLOF alerts with impact windows.
+- [Open Data](/data): Public read-only API endpoints (lakes, alerts, KPIs).
+
+## Optional
+
+- [CHW Workspace](/chw): Authenticated workspace for community health workers.
+- [Admin](/admin): Authenticated inventory and role management for CryoHealth and facility admins.
+- [Sign in](/login): Authentication for CHWs and admins.

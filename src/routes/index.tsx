@@ -25,13 +25,13 @@ const OG_IMAGE = `${SITE_URL}${heroImage}`;
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CryoHealth — GLOF Early Warning & Offline AI Health Assistant" },
+      { title: "CryoHealth — GLOF Early Warning & Offline AI Health" },
       {
         name: "description",
         content:
-          "Open-source platform connecting satellite-based glacial lake outburst flood (GLOF) early warning with offline AI health guidance for community health workers across Gilgit Baltistan and the Hindu Kush–Himalaya.",
+          "Open-source platform connecting satellite GLOF early warning with offline AI health guidance for community health workers across the Hindu Kush–Himalaya.",
       },
-      { property: "og:title", content: "CryoHealth — GLOF Early Warning & Offline AI Health Assistant" },
+      { property: "og:title", content: "CryoHealth — GLOF Early Warning & Offline AI Health" },
       {
         property: "og:description",
         content:
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/")({
       { property: "og:site_name", content: "CryoHealth" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "CryoHealth — GLOF Early Warning & Offline AI Health Assistant" },
+      { name: "twitter:title", content: "CryoHealth — GLOF Early Warning & Offline AI Health" },
       {
         name: "twitter:description",
         content:

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LakesRouteImport } from './routes/lakes'
 import { Route as DataRouteImport } from './routes/data'
@@ -23,6 +24,11 @@ import { Route as ApiPublicLakesRouteImport } from './routes/api/public/lakes'
 import { Route as ApiPublicKpisRouteImport } from './routes/api/public/kpis'
 import { Route as ApiPublicAlertsRouteImport } from './routes/api/public/alerts'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
@@ -113,6 +120,7 @@ export interface FileRoutesByTo {
   '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
@@ -146,6 +155,7 @@ export interface FileRouteTypes {
     | '/data'
     | '/lakes'
     | '/login'
+    | '/sitemap.xml'
     | '/glaciers/$glacierId'
     | '/lakes/$lakeId'
     | '/api/public/alerts'
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/data'
     | '/lakes'
     | '/login'
+    | '/sitemap.xml'
     | '/glaciers/$glacierId'
     | '/lakes/$lakeId'
     | '/api/public/alerts'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/data'
     | '/lakes'
     | '/login'
+    | '/sitemap.xml'
     | '/glaciers/$glacierId'
     | '/lakes/$lakeId'
     | '/api/public/alerts'
@@ -192,6 +204,7 @@ export interface RootRouteChildren {
   DataRoute: typeof DataRoute
   LakesRoute: typeof LakesRouteWithChildren
   LoginRoute: typeof LoginRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   GlaciersGlacierIdRoute: typeof GlaciersGlacierIdRoute
   ApiPublicAlertsRoute: typeof ApiPublicAlertsRoute
   ApiPublicKpisRoute: typeof ApiPublicKpisRoute
@@ -200,6 +213,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -313,6 +333,7 @@ const rootRouteChildren: RootRouteChildren = {
   DataRoute: DataRoute,
   LakesRoute: LakesRouteWithChildren,
   LoginRoute: LoginRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   GlaciersGlacierIdRoute: GlaciersGlacierIdRoute,
   ApiPublicAlertsRoute: ApiPublicAlertsRoute,
   ApiPublicKpisRoute: ApiPublicKpisRoute,
