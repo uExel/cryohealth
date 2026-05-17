@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/api/public/lakes")({
   server: {
     handlers: {
       GET: async () => {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await supabase
           .from("lakes")
           .select("id,name,lat,lng,elevation_m,area_km2,current_risk_score,current_tier,current_confidence,downstream_population,last_updated")
           .order("current_risk_score", { ascending: false });
