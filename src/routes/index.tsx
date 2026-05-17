@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
-import { ArrowRight, Activity, Mountain, Bell, Users } from "lucide-react";
+import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
+
+const GITHUB_REPO_URL = "https://github.com/cryohealth/cryohealth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
