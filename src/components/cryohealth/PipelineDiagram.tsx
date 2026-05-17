@@ -26,7 +26,7 @@ const NODES: NodeDef[] = [
   {
     id: "ai",
     label: "AI inference",
-    sub: "Hazard model · NDMA tiers",
+    sub: "Hazard model · tiered alerts",
     desc: "Risk model converts imagery + weather into WATCH → HIGH → CRITICAL alerts.",
     icon: <BrainCircuit className="h-6 w-6" />,
     x: 50,
