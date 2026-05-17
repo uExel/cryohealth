@@ -99,19 +99,41 @@ export function PipelineDiagram() {
             const b = getNode(e.to);
             const isActive = active === e.from || active === e.to;
             return (
-              <line
-                key={i}
-                x1={a.x}
-                y1={a.y}
-                x2={b.x}
-                y2={b.y}
-                stroke="url(#edge-grad)"
-                strokeWidth={isActive ? 0.6 : 0.35}
-                strokeLinecap="round"
-                className={isActive ? "pipeline-line-active" : "pipeline-line"}
-                style={{ transition: "stroke-width 200ms ease" }}
-                vectorEffect="non-scaling-stroke"
-              />
+              <g key={i}>
+                <path
+                  id={`edge-path-${i}`}
+                  d={`M ${a.x} ${a.y} L ${b.x} ${b.y}`}
+                  fill="none"
+                  stroke="url(#edge-grad)"
+                  strokeWidth={isActive ? 0.6 : 0.35}
+                  strokeLinecap="round"
+                  className={isActive ? "pipeline-line-active" : "pipeline-line"}
+                  style={{ transition: "stroke-width 200ms ease" }}
+                  vectorEffect="non-scaling-stroke"
+                />
+                {/* flowing particles — denser & faster when active */}
+                {[0, 0.33, 0.66].map((delay, p) => {
+                  if (!isActive && p > 0) return null;
+                  const dur = isActive ? 1.4 : 3;
+                  return (
+                    <circle
+                      key={p}
+                      r={isActive ? 0.9 : 0.6}
+                      fill="oklch(0.85 0.14 195)"
+                      opacity={isActive ? 0.95 : 0.55}
+                      style={{ filter: "drop-shadow(0 0 1.5px oklch(0.78 0.13 195))" }}
+                    >
+                      <animateMotion
+                        dur={`${dur}s`}
+                        repeatCount="indefinite"
+                        begin={`-${delay * dur}s`}
+                        path={`M ${a.x} ${a.y} L ${b.x} ${b.y}`}
+                        rotate="auto"
+                      />
+                    </circle>
+                  );
+                })}
+              </g>
             );
           })}
         </svg>
