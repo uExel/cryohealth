@@ -5,6 +5,7 @@ import { Mountain, Languages } from "lucide-react";
 
 const NAV = [
   { to: "/", key: "home" },
+  { to: "/dashboard", key: "dashboard" },
   { to: "/lakes", key: "lakes" },
   { to: "/alerts", key: "alerts" },
   { to: "/data", key: "data" },
