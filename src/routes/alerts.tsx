@@ -11,7 +11,12 @@ export const Route = createFileRoute("/alerts")({
     meta: [
       { title: "Alerts — CryoHealth" },
       { name: "description", content: "Live GLOF alert feed for Gilgit Baltistan." },
+      { property: "og:title", content: "Alerts — CryoHealth" },
+      { property: "og:description", content: "Chronological feed of GLOF alerts with estimated impact windows and affected downstream populations." },
+      { property: "og:url", content: "https://cryohealth.life/alerts" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://cryohealth.life/alerts" }],
   }),
   component: AlertsPage,
 });
