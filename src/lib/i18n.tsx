@@ -5,7 +5,8 @@ const dict: Record<Lang, Record<string, string>> = {
   en: {
     appName: "CryoHealth",
     tagline: "GLOF Early Warning & Offline AI Health Assistant",
-    home: "Overview",
+    home: "Home",
+    dashboard: "Dashboard",
     lakes: "Hazard Map",
     alerts: "Alerts",
     chw: "CHW Workspace",
@@ -18,7 +19,8 @@ const dict: Record<Lang, Record<string, string>> = {
   ur: {
     appName: "کرائیو ہیلتھ",
     tagline: "گلوف ابتدائی انتباہ اور آف لائن AI ہیلتھ معاون",
-    home: "جائزہ",
+    home: "ہوم",
+    dashboard: "ڈیش بورڈ",
     lakes: "خطرے کا نقشہ",
     alerts: "انتباہات",
     chw: "ہیلتھ ورکر",
