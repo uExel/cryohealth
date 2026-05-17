@@ -65,7 +65,7 @@ function Index() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
       <section className="rounded-2xl border border-border bg-gradient-to-br from-primary to-[oklch(0.38_0.1_240)] p-8 text-primary-foreground">
-        <p className="text-xs uppercase tracking-widest text-accent">UNICEF Venture Fund · Climate & Health 2026</p>
+        <p className="text-xs uppercase tracking-widest text-accent">Open source · Seeking funding partners</p>
         <h1 className="mt-2 text-4xl font-semibold leading-tight md:text-5xl">
           From satellite to bedside in under 3 minutes.
         </h1>
