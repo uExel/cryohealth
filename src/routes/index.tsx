@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
-import { ArrowRight, Activity, Mountain, Bell, Users } from "lucide-react";
+import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
+
+const GITHUB_REPO_URL = "https://github.com/cryohealth/cryohealth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -146,6 +148,51 @@ function Index() {
               <li className="py-6 text-center text-sm text-muted-foreground">No alerts yet.</li>
             )}
           </ul>
+        </div>
+      </section>
+
+      <section className="mt-8 rounded-xl border border-border bg-card p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-widest text-accent">Open source</p>
+            <h2 className="mt-2 text-2xl font-semibold text-foreground">Built in the open</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              CryoHealth is released under the MIT License. The code, data schema, and seed data are
+              public so partners, researchers, and community health programs can audit, fork, and
+              deploy the platform. Contributions and funding partners are welcome.
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1">
+                <Scale className="h-3.5 w-3.5" /> MIT License
+              </span>
+              <a
+                href={`${GITHUB_REPO_URL}/blob/main/LICENSE`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                Read the license
+              </a>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href={GITHUB_REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              <Github className="h-4 w-4" /> View on GitHub
+            </a>
+            <a
+              href={`${GITHUB_REPO_URL}/issues`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+            >
+              Open an issue
+            </a>
+          </div>
         </div>
       </section>
     </main>
