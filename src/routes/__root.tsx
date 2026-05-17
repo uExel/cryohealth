@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "CryoHealth A scalable solution for glacier-dependent regions" },
+      { name: "description", content: "A scalable solution for glacier-dependent regions. CryoHealth fuses near-real-time glacial lake outburst flood (GLOF) intelligence with an offline AI health ass" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "CryoHealth A scalable solution for glacier-dependent regions" },
+      { property: "og:description", content: "A scalable solution for glacier-dependent regions. CryoHealth fuses near-real-time glacial lake outburst flood (GLOF) intelligence with an offline AI health ass" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "CryoHealth A scalable solution for glacier-dependent regions" },
+      { name: "twitter:description", content: "A scalable solution for glacier-dependent regions. CryoHealth fuses near-real-time glacial lake outburst flood (GLOF) intelligence with an offline AI health ass" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d58187c6-b20f-48e8-8151-6e224acf9881" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d58187c6-b20f-48e8-8151-6e224acf9881" },
     ],
     links: [
       {
