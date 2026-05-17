@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
 
-type Role = "chw" | "facility_admin" | "ndma" | "public_viewer";
+type Role = "chw" | "facility_admin" | "cryohealth_admin" | "public_viewer";
 
 type AuthCtx = {
   user: User | null;
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRolesLoaded(true);
   }
 
-  const isAdmin = roles.includes("ndma") || roles.includes("facility_admin");
+  const isAdmin = roles.includes("cryohealth_admin") || roles.includes("facility_admin");
   const isCHW = roles.includes("chw");
 
   return (
