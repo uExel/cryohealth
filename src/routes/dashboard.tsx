@@ -3,19 +3,45 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
 import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
+import heroImage from "@/assets/glacial-hero.jpg";
 
 const GITHUB_REPO_URL = "https://github.com/cryohealth/cryohealth";
+const SITE_URL = "https://cryohealth.life";
+const OG_IMAGE = `${SITE_URL}${heroImage}`;
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — CryoHealth" },
+      { title: "Dashboard — CryoHealth GLOF & Health Intelligence" },
       {
         name: "description",
         content:
           "Open-source platform connecting glacial lake hazard intelligence with offline AI health guidance for community health workers in Gilgit Baltistan.",
       },
+      {
+        property: "og:title",
+        content: "Dashboard — CryoHealth GLOF & Health Intelligence",
+      },
+      {
+        property: "og:description",
+        content:
+          "Live KPIs, priority glacial lakes, and recent alerts across Gilgit Baltistan and the Hindu Kush–Himalaya.",
+      },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:alt", content: "CryoHealth dashboard preview" },
+      { property: "og:url", content: `${SITE_URL}/dashboard` },
+      { property: "og:site_name", content: "CryoHealth" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Dashboard — CryoHealth" },
+      {
+        name: "twitter:description",
+        content:
+          "Live KPIs, priority glacial lakes, and recent alerts across the Hindu Kush–Himalaya.",
+      },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/dashboard` }],
   }),
   component: Index,
 });

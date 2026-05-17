@@ -17,6 +17,8 @@ import {
 import heroImage from "@/assets/glacial-hero.jpg";
 
 const GITHUB_REPO_URL = "https://github.com/cryohealth/cryohealth";
+const SITE_URL = "https://cryohealth.life";
+const OG_IMAGE = `${SITE_URL}${heroImage}`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,9 +35,21 @@ export const Route = createFileRoute("/")({
         content:
           "From satellite to bedside in under 3 minutes. Open-source GLOF early warning + offline AI health assistant for Gilgit Baltistan.",
       },
-      { property: "og:image", content: heroImage },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:alt", content: "Glacial lake in the Hindu Kush–Himalaya" },
+      { property: "og:url", content: `${SITE_URL}/` },
+      { property: "og:site_name", content: "CryoHealth" },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "CryoHealth — GLOF Early Warning & Offline AI Health Assistant" },
+      {
+        name: "twitter:description",
+        content:
+          "From satellite to bedside in under 3 minutes. Open-source GLOF early warning + offline AI health assistant.",
+      },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/` }],
   }),
   component: Landing,
 });
