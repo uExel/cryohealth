@@ -9,7 +9,7 @@ const GITHUB_REPO_URL = "https://github.com/cryohealth/cryohealth";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "CryoHealth — GLOF Early Warning & Health Assistant" },
+      { title: "Dashboard — CryoHealth" },
       {
         name: "description",
         content:
