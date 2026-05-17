@@ -1,7 +1,8 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import { Mountain, Languages } from "lucide-react";
+import { Languages } from "lucide-react";
+import logo from "@/assets/cryohealth-logo.png";
 
 const NAV = [
   { to: "/", key: "home" },
@@ -20,12 +21,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2">
-          <div className="rounded-md bg-primary p-1.5 text-primary-foreground">
-            <Mountain className="h-4 w-4" />
-          </div>
+          <img src={logo} alt="CryoHealth logo" className="h-9 w-9 object-contain" />
           <div className="leading-tight">
             <div className="text-sm font-semibold text-foreground">{t("appName")}</div>
-            <div className="text-[10px] text-muted-foreground">Gilgit Baltistan</div>
+            <div className="text-[10px] text-muted-foreground">Scalable solution for glacier-dependent regions</div>
           </div>
         </Link>
         <nav className="hidden items-center gap-1 md:flex">

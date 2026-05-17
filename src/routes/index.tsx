@@ -15,6 +15,7 @@ import {
   Globe2,
 } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
+import logo from "@/assets/cryohealth-logo.png";
 
 const GITHUB_REPO_URL = "https://github.com/cryohealth/cryohealth";
 const SITE_URL = "https://cryohealth.life";
@@ -65,13 +66,15 @@ function Landing() {
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-accent-foreground/70">
               Open source · Seeking funding partners
             </p>
+            <img src={logo} alt="CryoHealth logo" className="mt-6 h-20 w-20 object-contain" />
             <h1 className="mt-4 text-4xl font-semibold leading-[1.05] text-foreground md:text-5xl lg:text-6xl">
               From satellite <span className="text-primary">to bedside</span> in under three minutes.
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-              CryoHealth fuses near-real-time glacial lake outburst flood (GLOF) intelligence with an
-              offline AI health assistant — built for community health workers across Gilgit Baltistan
-              and the wider Hindu Kush–Himalaya.
+              A scalable solution for glacier-dependent regions. CryoHealth fuses near-real-time
+              glacial lake outburst flood (GLOF) intelligence with an offline AI health assistant —
+              built for community health workers across Gilgit Baltistan and the wider
+              Hindu Kush–Himalaya.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
