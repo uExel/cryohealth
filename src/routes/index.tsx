@@ -159,7 +159,7 @@ function Landing() {
               n="02"
               icon={<Bell />}
               title="Tiered alerts"
-              desc="NDMA-aligned WATCH → HIGH → CRITICAL alerts trigger automatic notifications."
+              desc="Tiered WATCH → HIGH → CRITICAL alerts (NDMA-compatible) trigger automatic notifications."
             />
             <Step
               n="03"
@@ -197,7 +197,7 @@ function Landing() {
             <Feature
               icon={<Bell />}
               title="Alerts feed"
-              desc="Chronological feed of NDMA alerts with estimated impact windows and downstream populations."
+              desc="Chronological feed of hazard alerts with estimated impact windows and downstream populations."
               to="/alerts"
               cta="View alerts"
             />
@@ -218,7 +218,7 @@ function Landing() {
             <Feature
               icon={<ShieldCheck />}
               title="Admin controls"
-              desc="For NDMA and facility admins: inventory, role management, and audit-ready data."
+              desc="For CryoHealth admins and facility admins: inventory, role management, and audit-ready data."
               to="/admin"
               cta="Admin panel"
             />
@@ -264,10 +264,10 @@ function Landing() {
               cta="CHW workspace"
             />
             <Role
-              tag="NDMA / facility admin"
+              tag="CryoHealth / facility admin"
               title="Coordinate response"
               steps={[
-                "Sign in with the ndma or facility_admin role.",
+                "Sign in with the cryohealth_admin or facility_admin role.",
                 "Manage glacier and lake inventory.",
                 "Issue alerts and monitor downstream impact.",
               ]}
