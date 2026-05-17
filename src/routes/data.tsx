@@ -5,7 +5,12 @@ export const Route = createFileRoute("/data")({
     meta: [
       { title: "Open Data — CryoHealth" },
       { name: "description", content: "Public hazard and health data endpoints under CC BY 4.0." },
+      { property: "og:title", content: "Open Data — CryoHealth" },
+      { property: "og:description", content: "Public read-only API endpoints for lakes, alerts, and KPIs — free to use under CC BY 4.0." },
+      { property: "og:url", content: "https://cryohealth.life/data" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://cryohealth.life/data" }],
   }),
   component: DataPage,
 });
