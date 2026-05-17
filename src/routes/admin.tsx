@@ -10,7 +10,13 @@ export const Route = createFileRoute("/admin")({
     meta: [
       { title: "Admin — Cryosphere Inventory" },
       { name: "description", content: "Profile of glaciers and glacial lakes across Gilgit Baltistan and Chitral, mapped from RGI v7 / GLIMS and NASA satellite data." },
+      { property: "og:title", content: "Admin — CryoHealth Cryosphere Inventory" },
+      { property: "og:description", content: "Manage glaciers, glacial lakes, alerts, and roles. For CryoHealth admins and facility admins." },
+      { property: "og:url", content: "https://cryohealth.life/admin" },
+      { property: "og:type", content: "website" },
+      { name: "robots", content: "noindex" },
     ],
+    links: [{ rel: "canonical", href: "https://cryohealth.life/admin" }],
   }),
   component: AdminPage,
 });
