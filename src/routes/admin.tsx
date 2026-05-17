@@ -22,7 +22,7 @@ function AdminPage() {
   if (!isAdmin)
     return (
       <main className="mx-auto max-w-md px-4 py-10 text-center text-sm text-muted-foreground">
-        Admin access required. Ask the project owner to grant you the <code>ndma</code> or <code>facility_admin</code> role.
+        Admin access required. Ask the project owner to grant you the <code>cryohealth_admin</code> or <code>facility_admin</code> role.
         <div className="mt-4">
           <Link to="/login" className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground">Sign in</Link>
         </div>
