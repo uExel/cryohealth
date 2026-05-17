@@ -199,9 +199,9 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
           <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200}
             className="rounded-md border border-border bg-background px-3 py-2 text-sm" required />
         </label>
-        <label className="flex flex-col gap-1 text-xs">
+        <label htmlFor="alert-tier" className="flex flex-col gap-1 text-xs">
           <span className="text-muted-foreground">Risk tier</span>
-          <select value={tier} onChange={(e) => setTier(e.target.value as Tier)}
+          <select id="alert-tier" aria-label="Risk tier" value={tier} onChange={(e) => setTier(e.target.value as Tier)}
             className="rounded-md border border-border bg-background px-3 py-2 text-sm">
             <option value="NORMAL">NORMAL</option>
             <option value="WATCH">WATCH</option>
@@ -215,9 +215,9 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
             placeholder="e.g. next 24h"
             className="rounded-md border border-border bg-background px-3 py-2 text-sm" />
         </label>
-        <label className="flex flex-col gap-1 text-xs">
+        <label htmlFor="alert-lake" className="flex flex-col gap-1 text-xs">
           <span className="text-muted-foreground">Target lake</span>
-          <select value={lakeId} onChange={(e) => setLakeId(e.target.value)}
+          <select id="alert-lake" aria-label="Target lake" value={lakeId} onChange={(e) => setLakeId(e.target.value)}
             className="rounded-md border border-border bg-background px-3 py-2 text-sm">
             <option value="">— None —</option>
             {(lakes ?? []).map((l) => (
@@ -225,9 +225,9 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-1 text-xs">
+        <label htmlFor="alert-district" className="flex flex-col gap-1 text-xs">
           <span className="text-muted-foreground">Target district</span>
-          <select value={districtId} onChange={(e) => setDistrictId(e.target.value)}
+          <select id="alert-district" aria-label="Target district" value={districtId} onChange={(e) => setDistrictId(e.target.value)}
             className="rounded-md border border-border bg-background px-3 py-2 text-sm">
             <option value="">— Auto from lake —</option>
             {(districts ?? []).map((d) => (
