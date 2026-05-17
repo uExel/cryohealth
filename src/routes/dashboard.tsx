@@ -5,7 +5,7 @@ import { tierBadgeClass, type Tier } from "@/lib/tier";
 import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
 
-const GITHUB_REPO_URL = "https://github.com/cryohealth/cryohealth";
+const GITHUB_REPO_URL = "https://github.com/uExel/cryohealth.life";
 const SITE_URL = "https://cryohealth.life";
 const OG_IMAGE = `${SITE_URL}${heroImage}`;
 

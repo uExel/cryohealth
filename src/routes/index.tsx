@@ -18,7 +18,7 @@ import heroImage from "@/assets/glacial-hero.jpg";
 import logo from "@/assets/cryohealth-logo.png";
 import { PipelineDiagram } from "@/components/cryohealth/PipelineDiagram";
 
-const GITHUB_REPO_URL = "https://github.com/cryohealth/cryohealth";
+const GITHUB_REPO_URL = "https://github.com/uExel/cryohealth.life";
 const SITE_URL = "https://cryohealth.life";
 const OG_IMAGE = `${SITE_URL}${heroImage}`;
 
