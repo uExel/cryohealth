@@ -30,3 +30,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+graphify-out/cost.json
+.env
+.env.local
