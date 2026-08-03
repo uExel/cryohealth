@@ -35,3 +35,6 @@ tests: none  review: n/a  qa: n/a
 
 ## Resume with
 /uexel:orient   (then: /uexel:plan <G6 wiring task>)
+
+## Addendum — 2026-08-03 (harness maintenance)
+cryo-harness renamed to uxl-harness across the org (github.com/uExel/uxl-harness); this repo's .claude/settings.json marketplace pointer updated to match.
