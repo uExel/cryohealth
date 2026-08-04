@@ -7,8 +7,9 @@ type Lake = {
   lat: number;
   lng: number;
   current_tier: Tier;
-  current_risk_score: number;
-  downstream_population: number;
+  // Not yet exposed by CryoHealth-api — rendered only when present.
+  current_risk_score?: number;
+  downstream_population?: number;
 };
 
 type Facility = {
@@ -147,8 +148,8 @@ export function HazardMap({
           `<div class="space-y-1 text-xs">
             <div class="font-semibold">${escapeHtml(l.name)}</div>
             <div>Tier: ${l.current_tier}</div>
-            <div>Score: ${Number(l.current_risk_score).toFixed(0)}</div>
-            <div>Downstream: ${Number(l.downstream_population ?? 0).toLocaleString()}</div>
+            ${l.current_risk_score != null ? `<div>Score: ${Number(l.current_risk_score).toFixed(0)}</div>` : ""}
+            ${l.downstream_population != null ? `<div>Downstream: ${Number(l.downstream_population).toLocaleString()}</div>` : ""}
             <a href="/lakes/${encodeURIComponent(l.id)}" class="text-primary underline">Open lake →</a>
           </div>`,
         )

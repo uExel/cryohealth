@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchLakes } from "@/lib/cryohealth-api";
 import { HazardMap } from "@/components/cryohealth/HazardMap";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
 import { useState } from "react";
@@ -22,15 +23,9 @@ export const Route = createFileRoute("/lakes")({
 
 function LakesPage() {
   const [tier, setTier] = useState<"ALL" | Tier>("ALL");
-  const { data: lakes } = useQuery({
+  const { data: lakes, isLoading, isError } = useQuery({
     queryKey: ["lakes"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("lakes")
-        .select("id,name,lat,lng,current_tier,current_risk_score,downstream_population,last_updated,district_id")
-        .order("current_risk_score", { ascending: false });
-      return data ?? [];
-    },
+    queryFn: fetchLakes,
   });
   const { data: facilities } = useQuery({
     queryKey: ["facilities"],
@@ -66,7 +61,19 @@ function LakesPage() {
         </div>
       </div>
 
-      <HazardMap lakes={(filtered as never) ?? []} facilities={facilities ?? []} />
+      {isError && (
+        <div className="mb-4 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          Couldn't load lakes from CryoHealth-api. Showing whatever loaded previously, if anything.
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="flex h-[480px] items-center justify-center rounded-xl border border-border bg-secondary/40 text-sm text-muted-foreground">
+          Loading lakes…
+        </div>
+      ) : (
+        <HazardMap lakes={filtered} facilities={facilities ?? []} />
+      )}
 
       <div className="mt-6 overflow-hidden rounded-xl border border-border bg-card">
         <table className="w-full text-sm">
@@ -74,8 +81,6 @@ function LakesPage() {
             <tr>
               <th className="px-4 py-2">Lake</th>
               <th className="px-4 py-2">Tier</th>
-              <th className="px-4 py-2">Score</th>
-              <th className="px-4 py-2">Downstream</th>
               <th className="px-4 py-2">Last update</th>
             </tr>
           </thead>
@@ -87,9 +92,14 @@ function LakesPage() {
                     {l.name}
                   </Link>
                 </td>
-                <td className="px-4 py-2"><span className={tierBadgeClass(l.current_tier as Tier)}>{l.current_tier}</span></td>
-                <td className="px-4 py-2 text-foreground">{Number(l.current_risk_score).toFixed(0)}</td>
-                <td className="px-4 py-2 text-muted-foreground">{l.downstream_population.toLocaleString()}</td>
+                <td className="px-4 py-2">
+                  <span className={tierBadgeClass(l.current_tier)}>{l.current_tier}</span>
+                  {l.stale && (
+                    <span className="ml-1.5 rounded-full bg-secondary px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
+                      Stale
+                    </span>
+                  )}
+                </td>
                 <td className="px-4 py-2 text-muted-foreground">{new Date(l.last_updated).toLocaleString()}</td>
               </tr>
             ))}
