@@ -4,14 +4,15 @@
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/server.ts",
-  // Set by provisioning: id comes from the Hyperdrive config created against
-  // the Hetzner db (172.28.0.10:5432) over the Cloudflare Tunnel private
-  // network route — see cryohealth-infra/README.md. Unset in local dev
-  // (`bun dev`), where src/lib/db.ts falls back to the discrete DB_* vars.
+  // Hyperdrive reaches Postgres via the cryohealth-hetzner tunnel's
+  // db.cryohealth.io TCP route (tcp://db:5432), authenticated by a
+  // Cloudflare Access service token — not a public address. See
+  // cryohealth-infra/README.md. Unset in local dev (`bun dev`), where
+  // src/lib/db.ts falls back to the discrete DB_* vars.
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
-      "id": "REPLACE_WITH_HYPERDRIVE_CONFIG_ID",
+      "id": "bd83991e0c8d4562a1ebbc217252b216",
     },
   ],
 }
