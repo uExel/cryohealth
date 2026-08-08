@@ -10,6 +10,7 @@ const NAV = [
   { to: "/lakes", key: "lakes" },
   { to: "/alerts", key: "alerts" },
   { to: "/data", key: "data" },
+  { to: "/about", key: "about" },
 ] as const;
 
 export function SiteHeader() {

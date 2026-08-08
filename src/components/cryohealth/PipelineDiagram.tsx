@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Satellite, BrainCircuit, Smartphone, Stethoscope } from "lucide-react";
+import { Satellite, Bell, BookOpen, Stethoscope } from "lucide-react";
 
-type NodeId = "satellite" | "ai" | "phone" | "chw";
+type NodeId = "watch" | "alert" | "prepare" | "respond";
 
 type NodeDef = {
   id: NodeId;
@@ -15,37 +15,37 @@ type NodeDef = {
 
 const NODES: NodeDef[] = [
   {
-    id: "satellite",
-    label: "Satellite",
+    id: "watch",
+    label: "Watch",
     sub: "Sentinel-1/2 · MODIS",
-    desc: "Daily imagery is scored by ML to rank each glacial lake by hazard tier.",
+    desc: "Daily imagery is processed into a risk score for every monitored lake and catchment.",
     icon: <Satellite className="h-6 w-6" />,
     x: 12,
     y: 22,
   },
   {
-    id: "ai",
-    label: "AI inference",
-    sub: "Hazard model · tiered alerts",
-    desc: "Risk model converts imagery + weather into WATCH → HIGH → CRITICAL alerts.",
-    icon: <BrainCircuit className="h-6 w-6" />,
+    id: "alert",
+    label: "Alert",
+    sub: "Plain instruction, not a number",
+    desc: "When risk crosses a threshold, health workers receive a plain instruction on what to do.",
+    icon: <Bell className="h-6 w-6" />,
     x: 50,
     y: 14,
   },
   {
-    id: "phone",
-    label: "Offline app",
-    sub: "SMS · PWA · radio",
-    desc: "Alerts reach the village over any channel available, even without internet.",
-    icon: <Smartphone className="h-6 w-6" />,
+    id: "prepare",
+    label: "Prepare",
+    sub: "Offline prevention library",
+    desc: "Prevention guidance already lives on the device and refreshes at the health post.",
+    icon: <BookOpen className="h-6 w-6" />,
     x: 86,
     y: 28,
   },
   {
-    id: "chw",
-    label: "CHW + AI triage",
-    sub: "Bedside guidance",
-    desc: "The local AI assistant guides triage, dosing, and referrals — fully offline.",
+    id: "respond",
+    label: "Respond",
+    sub: "If an emergency still hits",
+    desc: "The worker registers a case and the app suggests care steps for the emergency, offline.",
     icon: <Stethoscope className="h-6 w-6" />,
     x: 50,
     y: 82,
@@ -53,10 +53,10 @@ const NODES: NodeDef[] = [
 ];
 
 const EDGES: Array<{ from: NodeId; to: NodeId }> = [
-  { from: "satellite", to: "ai" },
-  { from: "ai", to: "phone" },
-  { from: "phone", to: "chw" },
-  { from: "satellite", to: "chw" },
+  { from: "watch", to: "alert" },
+  { from: "alert", to: "prepare" },
+  { from: "prepare", to: "respond" },
+  { from: "watch", to: "respond" },
 ];
 
 function getNode(id: NodeId) {
@@ -185,7 +185,7 @@ export function PipelineDiagram() {
 
         {/* legend */}
         <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[10px] uppercase tracking-widest text-primary-foreground/60">
-          <span>Lead-time goal &lt; 3 min</span>
+          <span>Prevention first, response second</span>
           <span className="hidden sm:inline">Hover a node →</span>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { authFetch } from "@/lib/auth-client";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
 import { useAuth } from "@/lib/auth";
+import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/alerts")({
@@ -17,10 +18,10 @@ export const Route = createFileRoute("/alerts")({
         content:
           "Chronological feed of GLOF alerts with estimated impact windows and affected downstream populations.",
       },
-      { property: "og:url", content: "https://cryohealth.life/alerts" },
+      { property: "og:url", content: "https://cryohealth.io/alerts" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://cryohealth.life/alerts" }],
+    links: [{ rel: "canonical", href: "https://cryohealth.io/alerts" }],
   }),
   component: AlertsPage,
 });
@@ -86,7 +87,14 @@ function AlertsPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-6">
       <h1 className="text-2xl font-semibold text-foreground">Alert feed</h1>
-      <p className="text-sm text-muted-foreground">Most recent first. Public read-only view.</p>
+      <p className="text-sm text-muted-foreground">
+        Every alert issued, when it went out, through which channel and whether it was acknowledged.
+        This feed is public. Most recent first.
+      </p>
+      <FreshnessStamp
+        lastUpdated={data && data.length > 0 ? data[0].created_at : null}
+        className="mt-1 text-muted-foreground"
+      />
       {isAdmin && (
         <BroadcastForm onCreated={() => qc.invalidateQueries({ queryKey: ["alerts-all"] })} />
       )}

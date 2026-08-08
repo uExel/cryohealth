@@ -4,38 +4,39 @@ import {
   Satellite,
   Bell,
   Stethoscope,
+  BookOpen,
   Database,
   ShieldCheck,
   Github,
   Scale,
   MapPin,
-  Radio,
-  HeartPulse,
   Users,
-  Globe2,
 } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
 import logo from "@/assets/cryohealth-logo.png";
 import { PipelineDiagram } from "@/components/cryohealth/PipelineDiagram";
 
-const GITHUB_REPO_URL = "https://github.com/uExel/cryohealth.life";
-const SITE_URL = "https://cryohealth.life";
+const GITHUB_REPO_URL = "https://github.com/uExel/cryohealth";
+const SITE_URL = "https://cryohealth.io";
 const OG_IMAGE = `${SITE_URL}${heroImage}`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CryoHealth — GLOF Early Warning & Offline AI Health" },
+      { title: "CryoHealth — Prevention that arrives before the flood does" },
       {
         name: "description",
         content:
-          "Open-source platform connecting satellite GLOF early warning with offline AI health guidance for community health workers across the Hindu Kush–Himalaya.",
+          "CryoHealth turns satellite data on rising water and weather into early alerts for community health workers, with the prevention guidance already on their phone. It works with no internet, because that is exactly when it is needed.",
       },
-      { property: "og:title", content: "CryoHealth — GLOF Early Warning & Offline AI Health" },
+      {
+        property: "og:title",
+        content: "CryoHealth — Prevention that arrives before the flood does",
+      },
       {
         property: "og:description",
         content:
-          "From satellite to bedside in under 3 minutes. Open-source GLOF early warning + offline AI health assistant for Gilgit Baltistan.",
+          "Open source GLOF early warning and offline prevention guidance for community health workers in Gilgit Baltistan.",
       },
       { property: "og:image", content: OG_IMAGE },
       { property: "og:image:alt", content: "Glacial lake in the Hindu Kush–Himalaya" },
@@ -43,11 +44,14 @@ export const Route = createFileRoute("/")({
       { property: "og:site_name", content: "CryoHealth" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "CryoHealth — GLOF Early Warning & Offline AI Health" },
+      {
+        name: "twitter:title",
+        content: "CryoHealth — Prevention that arrives before the flood does",
+      },
       {
         name: "twitter:description",
         content:
-          "From satellite to bedside in under 3 minutes. Open-source GLOF early warning + offline AI health assistant.",
+          "Open source GLOF early warning and offline prevention guidance for community health workers in Gilgit Baltistan.",
       },
       { name: "twitter:image", content: OG_IMAGE },
     ],
@@ -65,38 +69,35 @@ function Landing() {
           <div className="relative flex flex-col justify-center px-6 py-16 md:px-12 md:py-24">
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,oklch(0.62_0.09_215/0.15),transparent_60%)]" />
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-accent-foreground/70">
-              Open source · Seeking funding partners
+              Open source, MIT licensed · Built in Gilgit Baltistan
             </p>
             <img src={logo} alt="CryoHealth logo" className="mt-6 h-20 w-20 object-contain" />
             <h1 className="mt-4 text-4xl font-semibold leading-[1.05] text-foreground md:text-5xl lg:text-6xl">
-              From satellite <span className="text-primary">to bedside</span> in under three
-              minutes.
+              Prevention that arrives <span className="text-primary">before the flood</span> does.
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-              A scalable solution for glacier-dependent regions. CryoHealth fuses near-real-time
-              glacial lake outburst flood (GLOF) intelligence with an offline AI health assistant —
-              built for community health workers across Gilgit Baltistan and the wider Hindu
-              Kush–Himalaya.
+              CryoHealth turns satellite data on rising water and weather into early alerts for
+              community health workers, with the prevention guidance already on their phone. It
+              works with no internet, because that is exactly when it is needed.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                to="/dashboard"
+                to="/lakes"
                 className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:-translate-y-0.5 hover:bg-primary/90"
               >
-                Open live dashboard <ArrowRight className="h-4 w-4" />
+                See the live hazard map <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link
-                to="/lakes"
+              <a
+                href="#how-it-works"
                 className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-3 text-sm font-medium text-foreground hover:bg-secondary"
               >
-                Explore hazard map
-              </Link>
+                How it works
+              </a>
             </div>
-            <dl className="mt-10 grid grid-cols-3 gap-6 border-t border-border pt-6 text-left">
-              <Stat label="Lead-time goal" value="< 3 min" />
-              <Stat label="Region" value="HKH" />
-              <Stat label="License" value="MIT" />
-            </dl>
+            <p className="mt-6 text-sm text-muted-foreground">
+              Hazard data is live. The mobile app is in field testing with community health workers
+              in Gilgit district.
+            </p>
           </div>
           <div className="relative min-h-[320px] md:min-h-[640px]">
             <img
@@ -119,44 +120,50 @@ function Landing() {
               The challenge
             </p>
             <h2 className="mt-3 text-3xl font-semibold text-foreground">
-              Two crises, one mountain valley.
+              When the road closes, the guidance stops.
             </h2>
           </div>
           <div className="space-y-6 md:col-span-2">
             <p className="text-base leading-relaxed text-muted-foreground">
-              More than 3,000 glacial lakes in Pakistan’s north now threaten downstream communities
-              as the cryosphere thaws. When a moraine fails, villages have minutes — not hours — to
-              evacuate. At the same time, the nearest doctor can be a day’s walk away, and
-              connectivity is unreliable.
+              Gilgit Baltistan holds more than 3,000 glacial lakes. Thirty three are classified as
+              critical outburst risk by Pakistan’s NDMA and ICIMOD. When a flood comes, the damage
+              does not end with the water. Roads are cut, clinics lose their supply lines and
+              waterborne disease moves through the community in the days that follow.
             </p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Pill
-                icon={<Globe2 />}
-                title="33+ GLOF events"
-                desc="recorded across Gilgit Baltistan in the last two decades."
-              />
-              <Pill
-                icon={<HeartPulse />}
-                title="1 doctor / 1,300"
-                desc="people in mountain districts — often offline."
-              />
-            </div>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              The guidance that would prevent most of that already exists. Advice on avoiding
+              contaminated water, on handwashing, on managing diarrhoea in young children is well
+              established and published by WHO and Pakistan’s NHSRC. It simply does not reach the
+              valley at the moment it is needed.
+            </p>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              Community health workers are often the only health resource for days, with no internet
+              and no doctor to call. They are working from memory while children under five bear the
+              worst of it.
+            </p>
+            <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <Stat label="Glacial lakes across Pakistan's north" value="3,000+" />
+              <Stat label="Classified as critical outburst risk" value="33" />
+              <Stat label="Doctor to population ratio in mountain districts" value="1 : 1,300" />
+              <Stat label="Major flood events since 1994" value="35" />
+            </dl>
           </div>
         </div>
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="border-b border-border">
+      <section id="how-it-works" className="border-b border-border">
         <div className="mx-auto max-w-7xl px-6 py-20 md:px-12">
           <div className="max-w-2xl">
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
               How it works
             </p>
             <h2 className="mt-3 text-3xl font-semibold text-foreground md:text-4xl">
-              One pipeline. Satellite → SMS → CHW.
+              Four steps, built to work when everything else fails.
             </h2>
             <p className="mt-3 text-base text-muted-foreground">
-              Each layer is designed to keep working when bandwidth, electricity, or roads do not.
+              Prevention first. Response second. Each layer is designed to keep working when
+              bandwidth, electricity or roads do not.
             </p>
           </div>
           <div className="mt-12">
@@ -166,26 +173,26 @@ function Landing() {
             <Step
               n="01"
               icon={<Satellite />}
-              title="Satellite watch"
-              desc="Sentinel-1/2 and MODIS imagery monitor glacial lakes daily. ML scores each lake by tier."
+              title="Watch"
+              desc="Daily imagery from ESA Copernicus Sentinel 1 and 2 and NASA MODIS is processed into a risk score for every monitored lake and catchment."
             />
             <Step
               n="02"
               icon={<Bell />}
-              title="Tiered alerts"
-              desc="Tiered WATCH → HIGH → CRITICAL alerts (NDMA-compatible) trigger automatic notifications."
+              title="Alert"
+              desc="When risk crosses a threshold, health workers receive a plain instruction, not a number: caution, possible outbreak of diarrhoea, mobilise water sanitation methods."
             />
             <Step
               n="03"
-              icon={<Radio />}
-              title="Last-mile delivery"
-              desc="SMS, radio, and PWA push reach CHWs and village focal points within minutes."
+              icon={<BookOpen />}
+              title="Prepare"
+              desc="A full prevention library on safe water, hygiene and disease control lives on the device and refreshes whenever the worker connects at a health post."
             />
             <Step
               n="04"
               icon={<Stethoscope />}
-              title="Offline AI care"
-              desc="A local model guides triage, drug dosing, and referrals — works without internet."
+              title="Respond"
+              desc="If an emergency still hits, the worker registers a case. The app works offline to suggest possible diagnoses and care steps for the emergency at hand."
             />
           </ol>
         </div>
@@ -307,10 +314,17 @@ function Landing() {
               Built in the open. Free to fork.
             </h2>
             <p className="mt-3 max-w-2xl text-primary-foreground/80">
-              CryoHealth is released under the MIT License. Code, schema, and seed data are public
-              so partners, researchers, and community health programs can audit, fork, and deploy
-              the platform in their own valley. Contributions and funding partners are warmly
-              welcomed.
+              CryoHealth is released under the MIT License. Code, database schema and sample data
+              are public, so any health programme, ministry or research group can audit it, fork it
+              and run it in their own valley without asking us and without paying us. Anonymised
+              case data, alert logs and hazard observations are published under CC BY 4.0 through
+              public endpoints.
+            </p>
+            <p className="mt-3 max-w-2xl text-sm text-primary-foreground/70">
+              Under our funding agreement with the UNICEF Innovation Fund we do not charge for
+              hosting, deployment, implementation, customisation, maintenance, support, training or
+              service level agreements associated with CryoHealth. There is no commercial edition
+              and no paid API tier.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-1.5 rounded-md border border-primary-foreground/30 px-2.5 py-1 text-xs">
@@ -378,18 +392,6 @@ function Stat({ label, value }: { label: string; value: string }) {
     <div>
       <dt className="text-[11px] uppercase tracking-widest text-muted-foreground">{label}</dt>
       <dd className="mt-1 text-lg font-semibold text-foreground">{value}</dd>
-    </div>
-  );
-}
-
-function Pill({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-4">
-      <div className="flex items-center gap-2 text-primary [&_svg]:h-4 [&_svg]:w-4">
-        {icon}
-        <span className="text-sm font-semibold text-foreground">{title}</span>
-      </div>
-      <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
     </div>
   );
 }

@@ -3,9 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
 import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
+import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
 
-const GITHUB_REPO_URL = "https://github.com/uExel/cryohealth.life";
-const SITE_URL = "https://cryohealth.life";
+const GITHUB_REPO_URL = "https://github.com/uExel/cryohealth";
+const SITE_URL = "https://cryohealth.io";
 const OG_IMAGE = `${SITE_URL}${heroImage}`;
 
 export const Route = createFileRoute("/dashboard")({
@@ -89,23 +90,26 @@ function Index() {
     },
   });
 
+  const latestUpdate = (hotLakes ?? []).reduce<string | null>(
+    (latest, l) => (!latest || l.last_updated > latest ? l.last_updated : latest),
+    null,
+  );
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
       <section className="rounded-2xl border border-border bg-gradient-to-br from-primary to-[oklch(0.38_0.1_240)] p-8 text-primary-foreground">
         <p className="text-xs uppercase tracking-widest text-accent">
-          Open source · Seeking funding partners
+          Open source · Prevention before the emergency
         </p>
         <h1 className="mt-2 text-4xl font-semibold leading-tight md:text-5xl">
           Health &amp; Hazard Dashboard
         </h1>
-        <p className="mt-2 text-sm uppercase tracking-widest text-accent">
-          From satellite to bedside in under 3 minutes
-        </p>
         <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80">
-          Integrated glacial lake outburst flood (GLOF) early warning and offline AI health
-          assistant for community health workers across Gilgit Baltistan, Pakistan and the wider
-          Hindu Kush–Himalaya region.
+          Current risk levels across monitored lakes and catchments in Gilgit Baltistan, updated
+          daily from satellite imagery. Hazard data below is live; case and health figures are
+          sample data for demonstration.
         </p>
+        <FreshnessStamp lastUpdated={latestUpdate} className="mt-3 text-primary-foreground/70" />
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to="/lakes"
@@ -198,6 +202,12 @@ function Index() {
               CryoHealth is released under the MIT License. The code, data schema, and seed data are
               public so partners, researchers, and community health programs can audit, fork, and
               deploy the platform. Contributions and funding partners are welcome.
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Under our funding agreement with the UNICEF Innovation Fund we do not charge for
+              hosting, deployment, implementation, customisation, maintenance, support, training or
+              service level agreements associated with CryoHealth. There is no commercial edition
+              and no paid API tier.
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1">

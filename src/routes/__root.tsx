@@ -103,14 +103,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             {
               "@type": "Organization",
               name: "CryoHealth",
-              url: "https://cryohealth.life",
-              logo: "https://cryohealth.life/favicon.ico",
-              sameAs: ["https://github.com/uExel/cryohealth.life"],
+              url: "https://cryohealth.io",
+              logo: "https://cryohealth.io/favicon.ico",
+              sameAs: ["https://github.com/uExel/cryohealth.io"],
             },
             {
               "@type": "WebSite",
               name: "CryoHealth",
-              url: "https://cryohealth.life",
+              url: "https://cryohealth.io",
               description:
                 "Open-source GLOF early warning and offline AI health assistant for glacier-dependent regions.",
             },

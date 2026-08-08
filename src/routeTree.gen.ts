@@ -9,66 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AlertsRouteImport } from './routes/alerts'
-import { Route as ChwRouteImport } from './routes/chw'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as DataRouteImport } from './routes/data'
-import { Route as LakesRouteImport } from './routes/lakes'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as GlaciersGlacierIdRouteImport } from './routes/glaciers.$glacierId'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as LakesRouteImport } from './routes/lakes'
+import { Route as DataRouteImport } from './routes/data'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ChwRouteImport } from './routes/chw'
+import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as LakesLakeIdRouteImport } from './routes/lakes.$lakeId'
-import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
-import { Route as ApiPublicAlertAcksRouteImport } from './routes/api/public/alert-acks'
-import { Route as ApiPublicAlertsRouteImport } from './routes/api/public/alerts'
-import { Route as ApiPublicCasesRouteImport } from './routes/api/public/cases'
-import { Route as ApiPublicDistrictsRouteImport } from './routes/api/public/districts'
-import { Route as ApiPublicFacilitiesRouteImport } from './routes/api/public/facilities'
-import { Route as ApiPublicGlaciersRouteImport } from './routes/api/public/glaciers'
-import { Route as ApiPublicHotLakesRouteImport } from './routes/api/public/hot-lakes'
-import { Route as ApiPublicKpisRouteImport } from './routes/api/public/kpis'
-import { Route as ApiPublicLakesRouteImport } from './routes/api/public/lakes'
-import { Route as ApiPublicLakesAdminRouteImport } from './routes/api/public/lakes-admin'
-import { Route as ApiPublicOpenAlertsRouteImport } from './routes/api/public/open-alerts'
+import { Route as GlaciersGlacierIdRouteImport } from './routes/glaciers.$glacierId'
 import { Route as ApiPublicProtocolsRouteImport } from './routes/api/public/protocols'
-import { Route as ApiPublicGlaciersGlacierIdRouteImport } from './routes/api/public/glaciers.$glacierId'
+import { Route as ApiPublicOpenAlertsRouteImport } from './routes/api/public/open-alerts'
+import { Route as ApiPublicLakesAdminRouteImport } from './routes/api/public/lakes-admin'
+import { Route as ApiPublicLakesRouteImport } from './routes/api/public/lakes'
+import { Route as ApiPublicKpisRouteImport } from './routes/api/public/kpis'
+import { Route as ApiPublicHotLakesRouteImport } from './routes/api/public/hot-lakes'
+import { Route as ApiPublicGlaciersRouteImport } from './routes/api/public/glaciers'
+import { Route as ApiPublicFacilitiesRouteImport } from './routes/api/public/facilities'
+import { Route as ApiPublicDistrictsRouteImport } from './routes/api/public/districts'
+import { Route as ApiPublicCasesRouteImport } from './routes/api/public/cases'
+import { Route as ApiPublicAlertsRouteImport } from './routes/api/public/alerts'
+import { Route as ApiPublicAlertAcksRouteImport } from './routes/api/public/alert-acks'
+import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiPublicLakesLakeIdRouteImport } from './routes/api/public/lakes.$lakeId'
+import { Route as ApiPublicGlaciersGlacierIdRouteImport } from './routes/api/public/glaciers.$glacierId'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AlertsRoute = AlertsRouteImport.update({
-  id: '/alerts',
-  path: '/alerts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChwRoute = ChwRouteImport.update({
-  id: '/chw',
-  path: '/chw',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DataRoute = DataRouteImport.update({
-  id: '/data',
-  path: '/data',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LakesRoute = LakesRouteImport.update({
-  id: '/lakes',
-  path: '/lakes',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -76,14 +47,44 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const LakesRoute = LakesRouteImport.update({
+  id: '/lakes',
+  path: '/lakes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GlaciersGlacierIdRoute = GlaciersGlacierIdRouteImport.update({
-  id: '/glaciers/$glacierId',
-  path: '/glaciers/$glacierId',
+const DataRoute = DataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChwRoute = ChwRouteImport.update({
+  id: '/chw',
+  path: '/chw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlertsRoute = AlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LakesLakeIdRoute = LakesLakeIdRouteImport.update({
@@ -91,64 +92,9 @@ const LakesLakeIdRoute = LakesLakeIdRouteImport.update({
   path: '/$lakeId',
   getParentRoute: () => LakesRoute,
 } as any)
-const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
-  id: '/api/auth/login',
-  path: '/api/auth/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicAlertAcksRoute = ApiPublicAlertAcksRouteImport.update({
-  id: '/api/public/alert-acks',
-  path: '/api/public/alert-acks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicAlertsRoute = ApiPublicAlertsRouteImport.update({
-  id: '/api/public/alerts',
-  path: '/api/public/alerts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicCasesRoute = ApiPublicCasesRouteImport.update({
-  id: '/api/public/cases',
-  path: '/api/public/cases',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicDistrictsRoute = ApiPublicDistrictsRouteImport.update({
-  id: '/api/public/districts',
-  path: '/api/public/districts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicFacilitiesRoute = ApiPublicFacilitiesRouteImport.update({
-  id: '/api/public/facilities',
-  path: '/api/public/facilities',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicGlaciersRoute = ApiPublicGlaciersRouteImport.update({
-  id: '/api/public/glaciers',
-  path: '/api/public/glaciers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicHotLakesRoute = ApiPublicHotLakesRouteImport.update({
-  id: '/api/public/hot-lakes',
-  path: '/api/public/hot-lakes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicKpisRoute = ApiPublicKpisRouteImport.update({
-  id: '/api/public/kpis',
-  path: '/api/public/kpis',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicLakesRoute = ApiPublicLakesRouteImport.update({
-  id: '/api/public/lakes',
-  path: '/api/public/lakes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicLakesAdminRoute = ApiPublicLakesAdminRouteImport.update({
-  id: '/api/public/lakes-admin',
-  path: '/api/public/lakes-admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicOpenAlertsRoute = ApiPublicOpenAlertsRouteImport.update({
-  id: '/api/public/open-alerts',
-  path: '/api/public/open-alerts',
+const GlaciersGlacierIdRoute = GlaciersGlacierIdRouteImport.update({
+  id: '/glaciers/$glacierId',
+  path: '/glaciers/$glacierId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicProtocolsRoute = ApiPublicProtocolsRouteImport.update({
@@ -156,20 +102,81 @@ const ApiPublicProtocolsRoute = ApiPublicProtocolsRouteImport.update({
   path: '/api/public/protocols',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicOpenAlertsRoute = ApiPublicOpenAlertsRouteImport.update({
+  id: '/api/public/open-alerts',
+  path: '/api/public/open-alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicLakesAdminRoute = ApiPublicLakesAdminRouteImport.update({
+  id: '/api/public/lakes-admin',
+  path: '/api/public/lakes-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicLakesRoute = ApiPublicLakesRouteImport.update({
+  id: '/api/public/lakes',
+  path: '/api/public/lakes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicKpisRoute = ApiPublicKpisRouteImport.update({
+  id: '/api/public/kpis',
+  path: '/api/public/kpis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHotLakesRoute = ApiPublicHotLakesRouteImport.update({
+  id: '/api/public/hot-lakes',
+  path: '/api/public/hot-lakes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicGlaciersRoute = ApiPublicGlaciersRouteImport.update({
+  id: '/api/public/glaciers',
+  path: '/api/public/glaciers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicFacilitiesRoute = ApiPublicFacilitiesRouteImport.update({
+  id: '/api/public/facilities',
+  path: '/api/public/facilities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicDistrictsRoute = ApiPublicDistrictsRouteImport.update({
+  id: '/api/public/districts',
+  path: '/api/public/districts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCasesRoute = ApiPublicCasesRouteImport.update({
+  id: '/api/public/cases',
+  path: '/api/public/cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAlertsRoute = ApiPublicAlertsRouteImport.update({
+  id: '/api/public/alerts',
+  path: '/api/public/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAlertAcksRoute = ApiPublicAlertAcksRouteImport.update({
+  id: '/api/public/alert-acks',
+  path: '/api/public/alert-acks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
+  id: '/api/auth/login',
+  path: '/api/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicLakesLakeIdRoute = ApiPublicLakesLakeIdRouteImport.update({
+  id: '/$lakeId',
+  path: '/$lakeId',
+  getParentRoute: () => ApiPublicLakesRoute,
+} as any)
 const ApiPublicGlaciersGlacierIdRoute =
   ApiPublicGlaciersGlacierIdRouteImport.update({
     id: '/$glacierId',
     path: '/$glacierId',
     getParentRoute: () => ApiPublicGlaciersRoute,
   } as any)
-const ApiPublicLakesLakeIdRoute = ApiPublicLakesLakeIdRouteImport.update({
-  id: '/$lakeId',
-  path: '/$lakeId',
-  getParentRoute: () => ApiPublicLakesRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/chw': typeof ChwRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/chw': typeof ChwRoute
@@ -227,6 +235,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/chw': typeof ChwRoute
@@ -257,6 +266,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/admin'
     | '/alerts'
     | '/chw'
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/admin'
     | '/alerts'
     | '/chw'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/admin'
     | '/alerts'
     | '/chw'
@@ -342,6 +354,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AlertsRoute: typeof AlertsRoute
   ChwRoute: typeof ChwRoute
@@ -368,53 +381,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/alerts': {
-      id: '/alerts'
-      path: '/alerts'
-      fullPath: '/alerts'
-      preLoaderRoute: typeof AlertsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/chw': {
-      id: '/chw'
-      path: '/chw'
-      fullPath: '/chw'
-      preLoaderRoute: typeof ChwRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/data': {
-      id: '/data'
-      path: '/data'
-      fullPath: '/data'
-      preLoaderRoute: typeof DataRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lakes': {
-      id: '/lakes'
-      path: '/lakes'
-      fullPath: '/lakes'
-      preLoaderRoute: typeof LakesRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -424,18 +395,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
+    '/lakes': {
+      id: '/lakes'
+      path: '/lakes'
+      fullPath: '/lakes'
+      preLoaderRoute: typeof LakesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/glaciers/$glacierId': {
-      id: '/glaciers/$glacierId'
-      path: '/glaciers/$glacierId'
-      fullPath: '/glaciers/$glacierId'
-      preLoaderRoute: typeof GlaciersGlacierIdRouteImport
+    '/data': {
+      id: '/data'
+      path: '/data'
+      fullPath: '/data'
+      preLoaderRoute: typeof DataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chw': {
+      id: '/chw'
+      path: '/chw'
+      fullPath: '/chw'
+      preLoaderRoute: typeof ChwRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alerts': {
+      id: '/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lakes/$lakeId': {
@@ -445,88 +458,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LakesLakeIdRouteImport
       parentRoute: typeof LakesRoute
     }
-    '/api/auth/login': {
-      id: '/api/auth/login'
-      path: '/api/auth/login'
-      fullPath: '/api/auth/login'
-      preLoaderRoute: typeof ApiAuthLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/alert-acks': {
-      id: '/api/public/alert-acks'
-      path: '/api/public/alert-acks'
-      fullPath: '/api/public/alert-acks'
-      preLoaderRoute: typeof ApiPublicAlertAcksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/alerts': {
-      id: '/api/public/alerts'
-      path: '/api/public/alerts'
-      fullPath: '/api/public/alerts'
-      preLoaderRoute: typeof ApiPublicAlertsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/cases': {
-      id: '/api/public/cases'
-      path: '/api/public/cases'
-      fullPath: '/api/public/cases'
-      preLoaderRoute: typeof ApiPublicCasesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/districts': {
-      id: '/api/public/districts'
-      path: '/api/public/districts'
-      fullPath: '/api/public/districts'
-      preLoaderRoute: typeof ApiPublicDistrictsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/facilities': {
-      id: '/api/public/facilities'
-      path: '/api/public/facilities'
-      fullPath: '/api/public/facilities'
-      preLoaderRoute: typeof ApiPublicFacilitiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/glaciers': {
-      id: '/api/public/glaciers'
-      path: '/api/public/glaciers'
-      fullPath: '/api/public/glaciers'
-      preLoaderRoute: typeof ApiPublicGlaciersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/hot-lakes': {
-      id: '/api/public/hot-lakes'
-      path: '/api/public/hot-lakes'
-      fullPath: '/api/public/hot-lakes'
-      preLoaderRoute: typeof ApiPublicHotLakesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/kpis': {
-      id: '/api/public/kpis'
-      path: '/api/public/kpis'
-      fullPath: '/api/public/kpis'
-      preLoaderRoute: typeof ApiPublicKpisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/lakes': {
-      id: '/api/public/lakes'
-      path: '/api/public/lakes'
-      fullPath: '/api/public/lakes'
-      preLoaderRoute: typeof ApiPublicLakesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/lakes-admin': {
-      id: '/api/public/lakes-admin'
-      path: '/api/public/lakes-admin'
-      fullPath: '/api/public/lakes-admin'
-      preLoaderRoute: typeof ApiPublicLakesAdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/open-alerts': {
-      id: '/api/public/open-alerts'
-      path: '/api/public/open-alerts'
-      fullPath: '/api/public/open-alerts'
-      preLoaderRoute: typeof ApiPublicOpenAlertsRouteImport
+    '/glaciers/$glacierId': {
+      id: '/glaciers/$glacierId'
+      path: '/glaciers/$glacierId'
+      fullPath: '/glaciers/$glacierId'
+      preLoaderRoute: typeof GlaciersGlacierIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/protocols': {
@@ -536,12 +472,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicProtocolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/glaciers/$glacierId': {
-      id: '/api/public/glaciers/$glacierId'
-      path: '/$glacierId'
-      fullPath: '/api/public/glaciers/$glacierId'
-      preLoaderRoute: typeof ApiPublicGlaciersGlacierIdRouteImport
-      parentRoute: typeof ApiPublicGlaciersRoute
+    '/api/public/open-alerts': {
+      id: '/api/public/open-alerts'
+      path: '/api/public/open-alerts'
+      fullPath: '/api/public/open-alerts'
+      preLoaderRoute: typeof ApiPublicOpenAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/lakes-admin': {
+      id: '/api/public/lakes-admin'
+      path: '/api/public/lakes-admin'
+      fullPath: '/api/public/lakes-admin'
+      preLoaderRoute: typeof ApiPublicLakesAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/lakes': {
+      id: '/api/public/lakes'
+      path: '/api/public/lakes'
+      fullPath: '/api/public/lakes'
+      preLoaderRoute: typeof ApiPublicLakesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/kpis': {
+      id: '/api/public/kpis'
+      path: '/api/public/kpis'
+      fullPath: '/api/public/kpis'
+      preLoaderRoute: typeof ApiPublicKpisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hot-lakes': {
+      id: '/api/public/hot-lakes'
+      path: '/api/public/hot-lakes'
+      fullPath: '/api/public/hot-lakes'
+      preLoaderRoute: typeof ApiPublicHotLakesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/glaciers': {
+      id: '/api/public/glaciers'
+      path: '/api/public/glaciers'
+      fullPath: '/api/public/glaciers'
+      preLoaderRoute: typeof ApiPublicGlaciersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/facilities': {
+      id: '/api/public/facilities'
+      path: '/api/public/facilities'
+      fullPath: '/api/public/facilities'
+      preLoaderRoute: typeof ApiPublicFacilitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/districts': {
+      id: '/api/public/districts'
+      path: '/api/public/districts'
+      fullPath: '/api/public/districts'
+      preLoaderRoute: typeof ApiPublicDistrictsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/cases': {
+      id: '/api/public/cases'
+      path: '/api/public/cases'
+      fullPath: '/api/public/cases'
+      preLoaderRoute: typeof ApiPublicCasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/alerts': {
+      id: '/api/public/alerts'
+      path: '/api/public/alerts'
+      fullPath: '/api/public/alerts'
+      preLoaderRoute: typeof ApiPublicAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/alert-acks': {
+      id: '/api/public/alert-acks'
+      path: '/api/public/alert-acks'
+      fullPath: '/api/public/alert-acks'
+      preLoaderRoute: typeof ApiPublicAlertAcksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/login': {
+      id: '/api/auth/login'
+      path: '/api/auth/login'
+      fullPath: '/api/auth/login'
+      preLoaderRoute: typeof ApiAuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/lakes/$lakeId': {
       id: '/api/public/lakes/$lakeId'
@@ -549,6 +562,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/lakes/$lakeId'
       preLoaderRoute: typeof ApiPublicLakesLakeIdRouteImport
       parentRoute: typeof ApiPublicLakesRoute
+    }
+    '/api/public/glaciers/$glacierId': {
+      id: '/api/public/glaciers/$glacierId'
+      path: '/$glacierId'
+      fullPath: '/api/public/glaciers/$glacierId'
+      preLoaderRoute: typeof ApiPublicGlaciersGlacierIdRouteImport
+      parentRoute: typeof ApiPublicGlaciersRoute
     }
   }
 }
@@ -588,6 +608,7 @@ const ApiPublicLakesRouteWithChildren = ApiPublicLakesRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AlertsRoute: AlertsRoute,
   ChwRoute: ChwRoute,

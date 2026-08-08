@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchLakes } from "@/lib/cryohealth-api";
 import { HazardMap } from "@/components/cryohealth/HazardMap";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
+import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
 import { useState } from "react";
 
 export const Route = createFileRoute("/lakes")({
@@ -19,10 +20,10 @@ export const Route = createFileRoute("/lakes")({
         content:
           "Interactive map of glacial lakes with current hazard tiers and downstream populations.",
       },
-      { property: "og:url", content: "https://cryohealth.life/lakes" },
+      { property: "og:url", content: "https://cryohealth.io/lakes" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://cryohealth.life/lakes" }],
+    links: [{ rel: "canonical", href: "https://cryohealth.io/lakes" }],
   }),
   component: LakesPage,
 });
@@ -48,14 +49,21 @@ function LakesPage() {
 
   const filtered = (lakes ?? []).filter((l) => tier === "ALL" || l.current_tier === tier);
 
+  const latestUpdate = (lakes ?? []).reduce<string | null>(
+    (latest, l) => (!latest || l.last_updated > latest ? l.last_updated : latest),
+    null,
+  );
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-6">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Glacial lake hazard map</h1>
           <p className="text-sm text-muted-foreground">
-            {lakes?.length ?? 0} monitored lakes · derived from satellite SAR + IoT signals
+            Every monitored glacial lake, with its current risk level and the communities and health
+            facilities downstream. {lakes?.length ?? 0} lakes tracked.
           </p>
+          <FreshnessStamp lastUpdated={latestUpdate} className="mt-1 text-muted-foreground" />
         </div>
         <div className="flex flex-wrap gap-1 rounded-md border border-border bg-card p-1">
           {(["ALL", "CRITICAL", "HIGH", "WATCH", "NORMAL"] as const).map((t) => (

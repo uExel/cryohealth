@@ -18,10 +18,10 @@ export const Route = createFileRoute("/login")({
         content:
           "Authentication for CryoHealth community health workers, facility admins, and CryoHealth admins.",
       },
-      { property: "og:url", content: "https://cryohealth.life/login" },
+      { property: "og:url", content: "https://cryohealth.io/login" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://cryohealth.life/login" }],
+    links: [{ rel: "canonical", href: "https://cryohealth.io/login" }],
   }),
   component: LoginPage,
 });

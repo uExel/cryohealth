@@ -17,11 +17,11 @@ export const Route = createFileRoute("/chw")({
         content:
           "Capture cases offline and get AI-assisted triage, dosing, and referral guidance in the field.",
       },
-      { property: "og:url", content: "https://cryohealth.life/chw" },
+      { property: "og:url", content: "https://cryohealth.io/chw" },
       { property: "og:type", content: "website" },
       { name: "robots", content: "noindex" },
     ],
-    links: [{ rel: "canonical", href: "https://cryohealth.life/chw" }],
+    links: [{ rel: "canonical", href: "https://cryohealth.io/chw" }],
   }),
   component: CHWHome,
 });

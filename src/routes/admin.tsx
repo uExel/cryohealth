@@ -19,11 +19,11 @@ export const Route = createFileRoute("/admin")({
         content:
           "Manage glaciers, glacial lakes, alerts, and roles. For CryoHealth admins and facility admins.",
       },
-      { property: "og:url", content: "https://cryohealth.life/admin" },
+      { property: "og:url", content: "https://cryohealth.io/admin" },
       { property: "og:type", content: "website" },
       { name: "robots", content: "noindex" },
     ],
-    links: [{ rel: "canonical", href: "https://cryohealth.life/admin" }],
+    links: [{ rel: "canonical", href: "https://cryohealth.io/admin" }],
   }),
   component: AdminPage,
 });

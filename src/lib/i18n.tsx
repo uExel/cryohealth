@@ -12,9 +12,11 @@ const dict: Record<Lang, Record<string, string>> = {
     chw: "CHW Workspace",
     admin: "Admin",
     data: "Open Data",
+    about: "About",
     login: "Sign in",
     signOut: "Sign out",
-    demoBanner: "Demonstration platform — not for clinical use. Data is synthetic.",
+    demoBanner:
+      "Hazard data on this site is live. Case and health records shown are sample data. CryoHealth is in field testing and not yet approved for clinical use.",
   },
   ur: {
     appName: "کرائیو ہیلتھ",
@@ -26,9 +28,11 @@ const dict: Record<Lang, Record<string, string>> = {
     chw: "ہیلتھ ورکر",
     admin: "ایڈمن",
     data: "اوپن ڈیٹا",
+    about: "تعارف",
     login: "سائن ان",
     signOut: "سائن آؤٹ",
-    demoBanner: "یہ ایک مظاہراتی پلیٹ فارم ہے — طبی استعمال کے لیے نہیں۔ ڈیٹا مصنوعی ہے۔",
+    demoBanner:
+      "اس سائٹ پر خطرے کا ڈیٹا حقیقی وقت میں فعال ہے۔ دکھائے گئے کیس اور صحت کے ریکارڈ نمونہ ڈیٹا ہیں۔ کرائیو ہیلتھ فیلڈ ٹیسٹنگ کے مرحلے میں ہے اور ابھی طبی استعمال کے لیے منظور شدہ نہیں۔",
   },
 };
 
