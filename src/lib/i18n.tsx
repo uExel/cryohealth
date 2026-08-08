@@ -41,7 +41,8 @@ const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (k: strin
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>("en");
   useEffect(() => {
-    const saved = typeof window !== "undefined" ? (localStorage.getItem("ch_lang") as Lang | null) : null;
+    const saved =
+      typeof window !== "undefined" ? (localStorage.getItem("ch_lang") as Lang | null) : null;
     if (saved) setLang(saved);
   }, []);
   useEffect(() => {

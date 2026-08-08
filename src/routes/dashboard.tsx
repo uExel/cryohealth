@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
 import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
@@ -50,50 +49,52 @@ function Index() {
   const { data: kpis } = useQuery({
     queryKey: ["kpis"],
     queryFn: async () => {
-      const [{ count: highLakes }, { count: alerts30d }, { count: cases7d }, { count: chws }] = await Promise.all([
-        supabase.from("lakes").select("*", { count: "exact", head: true }).in("current_tier", ["HIGH", "CRITICAL"]),
-        supabase
-          .from("alerts")
-          .select("*", { count: "exact", head: true })
-          .gte("created_at", new Date(Date.now() - 30 * 864e5).toISOString()),
-        supabase
-          .from("cases")
-          .select("*", { count: "exact", head: true })
-          .gte("created_at", new Date(Date.now() - 7 * 864e5).toISOString()),
-        supabase.from("chw_profiles").select("*", { count: "exact", head: true }),
-      ]);
-      return { highLakes, alerts30d, cases7d, chws };
+      const res = await fetch("/api/public/kpis");
+      return res.json();
     },
   });
 
   const { data: hotLakes } = useQuery({
     queryKey: ["hotLakes"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("lakes")
-        .select("id, name, current_tier, current_risk_score, downstream_population, last_updated")
-        .in("current_tier", ["HIGH", "CRITICAL"])
-        .order("current_risk_score", { ascending: false });
-      return data ?? [];
+    queryFn: async (): Promise<
+      {
+        id: string;
+        name: string;
+        current_tier: string;
+        current_risk_score: number;
+        downstream_population: number;
+        last_updated: string;
+      }[]
+    > => {
+      const res = await fetch("/api/public/hot-lakes");
+      const body = await res.json();
+      return body.lakes ?? [];
     },
   });
 
   const { data: recentAlerts } = useQuery({
     queryKey: ["recentAlerts"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("alerts")
-        .select("id, title, tier, created_at, estimated_window")
-        .order("created_at", { ascending: false })
-        .limit(5);
-      return data ?? [];
+    queryFn: async (): Promise<
+      {
+        id: string;
+        title: string;
+        tier: string;
+        created_at: string;
+        estimated_window: string | null;
+      }[]
+    > => {
+      const res = await fetch("/api/public/open-alerts");
+      const body = await res.json();
+      return body.alerts ?? [];
     },
   });
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
       <section className="rounded-2xl border border-border bg-gradient-to-br from-primary to-[oklch(0.38_0.1_240)] p-8 text-primary-foreground">
-        <p className="text-xs uppercase tracking-widest text-accent">Open source · Seeking funding partners</p>
+        <p className="text-xs uppercase tracking-widest text-accent">
+          Open source · Seeking funding partners
+        </p>
         <h1 className="mt-2 text-4xl font-semibold leading-tight md:text-5xl">
           Health &amp; Hazard Dashboard
         </h1>
@@ -101,8 +102,9 @@ function Index() {
           From satellite to bedside in under 3 minutes
         </p>
         <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80">
-          Integrated glacial lake outburst flood (GLOF) early warning and offline AI health assistant for community
-          health workers across Gilgit Baltistan, Pakistan and the wider Hindu Kush–Himalaya region.
+          Integrated glacial lake outburst flood (GLOF) early warning and offline AI health
+          assistant for community health workers across Gilgit Baltistan, Pakistan and the wider
+          Hindu Kush–Himalaya region.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
@@ -139,18 +141,25 @@ function Index() {
             {(hotLakes ?? []).map((l) => (
               <li key={l.id} className="flex items-center justify-between py-3">
                 <div>
-                  <Link to="/lakes/$lakeId" params={{ lakeId: l.id }} className="text-sm font-medium text-foreground hover:underline">
+                  <Link
+                    to="/lakes/$lakeId"
+                    params={{ lakeId: l.id }}
+                    className="text-sm font-medium text-foreground hover:underline"
+                  >
                     {l.name}
                   </Link>
                   <div className="text-xs text-muted-foreground">
-                    {l.downstream_population.toLocaleString()} downstream · score {Number(l.current_risk_score).toFixed(0)}
+                    {l.downstream_population.toLocaleString()} downstream · score{" "}
+                    {Number(l.current_risk_score).toFixed(0)}
                   </div>
                 </div>
                 <span className={tierBadgeClass(l.current_tier as Tier)}>{l.current_tier}</span>
               </li>
             ))}
             {hotLakes && hotLakes.length === 0 && (
-              <li className="py-6 text-center text-sm text-muted-foreground">No HIGH or CRITICAL lakes right now.</li>
+              <li className="py-6 text-center text-sm text-muted-foreground">
+                No HIGH or CRITICAL lakes right now.
+              </li>
             )}
           </ul>
         </div>
@@ -228,7 +237,15 @@ function Index() {
   );
 }
 
-function Kpi({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
+function Kpi({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between text-muted-foreground">

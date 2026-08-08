@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { fetchLakes } from "@/lib/cryohealth-api";
 import { HazardMap } from "@/components/cryohealth/HazardMap";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
@@ -10,9 +9,16 @@ export const Route = createFileRoute("/lakes")({
   head: () => ({
     meta: [
       { title: "Hazard Map — CryoHealth" },
-      { name: "description", content: "Live risk map for monitored glacial lakes across Gilgit Baltistan." },
+      {
+        name: "description",
+        content: "Live risk map for monitored glacial lakes across Gilgit Baltistan.",
+      },
       { property: "og:title", content: "Hazard Map — CryoHealth" },
-      { property: "og:description", content: "Interactive map of glacial lakes with current hazard tiers and downstream populations." },
+      {
+        property: "og:description",
+        content:
+          "Interactive map of glacial lakes with current hazard tiers and downstream populations.",
+      },
       { property: "og:url", content: "https://cryohealth.life/lakes" },
       { property: "og:type", content: "website" },
     ],
@@ -23,15 +29,20 @@ export const Route = createFileRoute("/lakes")({
 
 function LakesPage() {
   const [tier, setTier] = useState<"ALL" | Tier>("ALL");
-  const { data: lakes, isLoading, isError } = useQuery({
+  const {
+    data: lakes,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["lakes"],
     queryFn: fetchLakes,
   });
   const { data: facilities } = useQuery({
     queryKey: ["facilities"],
     queryFn: async () => {
-      const { data } = await supabase.from("facilities").select("id,name,lat,lng,type,vulnerability");
-      return data ?? [];
+      const res = await fetch("/api/public/facilities");
+      const body = await res.json();
+      return body.facilities ?? [];
     },
   });
 
@@ -52,7 +63,9 @@ function LakesPage() {
               key={t}
               onClick={() => setTier(t)}
               className={`rounded px-2.5 py-1 text-xs ${
-                tier === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                tier === t
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {t}
@@ -88,7 +101,11 @@ function LakesPage() {
             {filtered.map((l) => (
               <tr key={l.id} className="hover:bg-secondary/40">
                 <td className="px-4 py-2">
-                  <Link to="/lakes/$lakeId" params={{ lakeId: l.id }} className="font-medium text-foreground hover:underline">
+                  <Link
+                    to="/lakes/$lakeId"
+                    params={{ lakeId: l.id }}
+                    className="font-medium text-foreground hover:underline"
+                  >
                     {l.name}
                   </Link>
                 </td>
@@ -100,7 +117,9 @@ function LakesPage() {
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-2 text-muted-foreground">{new Date(l.last_updated).toLocaleString()}</td>
+                <td className="px-4 py-2 text-muted-foreground">
+                  {new Date(l.last_updated).toLocaleString()}
+                </td>
               </tr>
             ))}
           </tbody>

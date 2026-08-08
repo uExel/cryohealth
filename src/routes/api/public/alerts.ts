@@ -1,17 +1,47 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
+import { insertAlert, listAllAlerts } from "@/lib/queries";
+import { requireAuth, AuthError } from "@/lib/auth-guard";
 
 export const Route = createFileRoute("/api/public/alerts")({
   server: {
     handlers: {
       GET: async () => {
-        const { data, error } = await supabase
-          .from("alerts")
-          .select("id,lake_id,district_id,tier,title,body_en,body_ur,estimated_window,affected_population,created_at")
-          .order("created_at", { ascending: false })
-          .limit(200);
-        if (error) return Response.json({ error: error.message }, { status: 500 });
-        return Response.json({ alerts: data });
+        const alerts = await listAllAlerts(200);
+        return Response.json({ alerts });
+      },
+      POST: async ({ request }) => {
+        let claims;
+        try {
+          claims = await requireAuth(request);
+        } catch (e) {
+          if (e instanceof AuthError) return e.response;
+          throw e;
+        }
+        if (claims.role !== "cryohealth_admin" && claims.role !== "facility_admin") {
+          return Response.json({ error: "Forbidden" }, { status: 403 });
+        }
+        const body = (await request.json()) as {
+          title: string;
+          bodyEn: string;
+          bodyUr?: string | null;
+          tier: string;
+          lakeId?: string | null;
+          districtId?: string | null;
+          estimatedWindow?: string | null;
+          affectedPopulation?: number;
+        };
+        await insertAlert({
+          title: body.title,
+          bodyEn: body.bodyEn,
+          bodyUr: body.bodyUr ?? null,
+          tier: body.tier,
+          lakeId: body.lakeId ?? null,
+          districtId: body.districtId ?? null,
+          estimatedWindow: body.estimatedWindow ?? null,
+          affectedPopulation: body.affectedPopulation ?? 0,
+          issuedById: claims.sub,
+        });
+        return Response.json({ ok: true });
       },
     },
   },

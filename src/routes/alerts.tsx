@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { authFetch } from "@/lib/auth-client";
 import { tierBadgeClass, type Tier } from "@/lib/tier";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
@@ -12,7 +12,11 @@ export const Route = createFileRoute("/alerts")({
       { title: "Alerts — CryoHealth" },
       { name: "description", content: "Live GLOF alert feed for Gilgit Baltistan." },
       { property: "og:title", content: "Alerts — CryoHealth" },
-      { property: "og:description", content: "Chronological feed of GLOF alerts with estimated impact windows and affected downstream populations." },
+      {
+        property: "og:description",
+        content:
+          "Chronological feed of GLOF alerts with estimated impact windows and affected downstream populations.",
+      },
       { property: "og:url", content: "https://cryohealth.life/alerts" },
       { property: "og:type", content: "website" },
     ],
@@ -27,34 +31,45 @@ function AlertsPage() {
 
   const { data } = useQuery({
     queryKey: ["alerts-all"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("alerts")
-        .select("id,title,body_en,body_ur,tier,estimated_window,affected_population,created_at,lake:lakes(name),district:districts(name)")
-        .order("created_at", { ascending: false })
-        .limit(100);
-      return data ?? [];
+    queryFn: async (): Promise<
+      {
+        id: string;
+        title: string;
+        body_en: string;
+        body_ur: string | null;
+        tier: string;
+        estimated_window: string | null;
+        affected_population: number | null;
+        created_at: string;
+        lake_name: string | null;
+        district_name: string | null;
+      }[]
+    > => {
+      const res = await fetch("/api/public/alerts");
+      const body = await res.json();
+      return body.alerts ?? [];
     },
   });
 
   const { data: acks } = useQuery({
     queryKey: ["alert-acks", user?.id, isAdmin],
     enabled: !!user,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("alert_acknowledgements")
-        .select("alert_id,chw_id,acknowledged_at");
-      return data ?? [];
+    queryFn: async (): Promise<{ alert_id: string; chw_id: string; acknowledged_at: string }[]> => {
+      const res = await fetch("/api/public/alert-acks");
+      const body = await res.json();
+      return body.acks ?? [];
     },
   });
 
   const ackMutation = useMutation({
     mutationFn: async (alertId: string) => {
       if (!user) throw new Error("Sign in required");
-      const { error } = await supabase
-        .from("alert_acknowledgements")
-        .insert({ alert_id: alertId, chw_id: user.id });
-      if (error) throw error;
+      const res = await authFetch("/api/public/alert-acks", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ alertId }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error ?? "Failed to acknowledge");
     },
     onSuccess: () => {
       toast.success("Acknowledged");
@@ -63,14 +78,18 @@ function AlertsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const myAckSet = new Set((acks ?? []).filter((a) => a.chw_id === user?.id).map((a) => a.alert_id));
+  const myAckSet = new Set(
+    (acks ?? []).filter((a) => a.chw_id === user?.id).map((a) => a.alert_id),
+  );
   const ackCount = (alertId: string) => (acks ?? []).filter((a) => a.alert_id === alertId).length;
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-6">
       <h1 className="text-2xl font-semibold text-foreground">Alert feed</h1>
       <p className="text-sm text-muted-foreground">Most recent first. Public read-only view.</p>
-      {isAdmin && <BroadcastForm onCreated={() => qc.invalidateQueries({ queryKey: ["alerts-all"] })} />}
+      {isAdmin && (
+        <BroadcastForm onCreated={() => qc.invalidateQueries({ queryKey: ["alerts-all"] })} />
+      )}
       <ul className="mt-4 space-y-3">
         {(data ?? []).map((a) => (
           <li key={a.id} className="rounded-xl border border-border bg-card p-4">
@@ -78,23 +97,32 @@ function AlertsPage() {
               <div>
                 <div className="text-sm font-semibold text-foreground">{a.title}</div>
                 <div className="text-xs text-muted-foreground">
-                  {new Date(a.created_at).toLocaleString()} · {(a.district as { name?: string } | null)?.name ?? "—"} ·
-                  window {a.estimated_window ?? "—"} · ~{a.affected_population?.toLocaleString() ?? 0} affected
+                  {new Date(a.created_at).toLocaleString()} · {a.district_name ?? "—"} · window{" "}
+                  {a.estimated_window ?? "—"} · ~{a.affected_population?.toLocaleString() ?? 0}{" "}
+                  affected
                 </div>
               </div>
               <span className={tierBadgeClass(a.tier as Tier)}>{a.tier}</span>
             </div>
             <p className="mt-2 text-sm text-foreground">{a.body_en}</p>
-            {a.body_ur && <p dir="rtl" className="mt-1 text-sm text-muted-foreground">{a.body_ur}</p>}
+            {a.body_ur && (
+              <p dir="rtl" className="mt-1 text-sm text-muted-foreground">
+                {a.body_ur}
+              </p>
+            )}
             <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-2">
               {isAdmin ? (
-                <span className="text-xs text-muted-foreground">{ackCount(a.id)} CHW acknowledgement{ackCount(a.id) === 1 ? "" : "s"}</span>
+                <span className="text-xs text-muted-foreground">
+                  {ackCount(a.id)} CHW acknowledgement{ackCount(a.id) === 1 ? "" : "s"}
+                </span>
               ) : (
                 <span className="text-xs text-muted-foreground">{ackCount(a.id)} acknowledged</span>
               )}
-              {isCHW && (
-                myAckSet.has(a.id) ? (
-                  <span className="text-xs font-medium text-[oklch(0.7_0.13_160)]">✓ You acknowledged</span>
+              {isCHW &&
+                (myAckSet.has(a.id) ? (
+                  <span className="text-xs font-medium text-[oklch(0.7_0.13_160)]">
+                    ✓ You acknowledged
+                  </span>
                 ) : (
                   <button
                     onClick={() => ackMutation.mutate(a.id)}
@@ -103,12 +131,13 @@ function AlertsPage() {
                   >
                     Acknowledge
                   </button>
-                )
-              )}
+                ))}
             </div>
           </li>
         ))}
-        {data && data.length === 0 && <li className="text-sm text-muted-foreground">No alerts yet.</li>}
+        {data && data.length === 0 && (
+          <li className="text-sm text-muted-foreground">No alerts yet.</li>
+        )}
       </ul>
     </main>
   );
@@ -129,15 +158,17 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
   const { data: lakes } = useQuery({
     queryKey: ["lakes-min"],
     queryFn: async () => {
-      const { data } = await supabase.from("lakes").select("id,name,district_id").order("name");
-      return data ?? [];
+      const res = await fetch("/api/public/lakes-admin");
+      const body = await res.json();
+      return (body.lakes ?? []) as { id: string; name: string; district_id: string | null }[];
     },
   });
   const { data: districts } = useQuery({
     queryKey: ["districts-min"],
     queryFn: async () => {
-      const { data } = await supabase.from("districts").select("id,name").order("name");
-      return data ?? [];
+      const res = await fetch("/api/public/districts");
+      const body = await res.json();
+      return (body.districts ?? []) as { id: string; name: string }[];
     },
   });
 
@@ -154,26 +185,31 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
     }
     const lakeDistrict = lakes?.find((l) => l.id === lakeId)?.district_id ?? null;
     if (lakeId && districtId && lakeDistrict && lakeDistrict !== districtId) {
-      toast.error("Selected lake belongs to a different district. Clear one to resolve the conflict.");
+      toast.error(
+        "Selected lake belongs to a different district. Clear one to resolve the conflict.",
+      );
       return;
     }
     setSubmitting(true);
-    const resolvedDistrict =
-      districtId || lakeDistrict || null;
-    const { error } = await supabase.from("alerts").insert({
-      title: title.trim(),
-      body_en: bodyEn.trim(),
-      body_ur: bodyUr.trim() || null,
-      tier,
-      lake_id: lakeId || null,
-      district_id: resolvedDistrict,
-      estimated_window: estimatedWindow.trim() || null,
-      affected_population: affected ? Number(affected) : 0,
-      issued_by: user.id,
+    const resolvedDistrict = districtId || lakeDistrict || null;
+    const res = await authFetch("/api/public/alerts", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        title: title.trim(),
+        bodyEn: bodyEn.trim(),
+        bodyUr: bodyUr.trim() || null,
+        tier,
+        lakeId: lakeId || null,
+        districtId: resolvedDistrict,
+        estimatedWindow: estimatedWindow.trim() || null,
+        affectedPopulation: affected ? Number(affected) : 0,
+      }),
     });
     setSubmitting(false);
-    if (error) {
-      toast.error(error.message);
+    if (!res.ok) {
+      const body = await res.json();
+      toast.error(body.error ?? "Failed to broadcast alert");
       return;
     }
     toast.success("Alert broadcast");
@@ -191,18 +227,28 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
     <form onSubmit={submit} className="mt-5 rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-foreground">Broadcast new alert</h2>
-        <span className="text-xs text-muted-foreground">Sender: {user?.email ?? user?.id}</span>
+        <span className="text-xs text-muted-foreground">Sender: {user?.name ?? user?.id}</span>
       </div>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-xs sm:col-span-2">
           <span className="text-muted-foreground">Title</span>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm" required />
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            maxLength={200}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+            required
+          />
         </label>
         <label htmlFor="alert-tier" className="flex flex-col gap-1 text-xs">
           <span className="text-muted-foreground">Risk tier</span>
-          <select id="alert-tier" aria-label="Risk tier" value={tier} onChange={(e) => setTier(e.target.value as Tier)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm">
+          <select
+            id="alert-tier"
+            aria-label="Risk tier"
+            value={tier}
+            onChange={(e) => setTier(e.target.value as Tier)}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          >
             <option value="NORMAL">NORMAL</option>
             <option value="WATCH">WATCH</option>
             <option value="HIGH">HIGH</option>
@@ -211,49 +257,86 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
         </label>
         <label className="flex flex-col gap-1 text-xs">
           <span className="text-muted-foreground">Estimated window</span>
-          <input value={estimatedWindow} onChange={(e) => setEstimatedWindow(e.target.value)}
+          <input
+            value={estimatedWindow}
+            onChange={(e) => setEstimatedWindow(e.target.value)}
             placeholder="e.g. next 24h"
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm" />
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
         </label>
         <label htmlFor="alert-lake" className="flex flex-col gap-1 text-xs">
           <span className="text-muted-foreground">Target lake</span>
-          <select id="alert-lake" aria-label="Target lake" value={lakeId} onChange={(e) => setLakeId(e.target.value)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm">
+          <select
+            id="alert-lake"
+            aria-label="Target lake"
+            value={lakeId}
+            onChange={(e) => setLakeId(e.target.value)}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          >
             <option value="">— None —</option>
             {(lakes ?? []).map((l) => (
-              <option key={l.id} value={l.id}>{l.name}</option>
+              <option key={l.id} value={l.id}>
+                {l.name}
+              </option>
             ))}
           </select>
         </label>
         <label htmlFor="alert-district" className="flex flex-col gap-1 text-xs">
           <span className="text-muted-foreground">Target district</span>
-          <select id="alert-district" aria-label="Target district" value={districtId} onChange={(e) => setDistrictId(e.target.value)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm">
+          <select
+            id="alert-district"
+            aria-label="Target district"
+            value={districtId}
+            onChange={(e) => setDistrictId(e.target.value)}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          >
             <option value="">— Auto from lake —</option>
             {(districts ?? []).map((d) => (
-              <option key={d.id} value={d.id}>{d.name}</option>
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
             ))}
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs">
           <span className="text-muted-foreground">Affected population</span>
-          <input type="number" min={0} value={affected} onChange={(e) => setAffected(e.target.value)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm" />
+          <input
+            type="number"
+            min={0}
+            value={affected}
+            onChange={(e) => setAffected(e.target.value)}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
         </label>
         <label className="flex flex-col gap-1 text-xs sm:col-span-2">
           <span className="text-muted-foreground">Message (English)</span>
-          <textarea value={bodyEn} onChange={(e) => setBodyEn(e.target.value)} rows={3} maxLength={2000}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm" required />
+          <textarea
+            value={bodyEn}
+            onChange={(e) => setBodyEn(e.target.value)}
+            rows={3}
+            maxLength={2000}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+            required
+          />
         </label>
         <label className="flex flex-col gap-1 text-xs sm:col-span-2">
           <span className="text-muted-foreground">Message (Urdu, optional)</span>
-          <textarea value={bodyUr} onChange={(e) => setBodyUr(e.target.value)} rows={2} maxLength={2000} dir="rtl"
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm" />
+          <textarea
+            value={bodyUr}
+            onChange={(e) => setBodyUr(e.target.value)}
+            rows={2}
+            maxLength={2000}
+            dir="rtl"
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
         </label>
       </div>
       <div className="mt-3 flex justify-end">
-        <button type="submit" disabled={submitting}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
+        <button
+          type="submit"
+          disabled={submitting}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+        >
           {submitting ? "Broadcasting…" : "Broadcast alert"}
         </button>
       </div>

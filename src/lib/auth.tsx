@@ -1,85 +1,63 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import type { Session, User } from "@supabase/supabase-js";
-
-type Role = "chw" | "facility_admin" | "cryohealth_admin" | "public_viewer";
+import { getToken, decodeUser, signOut as clearToken, type AuthUser } from "@/lib/auth-client";
+import type { Role } from "@/lib/jwt";
 
 type AuthCtx = {
-  user: User | null;
-  session: Session | null;
+  user: AuthUser | null;
   roles: Role[];
   isAdmin: boolean;
   isCHW: boolean;
   loading: boolean;
   rolesLoaded: boolean;
   signOut: () => Promise<void>;
+  refresh: () => void;
 };
 
 const Ctx = createContext<AuthCtx>({
   user: null,
-  session: null,
   roles: [],
   isAdmin: false,
   isCHW: false,
   loading: true,
   rolesLoaded: false,
   signOut: async () => {},
+  refresh: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [rolesLoaded, setRolesLoaded] = useState(false);
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        setRolesLoaded(false);
-        setTimeout(() => loadRoles(s.user.id), 0);
-      } else {
-        setRoles([]);
-        setRolesLoaded(true);
-      }
-    });
-    supabase.auth.getSession().then(async ({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      if (data.session?.user) {
-        await loadRoles(data.session.user.id);
-      } else {
-        setRolesLoaded(true);
-      }
-      setLoading(false);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  async function loadRoles(uid: string) {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
-    setRoles((data?.map((r) => r.role as Role)) ?? []);
-    setRolesLoaded(true);
+  function load() {
+    const token = getToken();
+    setUser(token ? decodeUser(token) : null);
+    setLoading(false);
   }
 
-  const isAdmin = roles.includes("cryohealth_admin") || roles.includes("facility_admin");
-  const isCHW = roles.includes("chw");
+  useEffect(() => {
+    load();
+    window.addEventListener("storage", load);
+    return () => window.removeEventListener("storage", load);
+  }, []);
+
+  const roles: Role[] = user ? [user.role] : [];
+  const isAdmin = user?.role === "cryohealth_admin" || user?.role === "facility_admin";
+  const isCHW = user?.role === "chw";
 
   return (
     <Ctx.Provider
       value={{
         user,
-        session,
         roles,
         isAdmin,
         isCHW,
         loading,
-        rolesLoaded,
+        rolesLoaded: !loading,
         signOut: async () => {
-          await supabase.auth.signOut();
+          clearToken();
+          setUser(null);
         },
+        refresh: load,
       }}
     >
       {children}

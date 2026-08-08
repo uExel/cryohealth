@@ -69,13 +69,14 @@ function Landing() {
             </p>
             <img src={logo} alt="CryoHealth logo" className="mt-6 h-20 w-20 object-contain" />
             <h1 className="mt-4 text-4xl font-semibold leading-[1.05] text-foreground md:text-5xl lg:text-6xl">
-              From satellite <span className="text-primary">to bedside</span> in under three minutes.
+              From satellite <span className="text-primary">to bedside</span> in under three
+              minutes.
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
               A scalable solution for glacier-dependent regions. CryoHealth fuses near-real-time
               glacial lake outburst flood (GLOF) intelligence with an offline AI health assistant —
-              built for community health workers across Gilgit Baltistan and the wider
-              Hindu Kush–Himalaya.
+              built for community health workers across Gilgit Baltistan and the wider Hindu
+              Kush–Himalaya.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -114,20 +115,31 @@ function Landing() {
       <section className="border-b border-border bg-secondary/40">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 md:grid-cols-3 md:px-12">
           <div className="md:col-span-1">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">The challenge</p>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
+              The challenge
+            </p>
             <h2 className="mt-3 text-3xl font-semibold text-foreground">
               Two crises, one mountain valley.
             </h2>
           </div>
           <div className="space-y-6 md:col-span-2">
             <p className="text-base leading-relaxed text-muted-foreground">
-              More than 3,000 glacial lakes in Pakistan’s north now threaten downstream communities as the
-              cryosphere thaws. When a moraine fails, villages have minutes — not hours — to evacuate.
-              At the same time, the nearest doctor can be a day’s walk away, and connectivity is unreliable.
+              More than 3,000 glacial lakes in Pakistan’s north now threaten downstream communities
+              as the cryosphere thaws. When a moraine fails, villages have minutes — not hours — to
+              evacuate. At the same time, the nearest doctor can be a day’s walk away, and
+              connectivity is unreliable.
             </p>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Pill icon={<Globe2 />} title="33+ GLOF events" desc="recorded across Gilgit Baltistan in the last two decades." />
-              <Pill icon={<HeartPulse />} title="1 doctor / 1,300" desc="people in mountain districts — often offline." />
+              <Pill
+                icon={<Globe2 />}
+                title="33+ GLOF events"
+                desc="recorded across Gilgit Baltistan in the last two decades."
+              />
+              <Pill
+                icon={<HeartPulse />}
+                title="1 doctor / 1,300"
+                desc="people in mountain districts — often offline."
+              />
             </div>
           </div>
         </div>
@@ -137,7 +149,9 @@ function Landing() {
       <section className="border-b border-border">
         <div className="mx-auto max-w-7xl px-6 py-20 md:px-12">
           <div className="max-w-2xl">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">How it works</p>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
+              How it works
+            </p>
             <h2 className="mt-3 text-3xl font-semibold text-foreground md:text-4xl">
               One pipeline. Satellite → SMS → CHW.
             </h2>
@@ -181,7 +195,9 @@ function Landing() {
       <section className="border-b border-border bg-secondary/40">
         <div className="mx-auto max-w-7xl px-6 py-20 md:px-12">
           <div className="max-w-2xl">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">What’s inside</p>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
+              What’s inside
+            </p>
             <h2 className="mt-3 text-3xl font-semibold text-foreground md:text-4xl">
               Built for the people closest to the risk.
             </h2>
@@ -235,7 +251,9 @@ function Landing() {
       <section className="border-b border-border">
         <div className="mx-auto max-w-7xl px-6 py-20 md:px-12">
           <div className="max-w-2xl">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">Get started</p>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
+              Get started
+            </p>
             <h2 className="mt-3 text-3xl font-semibold text-foreground md:text-4xl">
               Pick the path that matches your role.
             </h2>
@@ -282,12 +300,17 @@ function Landing() {
       <section className="border-b border-border bg-primary text-primary-foreground">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-20 md:grid-cols-[1.4fr_1fr] md:items-center md:px-12">
           <div>
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-accent">Open source</p>
-            <h2 className="mt-3 text-3xl font-semibold md:text-4xl">Built in the open. Free to fork.</h2>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-accent">
+              Open source
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
+              Built in the open. Free to fork.
+            </h2>
             <p className="mt-3 max-w-2xl text-primary-foreground/80">
-              CryoHealth is released under the MIT License. Code, schema, and seed data are public so
-              partners, researchers, and community health programs can audit, fork, and deploy the
-              platform in their own valley. Contributions and funding partners are warmly welcomed.
+              CryoHealth is released under the MIT License. Code, schema, and seed data are public
+              so partners, researchers, and community health programs can audit, fork, and deploy
+              the platform in their own valley. Contributions and funding partners are warmly
+              welcomed.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-1.5 rounded-md border border-primary-foreground/30 px-2.5 py-1 text-xs">
@@ -371,12 +394,24 @@ function Pill({ icon, title, desc }: { icon: React.ReactNode; title: string; des
   );
 }
 
-function Step({ n, icon, title, desc }: { n: string; icon: React.ReactNode; title: string; desc: string }) {
+function Step({
+  n,
+  icon,
+  title,
+  desc,
+}: {
+  n: string;
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}) {
   return (
     <li className="relative rounded-xl border border-border bg-card p-5">
       <div className="flex items-center justify-between text-muted-foreground">
         <span className="text-xs font-mono tracking-widest">{n}</span>
-        <span className="rounded-md bg-secondary p-1.5 text-primary [&_svg]:h-4 [&_svg]:w-4">{icon}</span>
+        <span className="rounded-md bg-secondary p-1.5 text-primary [&_svg]:h-4 [&_svg]:w-4">
+          {icon}
+        </span>
       </div>
       <h3 className="mt-4 text-base font-semibold text-foreground">{title}</h3>
       <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
@@ -405,7 +440,10 @@ function Feature({
       <h3 className="mt-4 text-base font-semibold text-foreground">{title}</h3>
       <p className="mt-1 flex-1 text-sm text-muted-foreground">{desc}</p>
       {to && cta && (
-        <Link to={to} className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
+        <Link
+          to={to}
+          className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+        >
           {cta} <ArrowRight className="h-3 w-3" />
         </Link>
       )}
@@ -442,7 +480,10 @@ function Role({
           </li>
         ))}
       </ol>
-      <Link to={to} className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+      <Link
+        to={to}
+        className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+      >
         {cta} <ArrowRight className="h-4 w-4" />
       </Link>
     </div>

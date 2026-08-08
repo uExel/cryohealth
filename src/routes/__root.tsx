@@ -78,7 +78,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "CryoHealth — GLOF early warning & offline AI health" },
-      { name: "description", content: "Open-source GLOF early warning and offline AI health assistant for community health workers in glacier-dependent regions of the Hindu Kush–Himalaya." },
+      {
+        name: "description",
+        content:
+          "Open-source GLOF early warning and offline AI health assistant for community health workers in glacier-dependent regions of the Hindu Kush–Himalaya.",
+      },
       { name: "author", content: "CryoHealth contributors" },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "CryoHealth" },
