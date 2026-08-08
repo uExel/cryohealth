@@ -125,7 +125,9 @@ function GlacierDetail() {
           risk: riskNorm * 0.5,
         };
         const driver = Object.entries(contributions).sort((a, b) => b[1] - a[1])[0][0] as
-          "distance" | "status" | "risk";
+          | "distance"
+          | "status"
+          | "risk";
         return { ...l, distanceKm, assoc, proximity, riskNorm, driver };
       })
       .sort((a, b) => b.assoc - a.assoc)

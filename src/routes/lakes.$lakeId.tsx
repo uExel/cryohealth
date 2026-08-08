@@ -89,7 +89,8 @@ function LakeDetail() {
         const hazard = glacierStatusWeight[g.status ?? "unknown"] ?? 0.4;
         const contributions = { distance: proximity * 0.6, status: hazard * 0.4 };
         const driver = (contributions.distance >= contributions.status ? "distance" : "status") as
-          "distance" | "status";
+          | "distance"
+          | "status";
         return {
           ...g,
           distanceKm,

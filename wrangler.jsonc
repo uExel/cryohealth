@@ -4,4 +4,14 @@
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/server.ts",
+  // Set by provisioning: id comes from the Hyperdrive config created against
+  // the Hetzner db (172.28.0.10:5432) over the Cloudflare Tunnel private
+  // network route — see cryohealth-infra/README.md. Unset in local dev
+  // (`bun dev`), where src/lib/db.ts falls back to the discrete DB_* vars.
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "REPLACE_WITH_HYPERDRIVE_CONFIG_ID",
+    },
+  ],
 }

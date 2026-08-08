@@ -24,7 +24,9 @@ export function SiteHeader() {
           <img src={logo} alt="CryoHealth logo" className="h-9 w-9 object-contain" />
           <div className="leading-tight">
             <div className="text-sm font-semibold text-foreground">{t("appName")}</div>
-            <div className="text-[10px] text-muted-foreground">Scalable solution for glacier-dependent regions</div>
+            <div className="text-[10px] text-muted-foreground">
+              Scalable solution for glacier-dependent regions
+            </div>
           </div>
         </Link>
         <nav className="hidden items-center gap-1 md:flex">
@@ -35,7 +37,9 @@ export function SiteHeader() {
                 key={n.to}
                 to={n.to}
                 className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
-                  active ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"
+                  active
+                    ? "bg-secondary text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {t(n.key)}
@@ -43,12 +47,18 @@ export function SiteHeader() {
             );
           })}
           {isCHW && (
-            <Link to="/chw" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground">
+            <Link
+              to="/chw"
+              className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground"
+            >
               {t("chw")}
             </Link>
           )}
           {isAdmin && (
-            <Link to="/admin" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground">
+            <Link
+              to="/admin"
+              className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground"
+            >
               {t("admin")}
             </Link>
           )}

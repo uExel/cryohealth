@@ -134,7 +134,14 @@ export function HazardMap({
 
     lakes.forEach((l) => {
       const c = tierClasses[l.current_tier];
-      const radius = l.current_tier === "CRITICAL" ? 14 : l.current_tier === "HIGH" ? 11 : l.current_tier === "WATCH" ? 8 : 6;
+      const radius =
+        l.current_tier === "CRITICAL"
+          ? 14
+          : l.current_tier === "HIGH"
+            ? 11
+            : l.current_tier === "WATCH"
+              ? 8
+              : 6;
       leaflet
         .circleMarker([l.lat, l.lng], {
           radius,
@@ -182,7 +189,10 @@ export function HazardMap({
 
   if (!leaflet) {
     return (
-      <div style={{ height }} className="flex items-center justify-center rounded-xl border border-border bg-secondary/40 text-sm text-muted-foreground">
+      <div
+        style={{ height }}
+        className="flex items-center justify-center rounded-xl border border-border bg-secondary/40 text-sm text-muted-foreground"
+      >
         Loading map…
       </div>
     );
@@ -195,7 +205,10 @@ export function HazardMap({
         <span className="font-medium text-foreground">Risk tiers:</span>
         {(["NORMAL", "WATCH", "HIGH", "CRITICAL"] as Tier[]).map((t) => (
           <span key={t} className="inline-flex items-center gap-1">
-            <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: tierClasses[t].hex }} />
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-full"
+              style={{ background: tierClasses[t].hex }}
+            />
             {t}
           </span>
         ))}
