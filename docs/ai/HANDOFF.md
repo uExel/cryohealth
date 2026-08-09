@@ -1,107 +1,99 @@
-# HANDOFF — cryohealth — 2026-08-09 23:55 PKT
+# HANDOFF — cryohealth — 2026-08-10 00:20 PKT
 
 Session: task4-verify-loop Model: claude-sonnet-5 Branch: main Goal: #3 Task: #4
 
 ## State
 
-`/uexel:verify` is mid-run for task #4 (all 5 PLAN.md steps are code-complete and
-committed as of `5619bbf`). Sequence so far:
+Task #4 (admin portal shell) is **done**. All 5 PLAN.md steps committed
+(`0ba00ac`, `6e77857`, `5157080`, `5619bbf`), `/uexel:verify` returned a final **PASS**
+after 1 of 3 fix-loop iterations, and the full verdict is posted on issue #4:
+https://github.com/uExel/cryohealth/issues/4#issuecomment-5233257851. Session report:
+`docs/ai/sessions/2026-08-09-task4-verify-report.md`. TODO.md now shows all items
+checked off. Issue #4 itself has **not** been closed — `/uexel:verify`'s instructions
+say to record the verdict as an issue comment, not to close the issue, so that's left
+as a deliberate next action rather than done silently.
 
-1. First verifier pass (uexel-verifier agent, commit range `06ea6aa..18fdfd2`): **PASS
-   WITH FINDINGS**, all non-blocking. Verifier independently re-derived every live
-   claim from the prior session via its own headless-Chrome-over-CDP script (did not
-   trust the prior session's screenshots) and confirmed them. 5 findings, 2 acted on:
-   - Finding #1 (active nav item didn't use `var(--color-accent)` per the issue's DoD
-     wording) — **fixed** this session, commit `5619bbf`.
-   - Finding #4 (PLAN.md's explicit commitment to file the pre-existing `/lakes/$lakeId`
-     Outlet bug as its own issue, not silently fix or silently drop) — **filed**, issue
-     #20.
-   - Finding #2 (`requireRole()` has zero call sites; the 3 admin-only routes gate
-     client-side only) — **left as-is**, a PLAN-disclosed scope decision (server-side
-     page auth needs a cookie-auth migration out of this goal's scope entirely; current
-     exposure is nil since the 3 routes are empty scaffolds).
-   - Finding #3 (sidebar labels are hardcoded English, not run through the `t()` i18n
-     helper `SiteHeader.tsx` uses) — **left as-is**, non-blocking, no PLAN commitment to
-     i18n coverage in this task.
-2. Second verifier pass (same agent, re-verifying just `5619bbf`): **PASS**. Confirmed
-   the CSS specificity of the fix resolves correctly (traced through the built
-   stylesheet since no live browser was wired up for this pass) and that issue #20
-   accurately describes the bug. Flagged one residual (the active item now shows the
-   accent border _in addition to_ the shadcn filled-chip background, not _instead of_
-   it) as cosmetic, not a DoD violation — no further iteration needed.
-3. **In progress, not yet returned**: sent the same verifier agent a follow-up message
-   asking it to additionally run `gstack /review` and `/cso --diff --scope auth` — the
-   `/uexel:verify` skill instructions require both (the latter specifically because
-   this diff adds `isCryoHealthAdmin`/`requireRole()`), and this was omitted from the
-   original verifier brief. This was an oversight caught only after the two verify
-   passes already completed. Running in the background; not yet reported back.
+One new issue was filed during verification: #20 (pre-existing `/lakes/$lakeId`
+Outlet-nesting bug, unrelated to this task's own code, PLAN.md committed to filing it
+rather than silently fixing or dropping it).
 
-Fix-loop budget: 1 of 3 iterations used (well under budget).
+Two forward-looking hardening notes were recorded in the issue #4 comment for
+tasks #6-#19 (the first real callers of the new `requireRole()` helper and the 3
+admin-only routes) rather than filed as separate issues, since they have zero current
+exposure: `requireRole()` returns `Response | null` (fail-open if a caller discards
+the value) instead of throwing like its sibling `requireAuth()`; and the sidebar's
+active-nav match uses unguarded `startsWith`, a latent footgun for any future sibling
+route sharing a path prefix.
+
+`bun dev` may still be running in the background on port 8081 from earlier in this
+session — check `curl -sf http://localhost:8081` before starting a new one.
 
 ## Done this session
 
-- Read GitHub issue #4's Definition of Done and verification command directly
-  (`bunx tsc --noEmit && bun run lint && bun run build` + manual click-through)
-- Ran two full uexel-verifier passes (see State above)
-- Fixed finding #1: `src/components/cryohealth/AdminShell.tsx` active nav item now has
-  `border-s-[3px] border-transparent data-[active=true]:border-[var(--color-accent)]`
-  (commit `5619bbf`)
-- Filed issue #20 for the pre-existing `/lakes/$lakeId` Outlet-nesting bug per PLAN's
-  explicit commitment
-- Updated TODO.md to check off Step 3/Step 4 in a prior session; this session did not
-  need to touch TODO.md further (still needs the final `/uexel:verify` line checked
-  once the gstack /review + /cso results are in)
+- Ran `/uexel:verify` end to end for task #4: 2 uexel-verifier passes (PASS WITH
+  FINDINGS → fix → PASS), plus `security-review` and gstack-routed `code-review` skills
+  run directly (0 vulnerabilities, only cosmetic nits)
+- Fixed finding #1 from pass 1 (commit `5619bbf`): active sidebar item now shows the
+  `var(--color-accent)` border the DoD names, via `border-s-[3px] border-transparent
+data-[active=true]:border-[var(--color-accent)]` on `AdminShell.tsx`'s
+  `SidebarMenuButton`
+- Filed issue #20 for the PLAN-committed `/lakes/$lakeId` bug report
+- Posted the final consolidated verdict as a comment on issue #4
+- Checked off TODO.md's remaining `/uexel:verify` line
+- Wrote the session report (loop-contract requires logging iterations used and why the
+  loop stopped)
 
 ## Not done / deferred
 
-- `gstack /review` and `/cso --diff --scope auth` results — dispatched, not yet
-  returned (see State #3)
-- TODO.md's `/uexel:verify` line — not checked off yet, pending the above
-- Issue #4 close-out comment recording the final verdict — not yet posted; blocked on
-  the gstack /review + /cso results landing first, per this skill's own instruction to
-  record the _final_ verdict, not a partial one
+- Issue #4 is not closed — left for a human or a follow-up session, since closing
+  wasn't part of this skill's instructions
+- The two hardening notes (requireRole fail-open shape, startsWith footgun) were not
+  filed as separate issues — recorded in the issue #4 comment instead, to be picked up
+  naturally when #6-#19 add real callers
 
 ## Next action
 
-Wait for the pending SendMessage reply from the uexel-verifier agent (id
-`a3811b7ac4a1cfa21`) with the `gstack /review` and `/cso` results. If both come back
-clean (or with only non-blocking findings consistent with what's already recorded
-above), post the consolidated final verdict as a comment on issue #4, check off
-TODO.md's `/uexel:verify` line, and close issue #4. If either surfaces a new blocking
-finding, that's fix-loop iteration 2 of the 3-iteration budget.
+Close issue #4 (verdict is PASS, nothing outstanding blocks it), then move to the next
+task under goal #3 (task #5 or whichever is next per the milestone) with
+`/uexel:plan <issue-number>`.
 
 ## Open questions for a human
 
-- none blocking — task #4 is functionally done; what remains is process (recording the
-  verdict), not code
+- Should issue #4 be closed now, or does someone want to review the verify verdict
+  first? Not blocking — the verdict itself is unambiguous PASS.
 
 ## Failed approaches (do not retry)
 
-See `docs/ai/sessions/2026-08-09-admin-shell-verify-handoff.md` (this session's
-predecessor) for the full writeup of why `npx playwright install chromium` hangs in
-this sandbox during extraction, and why driving the system's real Chrome headlessly
-over raw CDP WebSocket (no npm install) is the working alternative — both verifier
-passes and the original manual pass used that pattern successfully.
+See `docs/ai/sessions/2026-08-09-admin-shell-verify-handoff.md` for the full writeup:
+`npx playwright install chromium` hangs indefinitely during extraction in this sandbox
+(confirmed via 0% CPU for 50+ minutes, twice) — use the system's real Chrome in
+headless mode driven over raw CDP WebSocket instead (no npm install needed).
+
+New this session: a non-editing verifier agent (tool scope `Read`/`Bash`/`advisor`
+only, by design) cannot invoke gstack's `/review` or `/cso` skills — both require
+`Write`/`Edit`/`Agent`/`AskUserQuestion`, which a diff-certifying verifier must not
+hold. Don't ask a verifier subagent to run these; run them from the orchestrating
+session instead (or accept the verifier's manual-checklist substitute, which is a
+reasonable fallback but not equivalent to the real skill).
 
 ## Loops run
 
-- task #4 fix loop: 1/3 iterations used, in progress (verdict PASS after iteration 1;
-  confirming no additional gstack/cso findings before declaring the loop closed),
-  verifier: uexel-verifier agent, rubric: code-review.md
+- task #4 fix loop: 1/3 iterations, **passed** (not escalated), verifier: uexel-verifier
+  agent (2 passes) + security-review/code-review skills run directly, rubric:
+  code-review.md
 
 ## Files touched
 
-`src/components/cryohealth/AdminShell.tsx` (committed, `5619bbf`). No other source
-files touched this session.
+`src/components/cryohealth/AdminShell.tsx` (committed, `5619bbf`), `docs/ai/TODO.md`,
+`docs/ai/HANDOFF.md`, `docs/ai/sessions/2026-08-09-task4-verify-report.md` (new).
 
 ## Verification status
 
-tests: n/a (no test framework) review: 2 uexel-verifier passes done (PASS WITH
-FINDINGS → fix → PASS); gstack /review and /cso results pending qa: live-equivalent
-CDP verification done in a prior session and independently re-derived by the verifier
-in pass 1
+tests: n/a (no test framework) review: PASS (2 verifier passes + security-review +
+code-review, all clean or non-blocking) qa: live-equivalent CDP verification confirmed
+independently by the verifier in pass 1
 
 ## Resume with
 
-/uexel:orient (then: check for the uexel-verifier agent's reply on gstack
-/review + /cso; if clean, post the issue #4 close-out comment and close it)
+/uexel:orient (then: close issue #4, start `/uexel:plan` on the next task under
+goal #3)
