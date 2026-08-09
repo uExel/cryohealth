@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
+import { AdminShell } from "@/components/cryohealth/AdminShell";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -46,5 +47,9 @@ function AdminPage() {
         </div>
       </main>
     );
-  return <Outlet />;
+  return (
+    <AdminShell>
+      <Outlet />
+    </AdminShell>
+  );
 }
