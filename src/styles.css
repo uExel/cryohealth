@@ -91,6 +91,14 @@
   --color-on-tier: #ffffff;
   --color-scrim: rgba(0, 0, 0, 0.5);
 
+  /* Fixed "ink panel" pair for content that's deliberately night/satellite themed
+     regardless of site light/dark mode (e.g. PipelineDiagram's diagram background).
+     Intentionally NOT redefined in .dark — --color-accent-ink/-soft flip per theme
+     because they're text/tint tokens, which breaks contrast for the always-white
+     icons drawn on top of a fixed dark panel. */
+  --color-diagram-ink: #0a4d76;
+  --color-diagram-highlight: #d5e7f2;
+
   /* Hazard tier ramp — solid is for bars/icons/text-on-soft, never body copy */
   --color-normal: #1f7a4d;
   --color-normal-soft: #d9eee3;

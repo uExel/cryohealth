@@ -69,7 +69,7 @@ export function PipelineDiagram() {
   return (
     <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-stretch">
       {/* Diagram */}
-      <div className="relative aspect-[5/4] w-full overflow-hidden border-2 border-border bg-[var(--color-accent-ink)] p-2 md:aspect-auto md:min-h-[460px]">
+      <div className="relative aspect-[5/4] w-full overflow-hidden border-2 border-border bg-[var(--color-diagram-ink)] p-2 md:aspect-auto md:min-h-[460px]">
         {/* SVG edges — flat stroke, no gradient; motion is fine, glow is not */}
         <svg
           viewBox="0 0 100 100"
@@ -141,22 +141,24 @@ export function PipelineDiagram() {
               >
                 <span
                   aria-hidden
-                  className={`absolute inset-0 m-auto h-14 w-14 border-2 border-[var(--color-accent-soft)] transition-opacity ${
+                  className={`absolute inset-0 m-auto h-14 w-14 border-2 border-[var(--color-diagram-highlight)] transition-opacity ${
                     isActive ? "opacity-100" : "opacity-0"
                   } pipeline-pulse`}
                 />
                 <span
                   className={`relative flex h-14 w-14 items-center justify-center border-2 text-primary-foreground transition-colors ${
                     isActive
-                      ? "border-[var(--color-accent-soft)] bg-white/15"
-                      : "border-white/30 bg-white/10 group-hover:border-[var(--color-accent-soft)] group-hover:bg-white/15"
+                      ? "border-[var(--color-diagram-highlight)] bg-white/15"
+                      : "border-white/30 bg-white/10 group-hover:border-[var(--color-diagram-highlight)] group-hover:bg-white/15"
                   }`}
                 >
                   {n.icon}
                 </span>
                 <span
                   className={`mt-2 block whitespace-nowrap text-[11px] font-semibold uppercase tracking-widest transition-colors ${
-                    isActive ? "text-[var(--color-accent-soft)]" : "text-primary-foreground/80"
+                    isActive
+                      ? "text-[var(--color-diagram-highlight)]"
+                      : "text-primary-foreground/80"
                   }`}
                 >
                   {n.label}
