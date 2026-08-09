@@ -1,100 +1,107 @@
-# HANDOFF — cryohealth — 2026-08-09 23:20 PKT
+# HANDOFF — cryohealth — 2026-08-09 23:55 PKT
 
-Session: admin-shell-verify Model: claude-sonnet-5 Branch: main Goal: #3 Task: #4
+Session: task4-verify-loop Model: claude-sonnet-5 Branch: main Goal: #3 Task: #4
 
 ## State
 
-All 5 steps of PLAN.md (docs/ai/PLAN.md) for task #4 are done and committed. Steps 0-2
-were already committed at session start (`6e77857`, `0ba00ac`). This session committed
-Steps 3+4 together as `5157080`: `AdminShell.tsx` (6-group role-filtered sidebar,
-`collapsible="none"`) wired into `admin.tsx` via `<AdminShell><Outlet/></AdminShell>`.
-Verified live end-to-end with headless Chrome driven directly over the Chrome DevTools
-Protocol (no test framework in this repo, and `playwright install` could not complete
-in this sandbox — see Failed approaches): logged in as `admin-001`/`1234`
-(`cryohealth_admin`), confirmed all 12 sidebar links, active-state highlighting exact-
-match on `/admin` and prefix-match elsewhere, the `/admin/glaciers/<id>` and
-`/admin/lakes/<id>` direct-nav Outlet-nesting regression check, dark mode, RTL flip
-(`dir=rtl` — sidebar moves to the right, `border-e-2` renders on the correct edge, no
-clipped text), `facility_admin` sidebar correctly omits "People & access"/"Platform"
-and hits the in-page role gate on `/admin/users`, and `chw` sees only "Admin access
-required" with no sidebar at all. Zero code changes were needed for Step 4 — code
-review of `AdminShell.tsx` plus `src/styles.css`'s `.dark` token overrides showed it
-was already theme-token-only and logical-property-clean. TODO.md and PLAN.md's task are
-fully checked off except `/uexel:verify`, which has not been run.
+`/uexel:verify` is mid-run for task #4 (all 5 PLAN.md steps are code-complete and
+committed as of `5619bbf`). Sequence so far:
+
+1. First verifier pass (uexel-verifier agent, commit range `06ea6aa..18fdfd2`): **PASS
+   WITH FINDINGS**, all non-blocking. Verifier independently re-derived every live
+   claim from the prior session via its own headless-Chrome-over-CDP script (did not
+   trust the prior session's screenshots) and confirmed them. 5 findings, 2 acted on:
+   - Finding #1 (active nav item didn't use `var(--color-accent)` per the issue's DoD
+     wording) — **fixed** this session, commit `5619bbf`.
+   - Finding #4 (PLAN.md's explicit commitment to file the pre-existing `/lakes/$lakeId`
+     Outlet bug as its own issue, not silently fix or silently drop) — **filed**, issue
+     #20.
+   - Finding #2 (`requireRole()` has zero call sites; the 3 admin-only routes gate
+     client-side only) — **left as-is**, a PLAN-disclosed scope decision (server-side
+     page auth needs a cookie-auth migration out of this goal's scope entirely; current
+     exposure is nil since the 3 routes are empty scaffolds).
+   - Finding #3 (sidebar labels are hardcoded English, not run through the `t()` i18n
+     helper `SiteHeader.tsx` uses) — **left as-is**, non-blocking, no PLAN commitment to
+     i18n coverage in this task.
+2. Second verifier pass (same agent, re-verifying just `5619bbf`): **PASS**. Confirmed
+   the CSS specificity of the fix resolves correctly (traced through the built
+   stylesheet since no live browser was wired up for this pass) and that issue #20
+   accurately describes the bug. Flagged one residual (the active item now shows the
+   accent border _in addition to_ the shadcn filled-chip background, not _instead of_
+   it) as cosmetic, not a DoD violation — no further iteration needed.
+3. **In progress, not yet returned**: sent the same verifier agent a follow-up message
+   asking it to additionally run `gstack /review` and `/cso --diff --scope auth` — the
+   `/uexel:verify` skill instructions require both (the latter specifically because
+   this diff adds `isCryoHealthAdmin`/`requireRole()`), and this was omitted from the
+   original verifier brief. This was an oversight caught only after the two verify
+   passes already completed. Running in the background; not yet reported back.
+
+Fix-loop budget: 1 of 3 iterations used (well under budget).
 
 ## Done this session
 
-- Verified Step 3 (`AdminShell.tsx` + `admin.tsx`) live via CDP-driven headless Chrome:
-  sidebar nav, active-state, role-filtering, direct-URL gates, dark mode, RTL — all pass
-  (screenshots in scratchpad, not committed — see Files touched)
-- Confirmed Step 4 requires no code changes (dark-mode tokens and `border-e-2` logical
-  property already correct); committed Steps 3+4 together as `5157080`
-- Updated TODO.md to check off Steps 3 and 4
-- Left `bun dev` running in the background on **port 8081** (8080 was already taken) for
-  anyone continuing manual QA
+- Read GitHub issue #4's Definition of Done and verification command directly
+  (`bunx tsc --noEmit && bun run lint && bun run build` + manual click-through)
+- Ran two full uexel-verifier passes (see State above)
+- Fixed finding #1: `src/components/cryohealth/AdminShell.tsx` active nav item now has
+  `border-s-[3px] border-transparent data-[active=true]:border-[var(--color-accent)]`
+  (commit `5619bbf`)
+- Filed issue #20 for the pre-existing `/lakes/$lakeId` Outlet-nesting bug per PLAN's
+  explicit commitment
+- Updated TODO.md to check off Step 3/Step 4 in a prior session; this session did not
+  need to touch TODO.md further (still needs the final `/uexel:verify` line checked
+  once the gstack /review + /cso results are in)
 
 ## Not done / deferred
 
-- `/uexel:verify` — the last unchecked item on TODO.md for task #4; should run next
-- Did not test the `viewer` role separately — it shares the exact same non-admin code
-  path as `chw` (`isAdmin` check in `auth.tsx`), so no additional coverage expected
+- `gstack /review` and `/cso --diff --scope auth` results — dispatched, not yet
+  returned (see State #3)
+- TODO.md's `/uexel:verify` line — not checked off yet, pending the above
+- Issue #4 close-out comment recording the final verdict — not yet posted; blocked on
+  the gstack /review + /cso results landing first, per this skill's own instruction to
+  record the _final_ verdict, not a partial one
 
 ## Next action
 
-Run `/uexel:verify` against task #4, then close out issue #4 if it passes.
+Wait for the pending SendMessage reply from the uexel-verifier agent (id
+`a3811b7ac4a1cfa21`) with the `gstack /review` and `/cso` results. If both come back
+clean (or with only non-blocking findings consistent with what's already recorded
+above), post the consolidated final verdict as a comment on issue #4, check off
+TODO.md's `/uexel:verify` line, and close issue #4. If either surfaces a new blocking
+finding, that's fix-loop iteration 2 of the 3-iteration budget.
 
 ## Open questions for a human
 
-- none
+- none blocking — task #4 is functionally done; what remains is process (recording the
+  verdict), not code
 
 ## Failed approaches (do not retry)
 
-- `npx playwright install chromium` in this sandbox: the download completes (162 MB,
-  confirmed 100% via progress bar) but the subsequent extract/install step hangs
-  indefinitely (0% CPU for 51+ min, no forward progress) — killed both attempts. Root
-  cause not identified (suspect a sandboxed syscall the extractor blocks on, possibly
-  codesigning/xattr handling for the `.app` bundle). Don't retry `playwright install`
-  in this environment — instead, launch the system's real
-  `/Applications/Google Chrome.app` directly in headless mode
-  (`--headless=new --remote-debugging-port=<port> --user-data-dir=<scratch dir>`) and
-  drive it over raw CDP WebSocket using Node's built-in `WebSocket`/`fetch` (no npm
-  install needed) — this worked cleanly and is the pattern used this session
-  (`scratchpad/cdp-check.mjs`, `cdp-role-check.mjs`, `cdp-light.mjs`).
-- First CDP login attempt used `document.querySelector('button')?.click()` to submit
-  the login form — this actually clicked the site header's language-toggle button
-  (also a bare `<button>`, earlier in DOM order), not the form's submit button, so
-  login silently no-opped. Fixed by scoping the selector to
-  `form button[type="submit"], form button:not([type])`.
-- First screenshot attempt used Chrome's default viewport (800x600, but observed as
-  756px wide) — below Tailwind's `md:` 768px breakpoint, so `hidden md:flex` correctly
-  hid the sidebar; looked like a bug but wasn't. Fixed by explicitly setting
-  `Emulation.setDeviceMetricsOverride` to 1440x900 before navigating.
-- Forcing dark mode via `document.documentElement.classList.add('dark')` looked
-  identical to the "default" screenshot — because `theme.tsx` persists whatever theme
-  it resolves (including a `prefers-color-scheme` fallback) to `localStorage`, and
-  headless Chrome defaults `prefers-color-scheme` to dark. To get a true light-mode
-  screenshot, had to explicitly `localStorage.setItem('ch_theme','light')` before
-  reload — `Emulation.setEmulatedMedia` alone wasn't enough once a stale value was
-  already persisted from an earlier run in the same profile dir.
+See `docs/ai/sessions/2026-08-09-admin-shell-verify-handoff.md` (this session's
+predecessor) for the full writeup of why `npx playwright install chromium` hangs in
+this sandbox during extraction, and why driving the system's real Chrome headlessly
+over raw CDP WebSocket (no npm install) is the working alternative — both verifier
+passes and the original manual pass used that pattern successfully.
 
 ## Loops run
 
-- none (loop budget 3 for task #4's fix loop; not consumed)
+- task #4 fix loop: 1/3 iterations used, in progress (verdict PASS after iteration 1;
+  confirming no additional gstack/cso findings before declaring the loop closed),
+  verifier: uexel-verifier agent, rubric: code-review.md
 
 ## Files touched
 
-`src/components/cryohealth/AdminShell.tsx` (new, committed), `src/routes/admin.tsx`
-(committed), `docs/ai/TODO.md` (committed). Scratch-only, not committed: CDP driver
-scripts and verification screenshots under the session scratchpad dir (outside the
-repo).
+`src/components/cryohealth/AdminShell.tsx` (committed, `5619bbf`). No other source
+files touched this session.
 
 ## Verification status
 
-tests: n/a (no test framework) review: not yet run (`/uexel:verify` pending) qa: live
-manual-equivalent pass via headless-Chrome/CDP — all items in PLAN.md's human
-verification checklist confirmed pass (sidebar nav, active state, Outlet nesting,
-role gating, dark mode, RTL)
+tests: n/a (no test framework) review: 2 uexel-verifier passes done (PASS WITH
+FINDINGS → fix → PASS); gstack /review and /cso results pending qa: live-equivalent
+CDP verification done in a prior session and independently re-derived by the verifier
+in pass 1
 
 ## Resume with
 
-/uexel:orient (then: `/uexel:verify` against task #4)
+/uexel:orient (then: check for the uexel-verifier agent's reply on gstack
+/review + /cso; if clean, post the issue #4 close-out comment and close it)
