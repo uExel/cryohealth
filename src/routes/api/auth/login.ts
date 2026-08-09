@@ -15,7 +15,7 @@ export const Route = createFileRoute("/api/auth/login")({
           return Response.json({ error: "Missing identifier or password" }, { status: 400 });
         }
 
-        const sql = getDb();
+        const sql = await getDb();
         const rows = await sql<
           { id: string; role: string; name: string; passwordHash: string; active: boolean }[]
         >`

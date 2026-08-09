@@ -4,12 +4,12 @@ import { getDb } from "@/lib/db";
  *  functions — postgres.js needs Node's `net`/`tls` and must never reach the client bundle. */
 
 export async function listDistricts() {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`SELECT id, name, province FROM districts ORDER BY name`;
 }
 
 export async function listGlaciers() {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
     SELECT g.id, g.name, g.rgi_id, g.district_id, g.lat, g.lng, g.area_km2, g.length_km,
            g.elevation_min_m, g.elevation_max_m, g.status, g.source, g.last_observed, g.notes,
@@ -21,7 +21,7 @@ export async function listGlaciers() {
 }
 
 export async function getGlacier(id: string) {
-  const sql = getDb();
+  const sql = await getDb();
   const rows = await sql`
     SELECT g.*, d.id AS district_id, d.name AS district_name, d.province AS district_province
     FROM glaciers g
@@ -33,7 +33,7 @@ export async function getGlacier(id: string) {
 }
 
 export async function listGlacierObservations(glacierId: string) {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
     SELECT observed_at, area_km2, length_km, terminus_change_m, status, source, notes
     FROM glacier_observations
@@ -43,7 +43,7 @@ export async function listGlacierObservations(glacierId: string) {
 }
 
 export async function listDisasterCasesForDistrict(districtId: string) {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
     SELECT id, symptoms, diagnosis, outcome, is_disaster_related, created_at
     FROM cases
@@ -54,9 +54,9 @@ export async function listDisasterCasesForDistrict(districtId: string) {
 }
 
 export async function listLakesForAssoc() {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
-    SELECT l.id, l.name, upper(l."currentTier") AS current_tier, l.current_risk_score,
+    SELECT l.id, l.name, upper(l."currentTier"::text) AS current_tier, l.current_risk_score,
            l.downstream_population, ST_Y(l.geom::geometry) AS lat, ST_X(l.geom::geometry) AS lng,
            d.name AS district_name
     FROM lakes l
@@ -65,10 +65,10 @@ export async function listLakesForAssoc() {
 }
 
 export async function listLakesAdmin() {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
     SELECT l.id, l.name, ST_Y(l.geom::geometry) AS lat, ST_X(l.geom::geometry) AS lng,
-           upper(l."currentTier") AS current_tier, l.current_risk_score, l.downstream_population,
+           upper(l."currentTier"::text) AS current_tier, l.current_risk_score, l.downstream_population,
            l."updatedAt" AS last_updated, l.district_id
     FROM lakes l
     ORDER BY l.current_risk_score DESC NULLS LAST
@@ -76,10 +76,10 @@ export async function listLakesAdmin() {
 }
 
 export async function getLakeDetail(id: string) {
-  const sql = getDb();
+  const sql = await getDb();
   const rows = await sql`
     SELECT l.*, ST_Y(l.geom::geometry) AS lat, ST_X(l.geom::geometry) AS lng,
-           upper(l."currentTier") AS current_tier, l."elevationM" AS elevation_m,
+           upper(l."currentTier"::text) AS current_tier, l."elevationM" AS elevation_m,
            d.name AS district_name
     FROM lakes l
     LEFT JOIN districts d ON d.id = l.district_id
@@ -90,7 +90,7 @@ export async function getLakeDetail(id: string) {
 }
 
 export async function listLakeRiskScores(lakeId: string) {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
     SELECT score, upper(tier) AS tier, confidence, observed_at
     FROM lake_risk_scores
@@ -101,9 +101,9 @@ export async function listLakeRiskScores(lakeId: string) {
 }
 
 export async function listAlertsForLake(lakeId: string) {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
-    SELECT id, title, upper(tier) AS tier, "createdAt" AS created_at, estimated_window
+    SELECT id, title, upper(tier::text) AS tier, "createdAt" AS created_at, estimated_window
     FROM alerts
     WHERE "lakeId" = ${lakeId}
     ORDER BY "createdAt" DESC
@@ -112,9 +112,9 @@ export async function listAlertsForLake(lakeId: string) {
 }
 
 export async function listAllAlerts(limit = 200) {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
-    SELECT a.id, a."lakeId" AS lake_id, a.district_id, upper(a.tier) AS tier, a.title, a.body_en, a.body_ur,
+    SELECT a.id, a."lakeId" AS lake_id, a.district_id, upper(a.tier::text) AS tier, a.title, a.body_en, a.body_ur,
            a.estimated_window, a.affected_population, a."createdAt" AS created_at,
            l.name AS lake_name, d.name AS district_name
     FROM alerts a
@@ -126,9 +126,9 @@ export async function listAllAlerts(limit = 200) {
 }
 
 export async function listOpenAlerts(limit = 5) {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
-    SELECT id, title, upper(tier) AS tier, "createdAt" AS created_at, estimated_window
+    SELECT id, title, upper(tier::text) AS tier, "createdAt" AS created_at, estimated_window
     FROM alerts
     WHERE tier IN ('high', 'critical')
     ORDER BY "createdAt" DESC
@@ -147,7 +147,7 @@ export async function insertAlert(input: {
   affectedPopulation: number;
   issuedById: string;
 }) {
-  const sql = getDb();
+  const sql = await getDb();
   await sql`
     INSERT INTO alerts (title, body, body_en, body_ur, tier, "lakeId", district_id, estimated_window, affected_population, "issuedById")
     VALUES (${input.title}, ${input.bodyEn}, ${input.bodyEn}, ${input.bodyUr}, ${input.tier.toLowerCase()}, ${input.lakeId}, ${input.districtId}, ${input.estimatedWindow}, ${input.affectedPopulation}, ${input.issuedById})
@@ -155,7 +155,7 @@ export async function insertAlert(input: {
 }
 
 export async function listFacilities() {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
     SELECT id, name, ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng, type, vulnerability
     FROM facilities
@@ -164,17 +164,17 @@ export async function listFacilities() {
 }
 
 export async function listProtocols() {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`SELECT * FROM protocols ORDER BY is_disaster DESC`;
 }
 
 export async function listAlertAcks() {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`SELECT alert_id, chw_id, acknowledged_at FROM alert_acknowledgements`;
 }
 
 export async function insertAlertAck(alertId: string, chwId: string) {
-  const sql = getDb();
+  const sql = await getDb();
   await sql`
     INSERT INTO alert_acknowledgements (alert_id, chw_id)
     VALUES (${alertId}, ${chwId})
@@ -193,7 +193,7 @@ export async function insertCase(input: {
   outcome: string | null;
   isDisasterRelated: boolean;
 }) {
-  const sql = getDb();
+  const sql = await getDb();
   await sql`
     INSERT INTO cases (chw_id, district_id, patient_age, patient_sex, symptoms, diagnosis, treatment, outcome, is_disaster_related)
     VALUES (${input.chwId}, ${input.districtId}, ${input.patientAge}, ${input.patientSex}, ${input.symptoms}, ${input.diagnosis}, ${input.treatment}, ${input.outcome}, ${input.isDisasterRelated})
@@ -201,7 +201,7 @@ export async function insertCase(input: {
 }
 
 export async function getKpis() {
-  const sql = getDb();
+  const sql = await getDb();
   const since30 = new Date(Date.now() - 30 * 864e5).toISOString();
   const since7 = new Date(Date.now() - 7 * 864e5).toISOString();
   const [[{ count: highLakes }], [{ count: alerts30d }], [{ count: cases7d }], [{ count: chws }]] =
@@ -215,9 +215,9 @@ export async function getKpis() {
 }
 
 export async function listHotLakes() {
-  const sql = getDb();
+  const sql = await getDb();
   return sql`
-    SELECT id, name, upper("currentTier") AS current_tier, current_risk_score, downstream_population, "updatedAt" AS last_updated
+    SELECT id, name, upper("currentTier"::text) AS current_tier, current_risk_score, downstream_population, "updatedAt" AS last_updated
     FROM lakes
     WHERE "currentTier" IN ('high', 'critical')
     ORDER BY current_risk_score DESC NULLS LAST
