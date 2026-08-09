@@ -69,31 +69,14 @@ export function PipelineDiagram() {
   return (
     <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-stretch">
       {/* Diagram */}
-      <div className="relative aspect-[5/4] w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-primary/95 via-primary to-[oklch(0.20_0.06_240)] p-2 shadow-[var(--shadow-elegant)] md:aspect-auto md:min-h-[460px]">
-        {/* starfield dots */}
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.5) 0.5px, transparent 1px), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.3) 0.5px, transparent 1px), radial-gradient(circle at 40% 80%, rgba(255,255,255,0.35) 0.5px, transparent 1px)",
-            backgroundSize: "120px 120px, 180px 180px, 90px 90px",
-          }}
-        />
-
-        {/* SVG edges */}
+      <div className="relative aspect-[5/4] w-full overflow-hidden border-2 border-border bg-[var(--color-accent-ink)] p-2 md:aspect-auto md:min-h-[460px]">
+        {/* SVG edges — flat stroke, no gradient; motion is fine, glow is not */}
         <svg
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
           className="absolute inset-0 h-full w-full"
           aria-hidden
         >
-          <defs>
-            <linearGradient id="edge-grad" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0%" stopColor="oklch(0.78 0.13 195)" stopOpacity="0.9" />
-              <stop offset="100%" stopColor="oklch(0.62 0.09 215)" stopOpacity="0.5" />
-            </linearGradient>
-          </defs>
           {EDGES.map((e, i) => {
             const a = getNode(e.from);
             const b = getNode(e.to);
@@ -104,7 +87,8 @@ export function PipelineDiagram() {
                   id={`edge-path-${i}`}
                   d={`M ${a.x} ${a.y} L ${b.x} ${b.y}`}
                   fill="none"
-                  stroke="url(#edge-grad)"
+                  stroke="var(--color-accent)"
+                  strokeOpacity={isActive ? 0.9 : 0.5}
                   strokeWidth={isActive ? 0.6 : 0.35}
                   strokeLinecap="round"
                   className={isActive ? "pipeline-line-active" : "pipeline-line"}
@@ -119,9 +103,8 @@ export function PipelineDiagram() {
                     <circle
                       key={p}
                       r={isActive ? 0.9 : 0.6}
-                      fill="oklch(0.85 0.14 195)"
+                      fill="var(--color-on-accent)"
                       opacity={isActive ? 0.95 : 0.55}
-                      style={{ filter: "drop-shadow(0 0 1.5px oklch(0.78 0.13 195))" }}
                     >
                       <animateMotion
                         dur={`${dur}s`}
@@ -158,22 +141,22 @@ export function PipelineDiagram() {
               >
                 <span
                   aria-hidden
-                  className={`absolute inset-0 m-auto h-14 w-14 rounded-full bg-accent/30 blur-md transition-opacity ${
-                    isActive ? "opacity-100" : "opacity-60"
+                  className={`absolute inset-0 m-auto h-14 w-14 border-2 border-[var(--color-accent-soft)] transition-opacity ${
+                    isActive ? "opacity-100" : "opacity-0"
                   } pipeline-pulse`}
                 />
                 <span
-                  className={`relative flex h-14 w-14 items-center justify-center rounded-full border text-primary-foreground backdrop-blur transition-all ${
+                  className={`relative flex h-14 w-14 items-center justify-center border-2 text-primary-foreground transition-colors ${
                     isActive
-                      ? "border-accent bg-accent/30 scale-110"
-                      : "border-white/30 bg-white/10 group-hover:border-accent group-hover:bg-accent/20"
+                      ? "border-[var(--color-accent-soft)] bg-white/15"
+                      : "border-white/30 bg-white/10 group-hover:border-[var(--color-accent-soft)] group-hover:bg-white/15"
                   }`}
                 >
                   {n.icon}
                 </span>
                 <span
-                  className={`mt-2 block whitespace-nowrap text-[11px] font-medium uppercase tracking-widest transition-colors ${
-                    isActive ? "text-accent" : "text-primary-foreground/80"
+                  className={`mt-2 block whitespace-nowrap text-[11px] font-semibold uppercase tracking-widest transition-colors ${
+                    isActive ? "text-[var(--color-accent-soft)]" : "text-primary-foreground/80"
                   }`}
                 >
                   {n.label}
@@ -192,7 +175,7 @@ export function PipelineDiagram() {
 
       {/* Detail panel */}
       <div className="flex flex-col rounded-2xl border border-border bg-card p-6">
-        <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
           {active ? "Selected stage" : "Pipeline"}
         </p>
         <div className="mt-3 space-y-4">

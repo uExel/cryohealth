@@ -32,9 +32,11 @@ type Glacier = {
   elevation_max_m: number | null;
 };
 
+// Retreating is a concerning glacier status, not an active hazard alert — solid
+// red is reserved for the CRITICAL tier, so this uses the WATCH amber instead.
 const glacierStatusColor: Record<string, string> = {
   stable: "#2563eb",
-  retreating: "#dc2626",
+  retreating: "#a37700",
   advancing: "#16a34a",
   surging: "#9333ea",
   unknown: "#64748b",
@@ -168,8 +170,8 @@ export function HazardMap({
       leaflet
         .circleMarker([f.lat, f.lng], {
           radius: 5,
-          color: "#1d4ed8",
-          fillColor: "#1d4ed8",
+          color: "#0f6ea8",
+          fillColor: "#0f6ea8",
           fillOpacity: 0.9,
           weight: 1,
         })
@@ -191,7 +193,7 @@ export function HazardMap({
     return (
       <div
         style={{ height }}
-        className="flex items-center justify-center rounded-xl border border-border bg-secondary/40 text-sm text-muted-foreground"
+        className="flex items-center justify-center border-2 border-border bg-secondary/40 text-sm text-muted-foreground"
       >
         Loading map…
       </div>
@@ -199,32 +201,29 @@ export function HazardMap({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border">
+    <div className="overflow-hidden border-2 border-border">
       <div ref={containerRef} style={{ height, width: "100%" }} />
-      <div className="flex flex-wrap items-center gap-3 border-t border-border bg-card px-3 py-2 text-xs text-muted-foreground">
-        <span className="font-medium text-foreground">Risk tiers:</span>
+      <div className="flex flex-wrap items-center gap-3 border-t-2 border-border bg-card px-3 py-2 text-xs text-muted-foreground">
+        <span className="font-semibold text-foreground">Risk tiers:</span>
         {(["NORMAL", "WATCH", "HIGH", "CRITICAL"] as Tier[]).map((t) => (
           <span key={t} className="inline-flex items-center gap-1">
-            <span
-              className="inline-block h-2.5 w-2.5 rounded-full"
-              style={{ background: tierClasses[t].hex }}
-            />
+            <span className="inline-block h-2.5 w-2.5" style={{ background: tierClasses[t].hex }} />
             {t}
           </span>
         ))}
         {facilities.length > 0 && (
           <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-2.5 w-2.5 rounded-full bg-blue-700" />
+            <span className="inline-block h-2.5 w-2.5 bg-[var(--color-accent)]" />
             Health facility
           </span>
         )}
         {glaciers.length > 0 && (
           <>
             <span className="mx-1 text-border">|</span>
-            <span className="font-medium text-foreground">Glaciers:</span>
+            <span className="font-semibold text-foreground">Glaciers:</span>
             {Object.entries(glacierStatusColor).map(([k, v]) => (
               <span key={k} className="inline-flex items-center gap-1">
-                <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: v }} />
+                <span className="inline-block h-2.5 w-2.5" style={{ background: v }} />
                 {k}
               </span>
             ))}
