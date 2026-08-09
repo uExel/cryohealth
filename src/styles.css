@@ -1,32 +1,40 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
+ * Design system definition — CryoHealth Design System.
+ *
+ * Colours, type, spacing and geometry are literal values ported from
+ * CryoHealth-Design-System/tokens/*.css. Do not interpolate new colours.
+ * Red (--color-critical) means CRITICAL and nothing else — never a form
+ * error, never a delete action, never a brand accent.
  *
  * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
+ * classes (e.g. --color-primary -> bg-primary, text-primary). The :root
+ * and .dark blocks define the CryoHealth primitives; the shadcn semantic
+ * names (--background, --primary, etc.) alias those primitives so every
+ * existing consumer keeps working without a rename.
  *
  * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 1. Add the alias to :root, pointing at a CryoHealth primitive var.
  * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * 3. If it needs a different value in dark mode, redefine the underlying
+ *    primitive (not the alias) inside .dark.
  */
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -60,88 +68,150 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", serif;
 }
 
 :root {
-  --radius: 0.625rem;
-  /* CryoHealth — Ocean Deep palette */
-  --background: oklch(0.985 0.005 230);
-  --foreground: oklch(0.22 0.06 245);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.06 245);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.06 245);
-  --primary: oklch(0.28 0.07 245); /* #0c2340 deep navy */
-  --primary-foreground: oklch(0.985 0.005 230);
-  --primary-glow: oklch(0.62 0.09 215); /* #2d8a9e teal */
-  --secondary: oklch(0.95 0.018 220);
-  --secondary-foreground: oklch(0.25 0.07 245);
-  --muted: oklch(0.95 0.012 230);
-  --muted-foreground: oklch(0.5 0.03 240);
-  --accent: oklch(0.78 0.09 205); /* #5cbdb9 ice cyan */
-  --accent-foreground: oklch(0.2 0.05 245);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0.005 240);
-  --border: oklch(0.9 0.018 225);
-  --input: oklch(0.9 0.018 225);
-  --ring: oklch(0.55 0.1 220);
-  --gradient-hero: linear-gradient(135deg, oklch(0.28 0.07 245) 0%, oklch(0.4 0.09 230) 55%, oklch(0.62 0.09 215) 100%);
-  --shadow-elegant: 0 20px 60px -20px color-mix(in oklab, oklch(0.28 0.07 245) 40%, transparent);
-  /* Risk tier colors */
-  --tier-normal: oklch(0.7 0.13 160);
-  --tier-watch: oklch(0.78 0.16 85);
-  --tier-high: oklch(0.68 0.18 50);
-  --tier-critical: oklch(0.58 0.22 25);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --radius: 0px;
+
+  /* CryoHealth Design System — literal tokens (light) */
+  --color-bg: #f2f6f9;
+  --color-surface: #e6eef4;
+  --color-surface-2: #ffffff;
+  --color-text: #16232c;
+  --color-muted: #5b6f7c;
+  --color-line: rgba(22, 35, 44, 0.32);
+  --color-line-soft: rgba(22, 35, 44, 0.14);
+  --color-accent: #0f6ea8;
+  --color-accent-ink: #0a4d76;
+  --color-accent-soft: #d5e7f2;
+  --color-on-accent: #ffffff;
+  --color-on-tier: #ffffff;
+  --color-scrim: rgba(0, 0, 0, 0.5);
+
+  /* Hazard tier ramp — solid is for bars/icons/text-on-soft, never body copy */
+  --color-normal: #1f7a4d;
+  --color-normal-soft: #d9eee3;
+  --color-watch: #a37700;
+  --color-watch-soft: #f6e9c4;
+  --color-high: #d2600f;
+  --color-high-soft: #fbe3cf;
+  --color-critical: #c6231a;
+  --color-critical-soft: #f8d9d6;
+  --color-on-watch: #1a1300;
+
+  --weight-regular: 400;
+  --weight-semibold: 600;
+  --weight-bold: 800;
+
+  /* Archivo type scale — three weights only, no 500/700 anywhere */
+  --type-hero-size: 56px;
+  --type-hero-lh: 52px;
+  --type-hero-track: -1.9px;
+  --type-display-size: 40px;
+  --type-display-lh: 40px;
+  --type-display-track: -1.2px;
+  --type-title1-size: 30px;
+  --type-title1-lh: 32px;
+  --type-title1-track: -0.8px;
+  --type-title2-size: 24px;
+  --type-title2-lh: 28px;
+  --type-title2-track: -0.5px;
+  --type-title3-size: 19px;
+  --type-title3-lh: 22px;
+  --type-title3-track: -0.4px;
+  --type-headline-size: 17px;
+  --type-headline-lh: 21px;
+  --type-headline-track: -0.2px;
+  --type-body-size: 16px;
+  --type-body-lh: 23px;
+  --type-callout-size: 14px;
+  --type-callout-lh: 20px;
+  --type-footnote-size: 13px;
+  --type-footnote-lh: 18px;
+  --type-label-size: 11px;
+  --type-label-lh: 14px;
+  --type-label-track: 1.2px;
+
+  --border-hairline: 1px;
+  --border-rule: 2px;
+  --border-tab-indicator: 3px;
+  --border-tier-bar: 8px;
+  --border-alert-bar: 10px;
+  --shadow-none: none;
+
+  --motion-screen: 180ms;
+  --motion-screen-ease: ease-out;
+  --motion-banner: 140ms;
+  --motion-banner-ease: linear;
+  --motion-critical: 0ms;
+
+  /* shadcn semantic aliases — point at the primitives above */
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+  --card: var(--color-surface-2);
+  --card-foreground: var(--color-text);
+  --popover: var(--color-surface-2);
+  --popover-foreground: var(--color-text);
+  --primary: var(--color-accent);
+  --primary-foreground: var(--color-on-accent);
+  --secondary: var(--color-surface);
+  --secondary-foreground: var(--color-text);
+  --muted: var(--color-surface);
+  --muted-foreground: var(--color-muted);
+  --accent: var(--color-accent-soft);
+  --accent-foreground: var(--color-accent-ink);
+  /* Deliberately NOT red. Solid red is reserved for the CRITICAL hazard tier
+     only — never a delete button, never a generic form error. Destructive
+     actions get an inverted-ink treatment instead and must be confirmed. */
+  --destructive: var(--color-text);
+  --destructive-foreground: var(--color-bg);
+  --border: var(--color-line-soft);
+  --input: var(--color-line);
+  --ring: var(--color-accent);
+
+  --chart-1: var(--color-accent);
+  --chart-2: var(--color-normal);
+  --chart-3: var(--color-watch);
+  --chart-4: var(--color-high);
+  --chart-5: var(--color-critical);
+
+  --sidebar: var(--color-surface);
+  --sidebar-foreground: var(--color-text);
+  --sidebar-primary: var(--color-accent);
+  --sidebar-primary-foreground: var(--color-on-accent);
+  --sidebar-accent: var(--color-accent-soft);
+  --sidebar-accent-foreground: var(--color-accent-ink);
+  --sidebar-border: var(--color-line-soft);
+  --sidebar-ring: var(--color-accent);
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --color-bg: #0d151a;
+  --color-surface: #16232c;
+  --color-surface-2: #1d2d38;
+  --color-text: #e7f0f5;
+  --color-muted: #93a8b5;
+  --color-line: rgba(231, 240, 245, 0.34);
+  --color-line-soft: rgba(231, 240, 245, 0.14);
+  --color-accent: #4aa8dd;
+  --color-accent-ink: #9ed2f0;
+  --color-accent-soft: #12303f;
+  --color-on-accent: #ffffff;
+  --color-on-tier: #0d151a;
+  --color-scrim: rgba(0, 0, 0, 0.62);
+
+  --color-normal: #4bbd84;
+  --color-normal-soft: #123024;
+  --color-watch: #e0b23c;
+  --color-watch-soft: #332811;
+  --color-high: #f2873a;
+  --color-high-soft: #3a2211;
+  --color-critical: #ff6a5e;
+  --color-critical-soft: #3d1512;
+  --color-on-watch: #0d151a;
 }
 
 @layer base {
@@ -153,26 +223,148 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, h4 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    font-weight: var(--weight-bold);
+    text-align: left;
   }
+  h1 {
+    font-size: var(--type-display-size, 40px);
+    line-height: var(--type-display-lh, 40px);
+    letter-spacing: var(--type-display-track, -1.2px);
+  }
+  h2 {
+    font-size: var(--type-title1-size, 30px);
+    line-height: var(--type-title1-lh, 32px);
+    letter-spacing: var(--type-title1-track, -0.8px);
+  }
+  h3 {
+    font-size: var(--type-title2-size, 24px);
+    line-height: var(--type-title2-lh, 28px);
+    letter-spacing: var(--type-title2-track, -0.5px);
+  }
+  h4 {
+    font-size: var(--type-title3-size, 19px);
+    line-height: var(--type-title3-lh, 22px);
+    letter-spacing: var(--type-title3-track, -0.4px);
+  }
+  h5 {
+    font-size: var(--type-headline-size, 17px);
+    line-height: var(--type-headline-lh, 21px);
+    letter-spacing: var(--type-headline-track, -0.2px);
+  }
+  h6 {
+    font-size: var(--type-label-size, 11px);
+    line-height: var(--type-label-lh, 14px);
+    letter-spacing: var(--type-label-track, 1.2px);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  a {
+    color: var(--color-accent);
+    text-underline-offset: 3px;
+  }
+  a:hover {
+    color: var(--color-accent-ink);
+  }
+
+  img,
+  button {
+    border-radius: 0;
+  }
+
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: var(--border-rule) solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-accent-soft);
+  }
+
+  [dir="rtl"] {
+    font-family: var(--font-urdu);
+    line-height: 2.1;
+  }
+}
+
+/* Small reusable utilities matching the design system's own shorthand. */
+.ch-label {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.ch-muted {
+  color: var(--color-muted);
+}
+.ch-rule {
+  height: var(--border-rule);
+  border: 0;
+  background: var(--color-line);
+  margin: 0;
+}
+
+/* Leaflet ships its own chrome (zoom controls, attribution) that can't be
+   restyled from its own stylesheet — zero it out here to match the brand's
+   zero-radius, no-shadow rule. */
+.leaflet-bar,
+.leaflet-control,
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.leaflet-bar {
+  border: var(--border-hairline) solid var(--color-line) !important;
 }
 
 /* Pipeline diagram animations */
 @keyframes dash-flow {
-  to { stroke-dashoffset: -24; }
+  to {
+    stroke-dashoffset: -24;
+  }
 }
 @keyframes node-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.15); }
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
 }
 @keyframes packet-travel {
-  0% { offset-distance: 0%; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { offset-distance: 100%; opacity: 0; }
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
 }
 .pipeline-line {
   stroke-dasharray: 6 6;

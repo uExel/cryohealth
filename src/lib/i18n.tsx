@@ -51,6 +51,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }, []);
   useEffect(() => {
     if (typeof window !== "undefined") localStorage.setItem("ch_lang", lang);
+    if (typeof document !== "undefined") {
+      // RTL mirrors row direction and text alignment — the reading order
+      // actually flips, this is not a mirrored copy of the LTR layout only.
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "ur" ? "rtl" : "ltr";
+    }
   }, [lang]);
   const t = (k: string) => dict[lang][k] ?? dict.en[k] ?? k;
   return <Ctx.Provider value={{ lang, setLang, t }}>{children}</Ctx.Provider>;
