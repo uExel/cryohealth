@@ -319,12 +319,6 @@ function Landing() {
               case data, alert logs and hazard observations are published under CC BY 4.0 through
               public endpoints.
             </p>
-            <p className="mt-3 max-w-2xl text-sm text-primary-foreground/70">
-              Under our funding agreement with the UNICEF Innovation Fund we do not charge for
-              hosting, deployment, implementation, customisation, maintenance, support, training or
-              service level agreements associated with CryoHealth. There is no commercial edition
-              and no paid API tier.
-            </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-1.5 rounded-md border border-primary-foreground/30 px-2.5 py-1 text-xs">
                 <Scale className="h-3.5 w-3.5" /> MIT License
