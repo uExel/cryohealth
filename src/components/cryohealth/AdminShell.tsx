@@ -86,7 +86,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
                         : loc.pathname.startsWith(item.to);
                       return (
                         <SidebarMenuItem key={item.to}>
-                          <SidebarMenuButton asChild isActive={active} className="rounded-none">
+                          <SidebarMenuButton
+                            asChild
+                            isActive={active}
+                            className="rounded-none border-s-[3px] border-transparent data-[active=true]:border-[var(--color-accent)]"
+                          >
                             <Link to={item.to}>{item.label}</Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
