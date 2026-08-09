@@ -151,7 +151,8 @@ function CryosphereInventory() {
       <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <Stat label="Total glaciers" value={glaciers?.length ?? 0} />
         <Stat label="Total ice area" value={`${totalArea.toFixed(0)} km²`} />
-        <Stat label="Retreating" value={counts.retreating ?? 0} tone="danger" />
+        {/* Retreating is a concerning status, not an active hazard — "warn" (amber), not "danger" (red). */}
+        <Stat label="Retreating" value={counts.retreating ?? 0} tone="warn" />
         <Stat label="Surging" value={counts.surging ?? 0} tone="warn" />
         <Stat label="Stable" value={counts.stable ?? 0} tone="ok" />
       </div>
@@ -229,7 +230,7 @@ function CryosphereInventory() {
               )}
               {filteredGlaciers.map((g) => (
                 <tr key={g.id} className="hover:bg-secondary/40">
-                  <td className="px-3 py-2 font-medium text-foreground">
+                  <td className="px-3 py-2 font-semibold text-foreground">
                     <Link
                       to="/glaciers/$glacierId"
                       params={{ glacierId: g.id }}
@@ -284,11 +285,11 @@ function Stat({
 }) {
   const toneClass =
     tone === "danger"
-      ? "text-red-600"
+      ? "text-[var(--color-critical)]"
       : tone === "warn"
-        ? "text-amber-600"
+        ? "text-[var(--color-watch)]"
         : tone === "ok"
-          ? "text-emerald-600"
+          ? "text-[var(--color-normal)]"
           : "text-foreground";
   return (
     <div className="rounded-xl border border-border bg-card p-3">
@@ -301,15 +302,13 @@ function Stat({
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {
     stable: "bg-blue-100 text-blue-800",
-    retreating: "bg-red-100 text-red-800",
+    retreating: "bg-[var(--color-watch-soft)] text-[var(--color-watch)]",
     advancing: "bg-emerald-100 text-emerald-800",
     surging: "bg-purple-100 text-purple-800",
     unknown: "bg-slate-100 text-slate-700",
   };
   return (
-    <span
-      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${map[status] ?? map.unknown}`}
-    >
+    <span className={`inline-flex px-2 py-0.5 text-xs font-semibold ${map[status] ?? map.unknown}`}>
       {status}
     </span>
   );

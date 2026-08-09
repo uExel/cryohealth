@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import { tierBadgeClass, type Tier } from "@/lib/tier";
+import { TierBadge, type Tier } from "@/lib/tier";
 import { haversineKm, glacierLakeAssocScore } from "@/lib/geo";
 import { glacierStatusWeight } from "@/lib/geo";
 
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/glaciers/$glacierId")({
 
 const statusColor: Record<string, string> = {
   stable: "bg-blue-100 text-blue-800",
-  retreating: "bg-red-100 text-red-800",
+  retreating: "bg-[var(--color-watch-soft)] text-[var(--color-watch)]",
   advancing: "bg-emerald-100 text-emerald-800",
   surging: "bg-purple-100 text-purple-800",
   unknown: "bg-slate-100 text-slate-700",
@@ -174,7 +174,7 @@ function GlacierDetail() {
           </p>
         </div>
         <span
-          className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusColor[glacier.status] ?? statusColor.unknown}`}
+          className={`inline-flex px-3 py-1 text-sm font-semibold ${statusColor[glacier.status] ?? statusColor.unknown}`}
         >
           {glacier.status}
         </span>
@@ -208,7 +208,7 @@ function GlacierDetail() {
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-line-soft)" />
                 <XAxis
                   dataKey="ts"
                   fontSize={11}
@@ -292,7 +292,7 @@ function GlacierDetail() {
                       {o.length_km ? Number(o.length_km).toFixed(2) : "—"}
                     </td>
                     <td
-                      className={`px-4 py-2 ${Number(o.terminus_change_m ?? 0) < 0 ? "text-red-600" : "text-emerald-600"}`}
+                      className={`px-4 py-2 ${Number(o.terminus_change_m ?? 0) < 0 ? "text-[var(--color-watch)]" : "text-emerald-600"}`}
                     >
                       {o.terminus_change_m != null
                         ? `${Number(o.terminus_change_m) > 0 ? "+" : ""}${Number(o.terminus_change_m).toFixed(0)}`
@@ -300,7 +300,7 @@ function GlacierDetail() {
                     </td>
                     <td className="px-4 py-2">
                       <span
-                        className={`inline-flex rounded-full px-2 py-0.5 text-xs ${statusColor[o.status ?? "unknown"]}`}
+                        className={`inline-flex px-2 py-0.5 text-xs ${statusColor[o.status ?? "unknown"]}`}
                       >
                         {o.status ?? "—"}
                       </span>
@@ -339,7 +339,7 @@ function GlacierDetail() {
                     <Link
                       to="/lakes/$lakeId"
                       params={{ lakeId: l.id }}
-                      className="font-medium text-foreground hover:underline"
+                      className="font-semibold text-foreground hover:underline"
                     >
                       {l.name}
                     </Link>
@@ -366,7 +366,7 @@ function GlacierDetail() {
                     </span>
                   </BreakdownDetails>
                 </div>
-                <span className={tierBadgeClass(l.current_tier as Tier)}>{l.current_tier}</span>
+                <TierBadge tier={l.current_tier as Tier} />
               </li>
             ))}
             {relatedLakes && relatedLakes.length === 0 && (
@@ -386,7 +386,7 @@ function GlacierDetail() {
             {(relatedCases ?? []).map((c) => (
               <li key={c.id} className="px-5 py-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-foreground">
+                  <span className="font-semibold text-foreground">
                     {c.diagnosis ?? c.symptoms.slice(0, 60)}
                   </span>
                   <span className="text-xs text-muted-foreground">
@@ -431,14 +431,19 @@ function Meta({ k, v }: { k: string; v: React.ReactNode }) {
 const driverMeta: Record<string, { label: string; cls: string }> = {
   distance: { label: "Distance-driven", cls: "bg-blue-100 text-blue-800 ring-blue-200" },
   status: { label: "Status-driven", cls: "bg-purple-100 text-purple-800 ring-purple-200" },
-  risk: { label: "Risk-driven", cls: "bg-red-100 text-red-800 ring-red-200" },
+  // Deliberately not red — this labels a contributing factor in the lake/glacier
+  // association algorithm, not an active hazard tier, and red is reserved for CRITICAL.
+  risk: {
+    label: "Risk-driven",
+    cls: "bg-[var(--color-high-soft)] text-[var(--color-high)] ring-[var(--color-high)]/30",
+  },
 };
 
 export function DriverBadge({ driver }: { driver: "distance" | "status" | "risk" }) {
   const m = driverMeta[driver];
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ${m.cls}`}
+      className={`inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ${m.cls}`}
     >
       {m.label}
     </span>

@@ -46,7 +46,7 @@ const TEAM: { name: string; role: string }[] = [
 function AboutPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">About</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">About</p>
       <h1 className="mt-2 text-3xl font-semibold text-foreground">About CryoHealth</h1>
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
         CryoHealth began with a simple observation. In Gilgit Baltistan, the data that predicts a

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { authFetch } from "@/lib/auth-client";
-import { tierBadgeClass, type Tier } from "@/lib/tier";
+import { TierBadge, type Tier } from "@/lib/tier";
 import { useAuth } from "@/lib/auth";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
 import { toast } from "sonner";
@@ -100,46 +100,56 @@ function AlertsPage() {
       )}
       <ul className="mt-4 space-y-3">
         {(data ?? []).map((a) => (
-          <li key={a.id} className="rounded-xl border border-border bg-card p-4">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <div className="text-sm font-semibold text-foreground">{a.title}</div>
-                <div className="text-xs text-muted-foreground">
-                  {new Date(a.created_at).toLocaleString()} · {a.district_name ?? "—"} · window{" "}
-                  {a.estimated_window ?? "—"} · ~{a.affected_population?.toLocaleString() ?? 0}{" "}
-                  affected
+          <li key={a.id} className="flex rounded-xl border border-border bg-card">
+            <span
+              className="w-2 flex-none self-stretch"
+              style={{
+                background: `var(--color-${a.tier.toLowerCase()})`,
+              }}
+            />
+            <div className="flex-1 p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="text-sm font-semibold text-foreground">{a.title}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(a.created_at).toLocaleString()} · {a.district_name ?? "—"} · window{" "}
+                    {a.estimated_window ?? "—"} · ~{a.affected_population?.toLocaleString() ?? 0}{" "}
+                    affected
+                  </div>
                 </div>
+                <TierBadge tier={a.tier as Tier} solid={a.tier === "CRITICAL"} />
               </div>
-              <span className={tierBadgeClass(a.tier as Tier)}>{a.tier}</span>
-            </div>
-            <p className="mt-2 text-sm text-foreground">{a.body_en}</p>
-            {a.body_ur && (
-              <p dir="rtl" className="mt-1 text-sm text-muted-foreground">
-                {a.body_ur}
-              </p>
-            )}
-            <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-2">
-              {isAdmin ? (
-                <span className="text-xs text-muted-foreground">
-                  {ackCount(a.id)} CHW acknowledgement{ackCount(a.id) === 1 ? "" : "s"}
-                </span>
-              ) : (
-                <span className="text-xs text-muted-foreground">{ackCount(a.id)} acknowledged</span>
+              <p className="mt-2 text-sm text-foreground">{a.body_en}</p>
+              {a.body_ur && (
+                <p dir="rtl" className="mt-1 text-sm text-muted-foreground">
+                  {a.body_ur}
+                </p>
               )}
-              {isCHW &&
-                (myAckSet.has(a.id) ? (
-                  <span className="text-xs font-medium text-[oklch(0.7_0.13_160)]">
-                    ✓ You acknowledged
+              <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-2">
+                {isAdmin ? (
+                  <span className="text-xs text-muted-foreground">
+                    {ackCount(a.id)} CHW acknowledgement{ackCount(a.id) === 1 ? "" : "s"}
                   </span>
                 ) : (
-                  <button
-                    onClick={() => ackMutation.mutate(a.id)}
-                    disabled={ackMutation.isPending}
-                    className="rounded-md border border-border bg-background px-3 py-1 text-xs hover:bg-accent"
-                  >
-                    Acknowledge
-                  </button>
-                ))}
+                  <span className="text-xs text-muted-foreground">
+                    {ackCount(a.id)} acknowledged
+                  </span>
+                )}
+                {isCHW &&
+                  (myAckSet.has(a.id) ? (
+                    <span className="text-xs font-semibold text-[var(--color-normal)]">
+                      ✓ You acknowledged
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => ackMutation.mutate(a.id)}
+                      disabled={ackMutation.isPending}
+                      className="rounded-md border border-border bg-background px-3 py-1 text-xs hover:bg-accent"
+                    >
+                      Acknowledge
+                    </button>
+                  ))}
+              </div>
             </div>
           </li>
         ))}
@@ -343,7 +353,7 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+          className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
         >
           {submitting ? "Broadcasting…" : "Broadcast alert"}
         </button>

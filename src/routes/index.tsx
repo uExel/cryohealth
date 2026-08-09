@@ -67,8 +67,7 @@ function Landing() {
       <section className="relative overflow-hidden border-b border-border">
         <div className="mx-auto grid max-w-7xl gap-0 md:grid-cols-2">
           <div className="relative flex flex-col justify-center px-6 py-16 md:px-12 md:py-24">
-            <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,oklch(0.62_0.09_215/0.15),transparent_60%)]" />
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-accent-foreground/70">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent-foreground/70">
               Open source, MIT licensed · Built in Gilgit Baltistan
             </p>
             <img src={logo} alt="CryoHealth logo" className="mt-6 h-20 w-20 object-contain" />
@@ -83,13 +82,13 @@ function Landing() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/lakes"
-                className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:-translate-y-0.5 hover:bg-primary/90"
+                className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5 hover:bg-primary/90"
               >
                 See the live hazard map <ArrowRight className="h-4 w-4" />
               </Link>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-3 text-sm font-medium text-foreground hover:bg-secondary"
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground hover:bg-secondary"
               >
                 How it works
               </a>
@@ -107,7 +106,7 @@ function Landing() {
               height={1280}
               className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-background/10 to-background/80 md:bg-gradient-to-r md:from-background/80 md:via-background/0" />
+            <div className="absolute inset-0 bg-background/20" />
           </div>
         </div>
       </section>
@@ -116,7 +115,7 @@ function Landing() {
       <section className="border-b border-border bg-secondary/40">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 md:grid-cols-3 md:px-12">
           <div className="md:col-span-1">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
               The challenge
             </p>
             <h2 className="mt-3 text-3xl font-semibold text-foreground">
@@ -155,7 +154,7 @@ function Landing() {
       <section id="how-it-works" className="border-b border-border">
         <div className="mx-auto max-w-7xl px-6 py-20 md:px-12">
           <div className="max-w-2xl">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
               How it works
             </p>
             <h2 className="mt-3 text-3xl font-semibold text-foreground md:text-4xl">
@@ -202,7 +201,7 @@ function Landing() {
       <section className="border-b border-border bg-secondary/40">
         <div className="mx-auto max-w-7xl px-6 py-20 md:px-12">
           <div className="max-w-2xl">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
               What’s inside
             </p>
             <h2 className="mt-3 text-3xl font-semibold text-foreground md:text-4xl">
@@ -258,7 +257,7 @@ function Landing() {
       <section className="border-b border-border">
         <div className="mx-auto max-w-7xl px-6 py-20 md:px-12">
           <div className="max-w-2xl">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
               Get started
             </p>
             <h2 className="mt-3 text-3xl font-semibold text-foreground md:text-4xl">
@@ -307,7 +306,7 @@ function Landing() {
       <section className="border-b border-border bg-primary text-primary-foreground">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-20 md:grid-cols-[1.4fr_1fr] md:items-center md:px-12">
           <div>
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-accent">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">
               Open source
             </p>
             <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
@@ -345,7 +344,7 @@ function Landing() {
               href={GITHUB_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md bg-primary-foreground px-5 py-3 text-sm font-medium text-primary hover:bg-white/90"
+              className="inline-flex items-center gap-2 rounded-md bg-primary-foreground px-5 py-3 text-sm font-semibold text-primary hover:bg-white/90"
             >
               <Github className="h-4 w-4" /> View on GitHub
             </a>
@@ -353,7 +352,7 @@ function Landing() {
               href={`${GITHUB_REPO_URL}/issues`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md border border-primary-foreground/30 px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary-foreground/10"
+              className="inline-flex items-center gap-2 rounded-md border border-primary-foreground/30 px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground/10"
             >
               Open an issue
             </a>
@@ -370,13 +369,13 @@ function Landing() {
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               to="/dashboard"
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
             >
               Open dashboard <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 rounded-md border border-border px-6 py-3 text-sm font-medium text-foreground hover:bg-secondary"
+              className="inline-flex items-center gap-2 rounded-md border border-border px-6 py-3 text-sm font-semibold text-foreground hover:bg-secondary"
             >
               Sign in
             </Link>
@@ -444,7 +443,7 @@ function Feature({
       {to && cta && (
         <Link
           to={to}
-          className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+          className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
         >
           {cta} <ArrowRight className="h-3 w-3" />
         </Link>
@@ -468,14 +467,14 @@ function Role({
 }) {
   return (
     <div className="flex flex-col rounded-xl border border-border bg-card p-6">
-      <span className="self-start rounded-full border border-border bg-secondary px-2.5 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
+      <span className="self-start border border-border bg-secondary px-2.5 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
         {tag}
       </span>
       <h3 className="mt-4 text-lg font-semibold text-foreground">{title}</h3>
       <ol className="mt-4 flex-1 space-y-2 text-sm text-muted-foreground">
         {steps.map((s, i) => (
           <li key={i} className="flex gap-3">
-            <span className="mt-0.5 inline-flex h-5 w-5 flex-none items-center justify-center rounded-full bg-secondary text-[11px] font-semibold text-primary">
+            <span className="mt-0.5 inline-flex h-5 w-5 flex-none items-center justify-center bg-secondary text-[11px] font-semibold text-primary">
               {i + 1}
             </span>
             <span>{s}</span>
@@ -484,7 +483,7 @@ function Role({
       </ol>
       <Link
         to={to}
-        className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+        className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
       >
         {cta} <ArrowRight className="h-4 w-4" />
       </Link>

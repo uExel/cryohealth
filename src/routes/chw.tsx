@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
-import { tierBadgeClass, type Tier } from "@/lib/tier";
+import { TierBadge, type Tier } from "@/lib/tier";
 
 export const Route = createFileRoute("/chw")({
   head: () => ({
@@ -87,8 +87,8 @@ function CHWHome() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-6">
       {disasterMode && (
-        <div className="mb-4 rounded-xl border border-[oklch(0.58_0.22_25)] bg-[oklch(0.58_0.22_25)]/10 p-4">
-          <div className="text-xs font-semibold uppercase text-[oklch(0.58_0.22_25)]">
+        <div className="mb-4 rounded-xl border border-[var(--color-critical)] bg-[var(--color-critical)]/10 p-4">
+          <div className="text-xs font-semibold uppercase text-[var(--color-critical)]">
             Disaster mode active
           </div>
           <div className="mt-1 text-sm text-foreground">
@@ -107,12 +107,12 @@ function CHWHome() {
           {(openAlerts ?? []).map((a) => (
             <li key={a.id} className="flex items-center justify-between px-4 py-3 text-sm">
               <div>
-                <div className="font-medium text-foreground">{a.title}</div>
+                <div className="font-semibold text-foreground">{a.title}</div>
                 <div className="text-xs text-muted-foreground">
                   window {a.estimated_window ?? "—"}
                 </div>
               </div>
-              <span className={tierBadgeClass(a.tier as Tier)}>{a.tier}</span>
+              <TierBadge tier={a.tier as Tier} />
             </li>
           ))}
           {openAlerts && openAlerts.length === 0 && (
@@ -129,12 +129,12 @@ function CHWHome() {
           {(protocols ?? []).map((p) => (
             <article
               key={p.id}
-              className={`rounded-xl border bg-card p-4 ${p.is_disaster ? "border-[oklch(0.58_0.22_25)]/30" : "border-border"}`}
+              className={`rounded-xl border bg-card p-4 ${p.is_disaster ? "border-[var(--color-critical)]/30" : "border-border"}`}
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-foreground">{p.title}</h3>
                 {p.is_disaster && (
-                  <span className="rounded-full bg-[oklch(0.58_0.22_25)]/10 px-2 py-0.5 text-[10px] font-medium text-[oklch(0.58_0.22_25)]">
+                  <span className="bg-[var(--color-critical)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--color-critical)]">
                     Disaster
                   </span>
                 )}

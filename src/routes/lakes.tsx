@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchLakes } from "@/lib/cryohealth-api";
 import { HazardMap } from "@/components/cryohealth/HazardMap";
-import { tierBadgeClass, type Tier } from "@/lib/tier";
+import { TierBadge, type Tier } from "@/lib/tier";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
 import { useState } from "react";
 
@@ -83,7 +83,14 @@ function LakesPage() {
       </div>
 
       {isError && (
-        <div className="mb-4 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div
+          className="mb-4 border-2 px-3 py-2 text-sm"
+          style={{
+            borderColor: "var(--color-watch)",
+            background: "var(--color-watch-soft)",
+            color: "var(--color-on-watch)",
+          }}
+        >
           Couldn't load lakes from CryoHealth-api. Showing whatever loaded previously, if anything.
         </div>
       )}
@@ -112,15 +119,15 @@ function LakesPage() {
                   <Link
                     to="/lakes/$lakeId"
                     params={{ lakeId: l.id }}
-                    className="font-medium text-foreground hover:underline"
+                    className="font-semibold text-foreground hover:underline"
                   >
                     {l.name}
                   </Link>
                 </td>
                 <td className="px-4 py-2">
-                  <span className={tierBadgeClass(l.current_tier)}>{l.current_tier}</span>
+                  <TierBadge tier={l.current_tier} />
                   {l.stale && (
-                    <span className="ml-1.5 rounded-full bg-secondary px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
+                    <span className="ml-1.5 bg-secondary px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
                       Stale
                     </span>
                   )}

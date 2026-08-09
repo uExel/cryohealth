@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { tierBadgeClass, type Tier } from "@/lib/tier";
+import { TierBadge, type Tier } from "@/lib/tier";
 import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
@@ -97,7 +97,7 @@ function Index() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
-      <section className="rounded-2xl border border-border bg-gradient-to-br from-primary to-[oklch(0.38_0.1_240)] p-8 text-primary-foreground">
+      <section className="rounded-2xl border border-border bg-[var(--color-accent-ink)] p-8 text-primary-foreground">
         <p className="text-xs uppercase tracking-widest text-accent">
           Open source · Prevention before the emergency
         </p>
@@ -113,13 +113,13 @@ function Index() {
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to="/lakes"
-            className="inline-flex items-center gap-1 rounded-md bg-primary-foreground px-4 py-2 text-sm font-medium text-primary hover:bg-white/90"
+            className="inline-flex items-center gap-1 rounded-md bg-primary-foreground px-4 py-2 text-sm font-semibold text-primary hover:bg-white/90"
           >
             View hazard map <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             to="/data"
-            className="inline-flex items-center gap-1 rounded-md border border-primary-foreground/30 px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary-foreground/10"
+            className="inline-flex items-center gap-1 rounded-md border border-primary-foreground/30 px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground/10"
           >
             Open data API
           </Link>
@@ -148,7 +148,7 @@ function Index() {
                   <Link
                     to="/lakes/$lakeId"
                     params={{ lakeId: l.id }}
-                    className="text-sm font-medium text-foreground hover:underline"
+                    className="text-sm font-semibold text-foreground hover:underline"
                   >
                     {l.name}
                   </Link>
@@ -157,7 +157,7 @@ function Index() {
                     {Number(l.current_risk_score).toFixed(0)}
                   </div>
                 </div>
-                <span className={tierBadgeClass(l.current_tier as Tier)}>{l.current_tier}</span>
+                <TierBadge tier={l.current_tier as Tier} />
               </li>
             ))}
             {hotLakes && hotLakes.length === 0 && (
@@ -178,12 +178,12 @@ function Index() {
             {(recentAlerts ?? []).map((a) => (
               <li key={a.id} className="flex items-center justify-between py-3">
                 <div>
-                  <div className="text-sm font-medium text-foreground">{a.title}</div>
+                  <div className="text-sm font-semibold text-foreground">{a.title}</div>
                   <div className="text-xs text-muted-foreground">
                     {new Date(a.created_at).toLocaleString()} · window {a.estimated_window ?? "—"}
                   </div>
                 </div>
-                <span className={tierBadgeClass(a.tier as Tier)}>{a.tier}</span>
+                <TierBadge tier={a.tier as Tier} />
               </li>
             ))}
             {recentAlerts && recentAlerts.length === 0 && (
@@ -228,7 +228,7 @@ function Index() {
               href={GITHUB_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
             >
               <Github className="h-4 w-4" /> View on GitHub
             </a>
@@ -236,7 +236,7 @@ function Index() {
               href={`${GITHUB_REPO_URL}/issues`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+              className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent"
             >
               Open an issue
             </a>

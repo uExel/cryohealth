@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { tierBadgeClass, tierClasses, type Tier } from "@/lib/tier";
+import { TierBadge, tierClasses, type Tier } from "@/lib/tier";
 import {
   LineChart,
   Line,
@@ -125,9 +125,7 @@ function LakeDetail() {
             {Number(lake.area_km2 ?? 0).toFixed(2)} km²
           </p>
         </div>
-        <span className={tierBadgeClass(lake.current_tier as Tier) + " text-sm"}>
-          {lake.current_tier}
-        </span>
+        <TierBadge tier={lake.current_tier as Tier} solid={lake.current_tier === "CRITICAL"} />
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-4">
@@ -166,7 +164,7 @@ function LakeDetail() {
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="oklch(0.32 0.08 245)"
+                stroke="var(--color-accent-ink)"
                 strokeWidth={2}
                 dot={false}
               />
@@ -186,7 +184,7 @@ function LakeDetail() {
                   {new Date(a.created_at).toLocaleString()}
                 </div>
               </div>
-              <span className={tierBadgeClass(a.tier as Tier)}>{a.tier}</span>
+              <TierBadge tier={a.tier as Tier} />
             </li>
           ))}
           {alerts && alerts.length === 0 && (
@@ -218,7 +216,7 @@ function LakeDetail() {
                   <Link
                     to="/glaciers/$glacierId"
                     params={{ glacierId: g.id }}
-                    className="font-medium text-foreground hover:underline"
+                    className="font-semibold text-foreground hover:underline"
                   >
                     {g.name}
                   </Link>
