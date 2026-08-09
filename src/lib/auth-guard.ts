@@ -1,4 +1,4 @@
-import { verifyToken, type JwtPayload } from "@/lib/jwt";
+import { verifyToken, type JwtPayload, type Role } from "@/lib/jwt";
 
 /** Thrown by requireAuth when the request lacks a valid Bearer token. Callers
  *  should catch this and return `err.response`. */
@@ -22,4 +22,14 @@ export async function requireAuth(request: Request): Promise<JwtPayload> {
   } catch {
     throw new AuthError(Response.json({ error: "Unauthorized: invalid token" }, { status: 401 }));
   }
+}
+
+/** Returns a 403 Response if `claims.role` is not in `roles`, or null if allowed.
+ *  Use inside `server.handlers` after `requireAuth`:
+ *  `const forbidden = requireRole(claims, ["cryohealth_admin"]); if (forbidden) return forbidden;` */
+export function requireRole(claims: JwtPayload, roles: Role[]): Response | null {
+  if (!roles.includes(claims.role)) {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
+  return null;
 }

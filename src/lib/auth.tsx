@@ -6,6 +6,7 @@ type AuthCtx = {
   user: AuthUser | null;
   roles: Role[];
   isAdmin: boolean;
+  isCryoHealthAdmin: boolean;
   isCHW: boolean;
   loading: boolean;
   rolesLoaded: boolean;
@@ -17,6 +18,7 @@ const Ctx = createContext<AuthCtx>({
   user: null,
   roles: [],
   isAdmin: false,
+  isCryoHealthAdmin: false,
   isCHW: false,
   loading: true,
   rolesLoaded: false,
@@ -42,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const roles: Role[] = user ? [user.role] : [];
   const isAdmin = user?.role === "cryohealth_admin" || user?.role === "facility_admin";
+  const isCryoHealthAdmin = user?.role === "cryohealth_admin";
   const isCHW = user?.role === "chw";
 
   return (
@@ -50,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         roles,
         isAdmin,
+        isCryoHealthAdmin,
         isCHW,
         loading,
         rolesLoaded: !loading,
