@@ -1,7 +1,7 @@
 import { verifyToken, type JwtPayload, type Role } from "@/lib/jwt";
 
-/** Thrown by requireAuth when the request lacks a valid Bearer token. Callers
- *  should catch this and return `err.response`. */
+/** Thrown by requireAuth (invalid/missing token) or requireRole (wrong role).
+ *  Callers should catch this and return `err.response`. */
 export class AuthError extends Error {
   constructor(public response: Response) {
     super("Unauthorized");
@@ -24,12 +24,11 @@ export async function requireAuth(request: Request): Promise<JwtPayload> {
   }
 }
 
-/** Returns a 403 Response if `claims.role` is not in `roles`, or null if allowed.
- *  Use inside `server.handlers` after `requireAuth`:
- *  `const forbidden = requireRole(claims, ["cryohealth_admin"]); if (forbidden) return forbidden;` */
-export function requireRole(claims: JwtPayload, roles: Role[]): Response | null {
+/** Throws AuthError (403) if `claims.role` is not in `roles`. Use inside the same
+ *  `try` block as `requireAuth`, immediately after it:
+ *  `try { claims = await requireAuth(request); requireRole(claims, ["cryohealth_admin"]); } catch (e) { if (e instanceof AuthError) return e.response; throw e }` */
+export function requireRole(claims: JwtPayload, roles: Role[]): void {
   if (!roles.includes(claims.role)) {
-    return Response.json({ error: "Forbidden" }, { status: 403 });
+    throw new AuthError(Response.json({ error: "Forbidden" }, { status: 403 }));
   }
-  return null;
 }

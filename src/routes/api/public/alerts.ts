@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { insertAlert, listAllAlerts } from "@/lib/queries";
-import { requireAuth, AuthError } from "@/lib/auth-guard";
+import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
 
 export const Route = createFileRoute("/api/public/alerts")({
   server: {
@@ -13,12 +13,10 @@ export const Route = createFileRoute("/api/public/alerts")({
         let claims;
         try {
           claims = await requireAuth(request);
+          requireRole(claims, ["cryohealth_admin", "facility_admin"]);
         } catch (e) {
           if (e instanceof AuthError) return e.response;
           throw e;
-        }
-        if (claims.role !== "cryohealth_admin" && claims.role !== "facility_admin") {
-          return Response.json({ error: "Forbidden" }, { status: 403 });
         }
         const body = (await request.json()) as {
           title: string;
