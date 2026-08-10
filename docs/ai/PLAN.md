@@ -45,14 +45,17 @@ downstream #3 task (#6-#19) will consume. No CRUD, no new routes, no data fetchi
 
 ## NOT in scope (deferred, with rationale — filing 3 follow-up issues, not silently dropping)
 
-- **`--color-muted`/`--muted-foreground` token collision** (`src/styles.css` declares
-  `--color-muted` twice — a `@theme inline` alias and a later unlayered literal; the
-  literal wins, so `bg-muted text-muted-foreground` renders as low-contrast-but-not-
-  invisible mid-gray-on-mid-gray in both themes, not a "same color" failure). This
-  already affects `src/components/ui/tabs.tsx:15` and `table.tsx:36,47`, both of which
-  PRD §7 names as the admin portal's own upcoming building blocks. Out of scope for
-  this task (touches shared shadcn primitives, not this task's named files) —
-  **file as its own issue before this task closes.**
+- **`--color-muted`/`--muted-foreground` naming collision** (`src/styles.css` declares
+  `--color-muted` twice — a `@theme inline` alias and a later, unlayered literal).
+  **Correction post-verify**: `@theme inline` inlines its referenced value at Tailwind's
+  build time, so `.bg-muted` compiles straight to `background-color: var(--muted)` and
+  never reads the later literal at all — `bg-muted`/`text-muted-foreground` resolve to
+  genuinely different colors (`--color-surface` vs `--color-muted`) in both themes, not
+  the same one. No active contrast bug; confirmed against the built stylesheet. What's
+  real is a fragile naming collision (two different variables sharing one custom-
+  property name), worth a rename for clarity but not urgent — downgraded from `bug` to
+  `type:chore`/`prio:p3` on issue #21 after `/uexel:verify` caught the original claim
+  was wrong. See issue #21's correction comment for the full trace.
 - **`glaciers.$glacierId.tsx:432-435` `driverMeta` hardcoded palette** (`bg-blue-100`
   etc., same bug class as `StatusPill` but not named in the DoD, and the file is
   already half-migrated — its `risk` entry is correctly tokenized, `factor` isn't) —

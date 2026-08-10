@@ -3,8 +3,11 @@ import { verifyToken, type JwtPayload, type Role } from "@/lib/jwt";
 /** Thrown by requireAuth (invalid/missing token) or requireRole (wrong role).
  *  Callers should catch this and return `err.response`. */
 export class AuthError extends Error {
-  constructor(public response: Response) {
-    super("Unauthorized");
+  constructor(
+    public response: Response,
+    message = "Unauthorized",
+  ) {
+    super(message);
   }
 }
 
@@ -29,6 +32,6 @@ export async function requireAuth(request: Request): Promise<JwtPayload> {
  *  `try { claims = await requireAuth(request); requireRole(claims, ["cryohealth_admin"]); } catch (e) { if (e instanceof AuthError) return e.response; throw e }` */
 export function requireRole(claims: JwtPayload, roles: Role[]): void {
   if (!roles.includes(claims.role)) {
-    throw new AuthError(Response.json({ error: "Forbidden" }, { status: 403 }));
+    throw new AuthError(Response.json({ error: "Forbidden" }, { status: 403 }), "Forbidden");
   }
 }

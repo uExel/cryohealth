@@ -41,6 +41,8 @@ export function StatPair({ label, value }: { label: string; value: string }) {
 // — reuses the design-system tokens, not the Tier type, so surging/retreating never
 // render in tier-red (reserved for CRITICAL hazard alerts). Coherent with StatCard's
 // `tone` mapping on the admin overview: retreating/surging -> warn, stable -> ok.
+// `advancing` gets the accent token — it's neither a warning nor the baseline "stable"
+// case, just a notable observation worth its own distinct color.
 const STATUS_CLASSES: Record<string, string> = {
   stable: "bg-[var(--color-normal-soft)] text-[var(--color-normal)]",
   retreating: "bg-[var(--color-watch-soft)] text-[var(--color-watch)]",
