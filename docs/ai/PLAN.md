@@ -1,186 +1,207 @@
 # PLAN
 
 Goal: [#3 — CryoHealth admin portal — sidebar CRUD + platform monitoring](https://github.com/uExel/cryohealth/issues/3)
-Task: [#5 — Shared admin components: StatCard extraction, StatusPill token fix, requireRole helper](https://github.com/uExel/cryohealth/issues/5)
+Task: [#6 — Read-only admin views: Districts, Glaciers, Glacier observations](https://github.com/uExel/cryohealth/issues/6)
 
-Scope: extract shared display components and harden two primitives nearly every
-downstream #3 task (#6-#19) will consume. No CRUD, no new routes, no data fetching.
+Scope: build `/admin/districts` and `/admin/glaciers` (list + `$glacierId` detail with
+observation history) as real, view-only pages, replacing today's `AdminPlaceholder`
+stubs. No create/edit/delete controls, no new data-access code, no auth changes.
+
+**Process note:** `/uexel:plan`'s step 3 calls for chaining `gstack /autoplan`. Skipped
+deliberately — `/autoplan` reviews an _existing_ plan file (none exists yet; this plan
+is that file) and its preamble would append a "Skill routing" section to CLAUDE.md and
+auto-commit it (neither `cryo/CLAUDE.md` nor `cryohealth/CLAUDE.md` has that heading
+yet), an unrequested repo mutation mid-planning. Reviewed inline instead against the
+product/design/eng lenses the task actually needs, sized to a size:s, view-only task.
 
 ## Assumptions & blast radius
 
-- **Auth-adjacent, but no behavior change to any live request path.** `requireRole()`
-  (added in #4, commit `0ba00ac`) currently has **zero call sites** — confirmed via
-  grep. This task gives it its first caller (`api/public/alerts.ts`) and changes its
-  signature while that's still free to do. No other endpoint is touched;
-  `cases.ts`/`alert-acks.ts` intentionally stay role-open (any authenticated user can
-  log a case or ack an alert) and must **not** gain a `requireRole` call.
-- **No migrations, no user data.** Pure refactor (component extraction) + one
-  signature change + a new unused-until-consumed schema file.
-- **`requireRole`'s DoD text is partially stale.** Issue #5 says "Add `requireRole()`
-  to `auth-guard.ts`" as if from scratch — it already exists (task #4). The real,
-  undone half of that DoD line is wiring `alerts.ts` as its first caller. Documenting
-  this now so `/uexel:verify` doesn't read "already exists" as scope creep beyond the
-  issue.
-- **Working tree is clean, branch is `main`, up to date with `origin/main`** (verified
-  by the planning agent this session — no Step 0 stash needed, unlike #4).
+- **No auth, no migration, no user data, no new API routes.** Every query
+  (`listDistricts`, `listGlaciers`, `getGlacier`, `listGlacierObservations`) and every
+  GET handler (`api/public/districts.ts`, `api/public/glaciers.ts`,
+  `api/public/glaciers.$glacierId.ts`) the DoD implies **already exists** — confirmed by
+  the planning agent. This task is pure UI: two placeholder route files get real bodies,
+  one existing route file (`admin.index.tsx`) loses a section it shouldn't have kept.
+- **Role gating needs zero changes.** `admin.tsx`'s client-side `useAuth().isAdmin` gate
+  (`cryohealth_admin` OR `facility_admin`) already wraps every `admin.*` child route,
+  matching the goal's "For whom" section for this task. `requireRole` (hardened in #5)
+  has no relevance here — it gates mutating API routes, and this task adds none.
+- **Working tree clean, branch `main`, up to date with `origin/main`** (verified this
+  session).
+- **Blast radius: `admin.index.tsx` is edited outside the DoD's literal file list** (see
+  Deviation 1). This is the one change in this plan that touches a file the issue didn't
+  name — flagged for GATE, not slipped in silently.
 
 ## What already exists (reused, not rebuilt)
 
-- `src/lib/auth-guard.ts` — `requireAuth()` (throws `AuthError` carrying a `Response`)
-  is the pattern `requireRole()` will now match, instead of diverging from it.
-- `src/routes/api/public/alerts.ts:12-23` — the existing `try { requireAuth(...) } catch
-(e) { if (e instanceof AuthError) return e.response; throw e }` wrapper. `requireRole`
-  moves inside this same try block — zero new lines of error-handling boilerplate.
-- `src/lib/tier.tsx` — design-system tier tokens (`--color-normal/-watch/-high/-critical`
-  and `-soft` variants) `StatusPill` will map onto. **Not** reused directly: glacier
-  stability (`stable/retreating/advancing/surging/unknown`) is a different semantic axis
-  than hazard tier (`NORMAL/WATCH/HIGH/CRITICAL`) — see deviation #2 below. Reuse the
-  _tokens_, not `Tier`/`TierBadge`.
-- `src/components/cryohealth/AdminPlaceholder.tsx` — precedent for one file exporting
-  multiple small named components (`AdminPlaceholder` + `CryoHealthAdminOnly`).
-  `StatCard.tsx` follows the same shape.
-- `zod@3.25.76` (declared `^3.24.2`) and `@hookform/resolvers`/`react-hook-form` are
-  already dependencies — no install needed. Use `import { z } from "zod"` (v3 classic
-  API), not the `zod/v4` subpath the same package also ships.
+- `src/lib/queries.ts:6-45` — `listDistricts()`, `listGlaciers()`, `getGlacier(id)`,
+  `listGlacierObservations(glacierId)`. No new query functions needed.
+- `src/routes/api/public/districts.ts`, `glaciers.ts`, `glaciers.$glacierId.ts` — already
+  return `{ districts }`, `{ glaciers }`, `{ glacier, observations, lakes, cases }`
+  respectively (the last 404s on a missing glacier).
+- `src/components/cryohealth/StatCard.tsx` — `StatCard`, `StatusPill` (from #5).
+- `src/components/ui/table.tsx` — `Table/TableHeader/TableBody/TableRow/TableHead/TableCell`.
+  `src/components/ui/tabs.tsx` — `Tabs/TabsList/TabsTrigger/TabsContent`. Both installed,
+  zero consumers today — this task is genuinely their first use, as the DoD says.
+- `src/components/cryohealth/AdminShell.tsx` `NAV_GROUPS` — Districts/Glaciers sidebar
+  entries already point at `/admin/districts` / `/admin/glaciers`. No sidebar edit needed.
+- `src/routes/admin.lakes.tsx` / `.index.tsx` / `.$lakeId.tsx` — the settled three-file
+  triple convention (Outlet parent / list / detail) this task's Glaciers routes mirror.
+- `src/routes/glaciers.$glacierId.tsx` (public, 19KB) — working precedent for
+  `StatCard`/`StatusPill` usage, typed row shapes, and an explicit "No observations
+  yet." empty state (L296-302). Model the new detail page's structure on it, not its
+  600+ lines of public-page chrome.
+- `src/routes/admin.index.tsx:123-228` — existing search/district/status-filtered
+  glacier register `<table>`. This is the content that moves in Step 2 (see Deviation 1),
+  not new work.
 
-## NOT in scope (deferred, with rationale — filing 3 follow-up issues, not silently dropping)
+## NOT in scope (explicit non-goals)
 
-- **`--color-muted`/`--muted-foreground` naming collision** (`src/styles.css` declares
-  `--color-muted` twice — a `@theme inline` alias and a later, unlayered literal).
-  **Correction post-verify**: `@theme inline` inlines its referenced value at Tailwind's
-  build time, so `.bg-muted` compiles straight to `background-color: var(--muted)` and
-  never reads the later literal at all — `bg-muted`/`text-muted-foreground` resolve to
-  genuinely different colors (`--color-surface` vs `--color-muted`) in both themes, not
-  the same one. No active contrast bug; confirmed against the built stylesheet. What's
-  real is a fragile naming collision (two different variables sharing one custom-
-  property name), worth a rename for clarity but not urgent — downgraded from `bug` to
-  `type:chore`/`prio:p3` on issue #21 after `/uexel:verify` caught the original claim
-  was wrong. See issue #21's correction comment for the full trace.
-- **`glaciers.$glacierId.tsx:432-435` `driverMeta` hardcoded palette** (`bg-blue-100`
-  etc., same bug class as `StatusPill` but not named in the DoD, and the file is
-  already half-migrated — its `risk` entry is correctly tokenized, `factor` isn't) —
-  **file as its own issue.**
-- **`dashboard.tsx:250` `Kpi` component** — a 5th `Stat`-shaped card (adds an icon slot)
-  that could converge onto `StatCard` once it grows an optional `icon` prop. Not this
-  task's DoD; giving `StatCard` an `icon?: React.ReactNode` prop now costs nothing and
-  avoids a 6th duplicate appearing in #6-#19's admin KPI rows, but the `Kpi` call sites
-  themselves are not migrated here — **file as its own issue** so it doesn't get lost.
-- **Fixing issue #20** (`/lakes/$lakeId` renders the list, not the detail page) —
-  already filed, already out of scope for this task; it just means `StatCard`'s
-  presence in `lakes.$lakeId.tsx` can only be checked by code-inspection + `tsc`, not
-  by visiting the page (see Step 2's verify note).
-- **Filling in real per-resource `zod` schemas** (districts, glaciers, etc. field
-  lists) — that's #10-#19's job as each CRUD task lands; this task ships the file and
-  pattern, not the content.
+- **Seeding synthetic `glacier_observations` rows.** The seed script deliberately leaves
+  this table empty (CryoHealth-geo pipeline output, not admin-entered data — see
+  workspace CLAUDE.md's "no silent ML / human-auditable reason" framing and this
+  session's memory rule against fabricated hazard data). **The empty observations table
+  at `/admin/glaciers/<any-id>` is the correct, expected result of this task** — do not
+  "fix" it by inserting fake rows, in build or in verify.
+- **Editing `districtSchema`/`glacierSchema` in `admin-schemas.ts`.** Those are #10/#11's
+  job; this task never imports them.
+- **Any create/edit/delete control**, per the DoD.
+- **Districts detail page.** The DoD only asks for a districts _table_; no `$districtId`
+  route exists in the sidebar or DoD text, and none is added here.
 
 ## Deviations from the DoD's literal text (state now, don't let /uexel:verify discover them)
 
-1. **`index.tsx:383`'s `Stat` is not a duplicate of the other three** — it renders
-   `<dt>/<dd>` inside a `<dl>` on the landing-page hero, with no card chrome, `string`-
-   only value, vs. the other three's `<div>` card with `React.ReactNode` value and
-   (for `admin.index.tsx`) a `tone` prop. Swapping it for card-chrome `StatCard` would
-   break `<dl>` content validity and visually break the site's most-viewed page. Fix:
-   `StatCard.tsx` exports **two** components — `StatCard` (card, `tone`, superset of
-   the `admin.index.tsx`/`lakes.$lakeId.tsx`/`glaciers.$glacierId.tsx` shape) and
-   `StatPair` (`<dt>/<dd>`, for `index.tsx` only).
-2. **`StatusPill` lands on design-system tokens, not the `Tier` type.** Glacier
-   stability has 5 states that don't map 1:1 onto the 4 hazard tiers, and reusing `Tier`
-   would risk `surging`/`retreating` rendering in tier-red — which the workspace
-   CLAUDE.md reserves exclusively for CRITICAL hazard alerts. `HazardMap.tsx:36-37` and
-   `glaciers.$glacierId.tsx:434-435` already document this exact reasoning for adjacent
-   code. `StatusPill` reuses the `--color-watch`/`--color-normal` _tokens_, mapped the
-   same way `admin.index.tsx`'s existing `tone` prop already does (`retreating`/
-   `surging` → warn/watch, `stable` → ok/normal), not `TierBadge`.
-3. **`requireRole` changes its return type from `Response | null` to throwing
-   `AuthError`**, matching `requireAuth`. The DoD's `requireRole(claims, roles: Role[])`
-   names only the parameters, not the return shape. Justification: `Response | null`
-   is fail-open — a caller that writes `requireRole(claims, [...])` as a bare statement
-   (forgetting to check the return) compiles clean and lints clean (this repo's
-   `eslint.config.js` has no `no-unused-expressions` rule) while silently granting
-   access. `requireAuth`'s sibling pattern already throws for the identical reason.
-   Every future `api/admin/*` handler (#10-#19) will wrap both calls in the one
-   existing `try/catch`, at zero extra cost. This is the one behavior-shaped decision
-   in this plan — flagged here for GATE, not slipped in silently.
-4. **`glaciers.$glacierId.tsx:31-37`'s `statusColor` is folded into the same
-   extraction**, even though the DoD only names `admin.tsx:302`. It's a byte-identical
-   copy of `StatusPill`'s color map, used on a **public** page (`:177` header badge,
-   `:303` observations table) — leaving it behind means the DoD's "verify in dark mode"
-   requirement passes on `/admin` while the identical bug stays live on `/glaciers/$id`.
-5. **Schema placeholders use `.strict()` empty-shape stubs, not bare `z.object({})`** —
-   an unfilled `z.object({})` accepts any payload (fail-open, same class of bug as
-   deviation #3); `.strict()` rejects everything until a CRUD task fills in real fields,
-   which is the safe failure direction for a stub nobody's supposed to call yet.
+1. **The glacier table moves from `admin.index.tsx` into `admin.glaciers.index.tsx`,
+   not `admin.glaciers.tsx`.** The DoD names `admin.glaciers.tsx`, but that file is the
+   route-triple's Outlet parent (`component: () => <Outlet />`) — putting a table there
+   renders it above every detail page too. The lakes triple already settles this file
+   layout; glaciers follows it. **Named GATE decision:** move `admin.index.tsx`'s
+   existing register `<section>` (L123-228) into the new `admin.glaciers.index.tsx`
+   (converted to shadcn `Table`, links retargeted from the public
+   `/glaciers/$glacierId` to `/admin/glaciers/$glacierId`), leaving `/admin` as
+   StatCards + HazardMap only. **Rejected alternative:** leave `admin.index.tsx`'s table
+   in place and build a second, duplicate glacier table at `/admin/glaciers` — rejected
+   because it re-creates exactly the duplication #5 spent five steps eliminating, and
+   two tables linking to two different detail routes (public vs admin) for the same
+   data is a worse UX than the DoD's placeholder was.
+2. **No new queries land in `src/lib/queries.ts`,** despite the DoD's "existing/new GET
+   queries" phrasing. All four needed functions already exist (see above). Documenting
+   this now so `/uexel:verify` doesn't read a zero-diff `queries.ts` as a missed DoD
+   line — the DoD's wording anticipated work that turned out to already be done in an
+   earlier task.
+3. **The glacier detail page reuses `api/public/glaciers/$glacierId`'s bundle endpoint**
+   (glacier + observations + all lakes + district cases) rather than adding a lean
+   `api/admin/glaciers.$glacierId.ts`. **Named GATE decision, recommend reuse:** zero
+   new server code, at the cost of an admin page fetching lakes/cases data it discards.
+   For a view-only, size:s task this is the right trade; PRD §4's lean-endpoint pattern
+   is available as a follow-up if the extra payload becomes a real cost once #14/#15
+   (facilities/cases CRUD) land.
+4. **`Tabs` placement, named GATE decision:** `admin.glaciers.$glacierId.tsx` gets two
+   tabs — **Overview** (StatCard grid: area/length/elevation/status, district, source,
+   `last_observed`) and **Observations** (the `glacier_observations` history table, with
+   the empty state from the NOT-in-scope note above). This is the only place in this
+   task's scope `Tabs` has a natural fit (Districts and the Glaciers list are each one
+   flat table) — deciding it now, in the plan, rather than improvising at build time, so
+   the DoD's "first real consumers" clause is met deliberately, not accidentally.
 
 ## Test coverage note
 
-No test framework in this repo. `bunx tsc --noEmit && bun run lint` (the issue's own
-verification command) cannot catch: an orphaned unused local `Stat` left behind after
-extraction (`@typescript-eslint/no-unused-vars` is off), a `StatusPill` variant that
-doesn't actually change background color in dark mode, or `requireRole` regressing
-`alerts.ts`'s existing 401/403 behavior. Per-step `grep` checks and one dark-mode
-toggle check below cover what `tsc`/`lint` structurally cannot.
+No test framework in this repo. `bunx tsc --noEmit && bun run lint` cannot catch: a
+`numeric` Postgres column (`area_km2`, `length_km`, etc., all arrive as `string` via
+`postgres.js`) rendered without `Number(...)` before `.toFixed()` — a runtime throw
+`tsc` won't flag since the query result types may already claim `number`; a `Table`
+migration that visually regresses the house style (flat 2px borders, no shadow, no
+radius per PRD design rules) because shadcn's defaults weren't overridden; or the
+`admin.index.tsx` trim accidentally deleting the StatCards/HazardMap section instead of
+just the register. Per-step manual checks below cover what `tsc`/lint structurally can't.
 
 ## Steps
 
 ### Step 0 — pre-flight (not a commit)
 
-Confirm clean tree and green baseline: `git status --short` (expect only the untracked
-graphify cache stamp), `bunx tsc --noEmit && bun run lint && bun run build`.
-**Verify:** all three exit 0, lint warning count is exactly 10 (the current pre-existing
-`react-refresh/only-export-components` baseline) — record this number now so Step 2's
-verify can detect a regression `bun run lint`'s own exit code won't flag.
+Confirm clean tree and green baseline: `git status --short` (expect only untracked
+`docs/ai/planning/` and graphify cache files), `bunx tsc --noEmit && bun run lint`.
+**Verify:** both exit 0; record current lint warning count as this step's baseline for
+later regression checks.
 
-### Step 1 — `requireRole()` throws, wired into `alerts.ts`
+### Step 1 — `admin.districts.tsx`
 
-Edit `src/lib/auth-guard.ts`: change `requireRole(claims: JwtPayload, roles: Role[]): Response | null` to throw `AuthError` (same class `requireAuth` throws) instead of returning a `Response`; update `AuthError`'s docstring (currently scoped to "thrown by requireAuth") to cover both callers, and its default message away from "Unauthorized"-only phrasing if it's used as the literal string anywhere a 403 case would need a different one — check `AuthError`'s constructor before assuming the message is generic enough to reuse as-is; if not, add an optional `status`/`message` param defaulting to today's 401 behavior. Edit `src/routes/api/public/alerts.ts:12-23`: add `requireRole(claims, ["cryohealth_admin", "facility_admin"])` inside the existing `try` block, immediately after `requireAuth`, and delete the now-redundant inline `if (claims.role !== "cryohealth_admin" && claims.role !== "facility_admin") { return Response.json(...) }` check it replaces.
-**Verify:** `bunx tsc --noEmit && bun run lint`. `grep -rn "claims.role !==" src/routes/api/` → empty. `grep -rn "requireRole" src/routes/` → exactly 1 hit (the new call in `alerts.ts`). `grep -rln "requireRole" src/lib/auth-guard.ts src/routes/api/public/cases.ts src/routes/api/public/alert-acks.ts` → confirm `cases.ts`/`alert-acks.ts` do NOT gain a `requireRole` call (they intentionally stay role-open).
+Replace the `AdminPlaceholder` body with: `useQuery(["admin-districts"], () =>
+fetch("/api/public/districts").then(r => r.json()))`, render via shadcn `Table`
+(columns: Name, Province) styled to match the house table look (`bg-secondary/50
+text-xs uppercase text-muted-foreground` head, `divide-y divide-border` body,
+`hover:bg-secondary/40` rows — the pattern already used in `admin.index.tsx`'s current
+table, passed as `className` overrides on the shadcn primitives so the PRD's flat/no-
+radius/no-shadow rules hold). Loading state (skeleton or "Loading…" row) and empty
+state ("No districts yet.") both explicit, not blank. Keep the existing `head:` meta
+block pattern from sibling admin pages.
+**Verify:** `bunx tsc --noEmit && bun run lint` (no new warnings vs. Step 0 baseline).
+Manual: `bun dev`, log in as `cryohealth_admin`, visit `/admin/districts` → 2 rows,
+`Hunza` / `Gilgit Baltistan` and `Ghizer` / `Gilgit Baltistan` (from
+`CryoHealth-api/scripts/seed-dev-data.ts`).
 
-### Step 2 — extract `StatCard` / `StatPair` / `StatusPill`
+### Step 2 — `admin.glaciers.index.tsx`, trim `admin.index.tsx`
 
-New `src/components/cryohealth/StatCard.tsx`, following `AdminPlaceholder.tsx`'s
-multi-named-export shape (plain `export function`, no default export, no `React.FC`,
-status/tone class maps as module-private `const` — **not** `export const`, to avoid
-pushing the repo's `react-refresh/only-export-components` warning count from 10 to 11):
+Move the glacier register out of `admin.index.tsx` (L123-228: search + district select +
+status filter + `StatusPill` + raw `<table>`) into `admin.glaciers.index.tsx`, converted
+to shadcn `Table`, same house styling as Step 1, with each row linking to
+`/admin/glaciers/$glacierId` (not the public `/glaciers/$glacierId` the old code linked
+to). Keep the search/district/status filters — they're existing, working UX, not new
+scope. In the same commit, trim `admin.index.tsx` down to StatCards + HazardMap only, so
+the register isn't duplicated across two routes (Deviation 1).
+**Verify:** `bunx tsc --noEmit && bun run lint`. `grep -c "<table" src/routes/admin.index.tsx`
+→ 0. Manual: `/admin/glaciers` shows 6 rows (5 Hunza, 1 Ghizer — Badswat), all `unknown`
+status pills, all measurement columns rendering `—` (nulled in seed data); `/admin`
+still shows StatCards + HazardMap with no glacier table; filters still work.
 
-- `StatCard({label, value, tone?}: {label: string; value: React.ReactNode; tone?: "default"|"danger"|"warn"|"ok"; icon?: React.ReactNode})` — card chrome + tone-to-token mapping, modeled on `admin.index.tsx`'s current `Stat` (the superset variant). `icon` is optional and unused by this task's call sites — added now so `dashboard.tsx`'s `Kpi` can converge onto it later without a second breaking prop change (see NOT-in-scope note; do not migrate `Kpi`'s call sites in this task).
-- `StatPair({label, value}: {label: string; value: string})` — the `<dt>/<dd>` shape, replacing `index.tsx`'s `Stat`.
-- `StatusPill({status}: {status: string})` — merges `admin.index.tsx`'s `StatusPill` map and `glaciers.$glacierId.tsx`'s byte-identical `statusColor` map into one, defaulting unrecognized values to the `unknown` style internally (fixes `glaciers.$glacierId.tsx:303`'s current no-fallback `undefined` class bug as a side effect — note this in the commit message as an intentional fix, not scope creep).
+### Step 3 — `admin.glaciers.$glacierId.tsx`
 
-Delete the local `Stat`/`StatusPill`/`statusColor` definitions from all 4 sites and import from the new file: `admin.index.tsx`, `lakes.$lakeId.tsx`, `glaciers.$glacierId.tsx` (import `StatCard` + `StatusPill`, update both `:177` and `:303` use sites), `index.tsx` (import `StatPair`).
+Replace the placeholder with `useQuery(["admin-glacier", glacierId], () =>
+fetch(\`/api/public/glaciers/${glacierId}\`).then(r => r.json()))`(404 → not-found
+state, matching the existing public detail page's handling). Render via`Tabs`:
+**Overview** tab = `StatCard`grid (area_km2, length_km, elevation_min_m/max_m — each
+wrapped in`Number(...)`before`.toFixed()`or rendered as`—`when null — status via`StatusPill`, district name/province, source, `last_observed`); **Observations** tab =
+shadcn `Table`of`listGlacierObservations`rows (observed_at, area_km2, length_km,
+terminus_change_m, status, source), with an explicit empty state ("No observations
+yet — populated by CryoHealth-geo pipeline runs.") when the array is empty — this is
+the expected state for every seeded glacier today (see NOT-in-scope).
+**Verify:**`bunx tsc --noEmit && bun run lint`. Manual: click into Badswat glacier from
+`/admin/glaciers`→ detail shows district`Ghizer`, Overview tab renders `—`for all
+null measurement fields, Observations tab shows the empty state (not a blank screen, not
+fabricated rows). Toggle dark mode —`StatusPill`/`StatCard` colors still change
+(regression check inherited from #5's fix, not new work here, but cheap to confirm).
 
-**Verify:** `bunx tsc --noEmit && bun run lint` (warning count still 10). `grep -rn "^function Stat\b\|^function StatusPill\b\|^const statusColor" src/routes/` → empty (nothing orphaned). `bun run build`. Manual: `/`, `/admin`, `/glaciers/<any-id>` in both light and dark — confirm every `StatusPill`/`StatCard` background actually changes color when toggling `.dark` on `<html>` (this is the real bug — a fixed-light chip that stays readable but doesn't participate in the theme; contrast alone won't catch it). `lakes.$lakeId.tsx` gets `tsc`-only verification, not a live check — issue #20 (`/lakes/$lakeId` Outlet bug, already filed, out of scope here) makes that route unreachable in its intended form.
+### Step 4 — cleanup
 
-### Step 3 — `StatusPill` colors onto design-system tokens
-
-Replace `StatusPill`'s hardcoded `bg-blue-100 text-blue-800` / `bg-emerald-100 text-emerald-800` / `bg-purple-100 text-purple-800` / `bg-slate-100 text-slate-700` with the same tone-to-token mapping `StatCard`'s `tone` prop already uses (`retreating`/`surging` → `--color-watch`/`--color-watch-soft`; `stable` → `--color-normal`/`--color-normal-soft`; `advancing` → keep a distinct, non-tier token — do not overload `--color-normal` for two different meanings; pick or introduce a token, name the choice in the commit).
-**Verify:** `grep -rn "bg-blue-100\|bg-emerald-100\|bg-purple-100\|bg-slate-100" src/` → only remaining hit is `glaciers.$glacierId.tsx:432-433`'s `driverMeta` (explicitly out of scope, filed separately). `bunx tsc --noEmit && bun run lint`. Manual dark-mode toggle check as in Step 2.
-
-### Step 4 — `zod` schema skeleton
-
-New `src/lib/admin-schemas.ts`: per-resource `.strict()` empty-object placeholder schemas + `z.infer` type exports for `districts`, `glaciers`, `lakes`, `alerts`, `protocols`, `facilities`, `chw_profiles`, `cases`, `users` (per PRD §5's "Full CRUD" rows). Add a comment on the `lakes` schema noting `currentTier`/`current_risk_score` must never appear there — that's tier-policy output CryoHealth-api owns, not an admin-editable field. Add a comment on `alerts` noting issue #12 requires a mandatory `reason` field on clear/delete — a marker for that task, not implemented here.
-**Verify:** `bunx tsc --noEmit && bun run lint`. `grep -n "strict()" src/lib/admin-schemas.ts` → 9 hits, one per resource.
-
-### Step 5 — cleanup
-
-`graphify update .` (graph is confirmed stale post-#4 — still shows `Stat`/`StatusPill` at old `admin.tsx` line numbers). File the 3 deferred-scope issues (`--color-muted` collision, `driverMeta` hardcoded palette, `Kpi`/`StatCard` convergence) per PLAN's "NOT in scope" section above — this is a commitment, not a suggestion, per the exact lesson from #4's verify pass (an unfiled commitment was the one real process gap found there).
-**Verify:** `graphify query "StatCard"` resolves to the new file. `gh issue list --search "in:title StatCard OR muted OR driverMeta"` shows the 3 new issues exist.
+`graphify update .` (graph is stale post-#5). Confirm no dangling references to the old
+`admin.index.tsx` register.
+**Verify:** `graphify query "admin glaciers"` resolves to the new route files.
+`bun run build` succeeds.
 
 ## Human verification checklist
 
-Run `bun dev`, no login needed (no route/auth-page changes in this task):
+Run `bun dev`, log in as `cryohealth_admin` (or `facility_admin` — both must see
+identical read access per this task's scope):
 
-- [ ] `/` hero stats render unchanged visually (StatPair swap)
-- [ ] `/admin` overview stats + status pills render, tone colors correct, dark mode toggle changes every pill's background
-- [ ] `/glaciers/<any-id>` header badge (L177) and observations table (L303) both use the shared `StatusPill`, dark mode changes both
-- [ ] `POST /api/public/alerts` (or whatever triggers the alerts write path) still returns 401 for no token, 403 for wrong role, 200 for `cryohealth_admin`/`facility_admin` — confirms `requireRole`'s new throw behavior didn't regress the response shape a client depends on
+- [ ] `/admin/districts` — 2 rows, correct name/province, no create/edit/delete UI
+- [ ] `/admin/glaciers` — 6 rows, filters work, links go to `/admin/glaciers/<id>` not
+      `/glaciers/<id>`
+- [ ] `/admin/glaciers/<Badswat's id>` — Overview tab (district Ghizer, `—` for nulls),
+      Observations tab (honest empty state, not fabricated data)
+- [ ] `/admin` — StatCards + HazardMap only, glacier table gone, no visual regression
+- [ ] Dark mode toggle — `StatusPill` colors still change on all three new/edited pages
+- [ ] `facility_admin` login reaches all three routes without a 403 (both roles allowed
+      per this task's scope — full role split lands in later G3 tasks)
 
 ## Rollback
 
-Each step is one commit; revert in reverse order (5→4→3→2→1). No generated-file
-side effects this time (no route files, no `routeTree.gen.ts` changes) — plain
-reverts are sufficient at every step.
+Each step is one commit; revert in reverse order (4→3→2→1). Step 2 touches two files
+(`admin.index.tsx` trim + new `admin.glaciers.index.tsx`) in one commit — revert as a
+unit, not separately, or `/admin` and `/admin/glaciers` end up in an inconsistent
+half-migrated state. No migrations, no generated-route-tree conflicts expected.
 
 ## Loop budget & escalation
 
-Loop budget: 3 (fix loop), copied from issue #5.
-Escalation: budget exhausted or two identical failure signatures → label `agent:needs-human`, comment the trail, stop.
+Loop budget: 3 (fix loop), copied from issue #6.
+Escalation: budget exhausted or two identical failure signatures → label
+`agent:needs-human`, comment the trail, stop.
