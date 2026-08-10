@@ -1,95 +1,102 @@
-# HANDOFF — cryohealth — 2026-08-10 01:10 PKT
+# HANDOFF — cryohealth — 2026-08-10 02:15 PKT
 
-Session: task5-plan Model: claude-sonnet-5 Branch: main Goal: #3 Task: #5
+Session: task5-build-verify Model: claude-sonnet-5 Branch: main Goal: #3 Task: #5
 
 ## State
 
-Task #4 is closed (verdict PASS, pushed to `origin/main`). `docs/ai/PLAN.md` now holds
-a fresh plan for **task #5** (Shared admin components: `StatCard` extraction,
-`StatusPill` token fix, `requireRole` helper hardening), posted as a comment on issue
-#5: https://github.com/uExel/cryohealth/issues/5#issuecomment-5235612325. **This is a
-plan, not a build** — no production code has been written for #5. GATE (a human
-approval on the issue) is required before `/uexel:build` starts.
+Task #5 (Shared admin components: StatCard extraction, StatusPill token fix,
+requireRole hardening) is **built, all 5 PLAN.md steps committed**, and
+`/uexel:verify` is mid-run. First verifier pass: PASS WITH FINDINGS — 1 blocking
+(issue #21's technical claim about a `--color-muted` "same color" bug was factually
+wrong, confirmed independently against the built CSS before acting), 5 non-blocking.
+Fixed the blocking finding plus 2 of the 5 non-blocking ones as fix-loop iteration 1
+of 3 (commit `151478c`). A second verifier pass re-checking that fix is **running in
+the background** (agent `ab7757dc4aa80baae`), not yet returned.
 
-`docs/ai/TODO.md` still shows task #4's checklist (all checked) — deliberately not
-reset, since TODO.md is owned by `/uexel:build`, not `/uexel:plan`; it will get a fresh
-task #5 checklist when building starts.
+Commits this session, in order: `903e7b2` (requireRole throws), `4c9f28f` (StatCard/
+StatPair/StatusPill extraction), `1b393a9` (StatusPill onto tokens — this commit's
+message contains the now-corrected false claim), `b85dbd6` (zod skeleton), `8263f89`
+(graphify update + filed issues #21/#22/#23), `151478c` (fix-loop: corrected issue
+#21 + PLAN.md, added AuthError message param, named the `advancing` token choice).
+**None of these are pushed to `origin/main` yet.**
 
-Key content of the plan (full detail in `docs/ai/PLAN.md` / the issue #5 comment):
+Issue #21 is corrected (body rewritten, relabeled `bug`→`type:chore`/`prio:p3`) but
+still open — it now tracks a real-but-minor naming-clarity cleanup, not the invisible-
+text bug it originally claimed. Issues #22/#23 are unaffected, confirmed accurate by
+the first verifier pass.
 
-- `requireRole()` (added in #4, zero call sites) changes from returning
-  `Response | null` to throwing `AuthError` like its sibling `requireAuth()` — fixes
-  a fail-open footgun flagged in task #4's verify report, done now while free (no
-  callers yet). Wired into `api/public/alerts.ts` as its first real caller.
-- `StatCard`/`StatPair`/`StatusPill` extracted from 4+2 duplicate/near-duplicate sites
-  into `src/components/cryohealth/StatCard.tsx` — 5 explicit deviations from the DoD's
-  literal text are documented in the plan (e.g. `index.tsx`'s `Stat` isn't actually a
-  duplicate; `StatusPill` should reuse design-system tokens, not the `Tier` type).
-- `src/lib/admin-schemas.ts` zod skeleton, `.strict()` stubs (fail-closed on unfilled
-  schemas) for the 9 CRUD resources #10-#19 will need.
-- 3 follow-up issues to file during Step 5 (not yet filed — that's part of the plan's
-  own Step 5, to run during build): a `--color-muted`/`--muted-foreground` token
-  collision affecting `ui/tabs.tsx`/`ui/table.tsx`, a hardcoded-palette bug in
-  `glaciers.$glacierId.tsx`'s `driverMeta` (same class as `StatusPill`'s, not in this
-  task's DoD), and `dashboard.tsx`'s `Kpi` component converging onto `StatCard` later.
+`bun dev` is running in the background on **port 8080** (8081 was taken this time).
+Headless Chrome (CDP, port 9333) may still be running from this session's manual
+verification — check before starting another instance.
 
 ## Done this session
 
-- Closed issue #4 (`gh issue close 4`)
-- Delegated subsystem exploration to the uexel-planner agent (read-only) — found the
-  4 real `Stat` sites are only 3 true duplicates, found a 5th hardcoded-palette bug
-  site not in the DoD (`glaciers.$glacierId.tsx`'s `statusColor`), confirmed
-  `requireRole`'s exact fail-open shape and recommended fixing it now
-- Made a deliberate, stated call to skip the full `gstack /autoplan` review gauntlet
-  (1852-line skill, designed for larger cross-functional plans) as disproportionate
-  for a size:s task where the planner's own findings already carried review-depth
-  tradeoffs and a deviation ledger — see PLAN.md's commit message
-- Wrote `docs/ai/PLAN.md` for task #5 against `plan-quality.md`'s rubric, posted to
-  issue #5, committed (`14a0ee8`) — **not yet pushed**
+- Built all 5 steps of `docs/ai/PLAN.md` for task #5, one atomic commit each, all
+  verification commands (`tsc`/`lint`/`build` + per-step greps) green throughout, zero
+  fix-loop iterations needed during the build itself
+- Manually verified live via the same headless-Chrome-over-CDP pattern from task #4:
+  `StatPair` on `/`, `StatCard`+`StatusPill` on `/admin`, `StatusPill` on
+  `/glaciers/<id>` (both light and dark) — all correct; confirmed `/api/public/alerts`
+  still returns 401/403/200 identically to before `requireRole`'s signature change
+- Filed 3 follow-up issues (#21, #22, #23) per the plan's explicit commitment
+- Ran `/uexel:verify`: first pass PASS WITH FINDINGS. **Independently re-derived the
+  one blocking finding myself** (built the CSS, grepped the compiled output) before
+  trusting it — confirmed correct. Fixed it plus 2 non-blocking findings as fix-loop
+  iteration 1/3 (`151478c`)
+- Dispatched a second verifier pass on that fix; not yet returned
 
 ## Not done / deferred
 
-- GATE approval on issue #5 — waiting on a human
-- `/uexel:build` — blocked on GATE, not started
-- The 3 follow-up issues named in the plan's Step 5 are not filed yet — that's part of
-  the build, not the plan
+- Second verifier pass result — pending, background agent `ab7757dc4aa80baae`
+- Task #5 not yet closed on GitHub — waiting on the second verify pass
+- Not pushed to `origin/main` — no push requested this session yet
+- 2 non-blocking findings deliberately left as-is (F2: em-dash→"unknown" text change
+  on a null observation status, F3: retreating/surging now share a color) — both
+  consistent with the plan's disclosed token mapping, not defects
 
 ## Next action
 
-Wait for GATE approval on issue #5, then `/uexel:build`. Separately: push commit
-`14a0ee8` (and this handoff) to `origin/main` if the user wants it synced now — not
-done automatically this session per the pattern established earlier (pushes happen
-when asked, not proactively).
+Check the second verifier pass's result (background agent `ab7757dc4aa80baae`). If
+PASS: post the consolidated verdict as a comment on issue #5, close it, then decide
+whether to push. If it finds something new: that's fix-loop iteration 2 of 3.
 
 ## Open questions for a human
 
-- GATE decision on issue #5's plan — not blocking my own next steps, but blocks build
+- none blocking
 
 ## Failed approaches (do not retry)
 
-- Calling `Skill(skill: "cso", ...)` or `Skill(skill: "autoplan", ...)` directly:
-  these gstack sub-skills are not registered as independently invocable skill names in
-  this harness — only the umbrella `gstack` router skill is. Calling `Skill(skill:
-"review", ...)` happened to fuzzy-match onto an unrelated but genuinely useful
-  built-in `code-review` skill (coincidence, not a reliable pattern) — don't assume
-  other gstack sub-skill names will resolve the same way. Either read gstack's
-  SKILL.md file directly and follow its instructions in the current context, or invoke
-  the closest matching independently-registered skill (`security-review`,
-  `code-review`) instead.
+- See `docs/ai/sessions/2026-08-09-task4-verify-loop-final-handoff.md`: `npx
+playwright install chromium` hangs in this sandbox; gstack sub-skills need `Skill`
+  tool access a non-editing verifier must not hold — run them from the orchestrating
+  session instead.
+- New this session: **don't trust a "confirmed against the built stylesheet" claim at
+  face value, even when it sounds rigorous** — issue #21's original body made exactly
+  that claim and was wrong. When a finding hinges on a specific technical mechanism
+  (here: whether `@theme inline` reads a CSS variable at build time or render time),
+  re-derive it from the actual build artifact yourself before acting on it, especially
+  before editing/closing a GitHub issue based on it.
 
 ## Loops run
 
-- none this session (planning only, no fix loop)
+- task #5 fix loop: 1/3 iterations used so far, second verify pass pending, verifier:
+  uexel-verifier agent, rubric: code-review.md
 
 ## Files touched
 
-`docs/ai/PLAN.md` (committed, `14a0ee8`). No source files.
+`src/lib/auth-guard.ts`, `src/routes/api/public/alerts.ts`,
+`src/components/cryohealth/StatCard.tsx` (new), `src/routes/admin.index.tsx`,
+`src/routes/lakes.$lakeId.tsx`, `src/routes/glaciers.$glacierId.tsx`,
+`src/routes/index.tsx`, `src/lib/admin-schemas.ts` (new), `docs/ai/PLAN.md`,
+`graphify-out/{graph.json,manifest.json,cache/stat-index.json}`. All committed.
 
 ## Verification status
 
-n/a — no production code changed this session (plan-only, per `/uexel:plan`'s own
-constraint: "Nothing in the plan writes production code before GATE approval").
+tests: n/a (no test framework) review: 1 verifier pass done (PASS WITH FINDINGS →
+fix), 2nd pass pending qa: live CDP verification done for StatPair/StatCard/
+StatusPill in both themes + alerts.ts 401/403/200 smoke test
 
 ## Resume with
 
-/uexel:orient (then: check issue #5 for a GATE decision; if approved, `/uexel:build`)
+/uexel:orient (then: check on background agent `ab7757dc4aa80baae`'s re-verify
+result; if PASS, close issue #5)
