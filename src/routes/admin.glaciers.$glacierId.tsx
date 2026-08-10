@@ -55,11 +55,16 @@ type ObservationRow = {
 function GlacierDetailAdmin() {
   const { glacierId } = Route.useParams();
 
-  const { data: bundle, isLoading } = useQuery({
+  const {
+    data: bundle,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["admin-glacier", glacierId],
     queryFn: async () => {
       const res = await fetch(`/api/public/glaciers/${glacierId}`);
-      if (!res.ok) return null;
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error(`glacier fetch failed: ${res.status}`);
       return res.json() as Promise<{ glacier: GlacierRow; observations: ObservationRow[] }>;
     },
   });
@@ -68,6 +73,13 @@ function GlacierDetailAdmin() {
   const observations = bundle?.observations ?? [];
 
   if (isLoading) return <AdminPlaceholder title="Glacier detail" subtitle="Loading…" />;
+  if (isError)
+    return (
+      <AdminPlaceholder
+        title="Glacier detail"
+        subtitle="Couldn't load this glacier. Try reloading the page."
+      />
+    );
   if (!glacier)
     return <AdminPlaceholder title="Glacier detail" subtitle={`ID: ${glacierId} · Not found.`} />;
 

@@ -19,10 +19,17 @@ export const Route = createFileRoute("/admin/districts")({
 type DistrictRow = { id: string; name: string; province: string };
 
 function DistrictsAdmin() {
-  const { data: districts, isLoading } = useQuery({
+  const {
+    data: districts,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["admin-districts"],
-    queryFn: async (): Promise<DistrictRow[]> =>
-      (await (await fetch("/api/public/districts")).json()).districts ?? [],
+    queryFn: async (): Promise<DistrictRow[]> => {
+      const res = await fetch("/api/public/districts");
+      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
+      return (await res.json()).districts ?? [];
+    },
   });
 
   return (
@@ -31,6 +38,19 @@ function DistrictsAdmin() {
         <h1 className="text-2xl font-semibold text-foreground">Districts</h1>
         <p className="text-sm text-muted-foreground">{districts?.length ?? 0} districts</p>
       </header>
+
+      {isError && (
+        <div
+          className="mb-4 border-2 px-3 py-2 text-sm"
+          style={{
+            borderColor: "var(--color-watch)",
+            background: "var(--color-watch-soft)",
+            color: "var(--color-on-watch)",
+          }}
+        >
+          Couldn't load districts. Showing whatever loaded previously, if anything.
+        </div>
+      )}
 
       <div className="rounded-xl border border-border bg-card">
         <Table>
@@ -48,7 +68,7 @@ function DistrictsAdmin() {
                 </TableCell>
               </TableRow>
             )}
-            {!isLoading && (districts ?? []).length === 0 && (
+            {!isLoading && !isError && (districts ?? []).length === 0 && (
               <TableRow className="border-border">
                 <TableCell colSpan={2} className="py-6 text-center text-muted-foreground">
                   No districts yet.

@@ -43,16 +43,27 @@ function GlaciersAdmin() {
   const [districtFilter, setDistrictFilter] = useState<string>("ALL");
   const [search, setSearch] = useState("");
 
-  const { data: districts } = useQuery({
+  const { data: districts, isError: districtsError } = useQuery({
     queryKey: ["admin-districts"],
-    queryFn: async (): Promise<DistrictRow[]> =>
-      (await (await fetch("/api/public/districts")).json()).districts ?? [],
+    queryFn: async (): Promise<DistrictRow[]> => {
+      const res = await fetch("/api/public/districts");
+      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
+      return (await res.json()).districts ?? [];
+    },
   });
-  const { data: glaciers, isLoading } = useQuery({
+  const {
+    data: glaciers,
+    isLoading,
+    isError: glaciersError,
+  } = useQuery({
     queryKey: ["admin-glaciers"],
-    queryFn: async (): Promise<GlacierRow[]> =>
-      (await (await fetch("/api/public/glaciers")).json()).glaciers ?? [],
+    queryFn: async (): Promise<GlacierRow[]> => {
+      const res = await fetch("/api/public/glaciers");
+      if (!res.ok) throw new Error(`glaciers fetch failed: ${res.status}`);
+      return (await res.json()).glaciers ?? [];
+    },
   });
+  const isError = districtsError || glaciersError;
 
   const districtById = useMemo(
     () => Object.fromEntries((districts ?? []).map((d) => [d.id, d])),
@@ -71,9 +82,29 @@ function GlaciersAdmin() {
       <header className="mb-4">
         <h1 className="text-2xl font-semibold text-foreground">Glaciers</h1>
         <p className="text-sm text-muted-foreground">
-          {glaciers?.length ?? 0} glaciers · RGI v7 / GLIMS
+          {glaciers?.length ?? 0} glaciers · sourced from Randolph Glacier Inventory v7 (RGI
+          Consortium, 2023) · GLIMS / NSIDC
         </p>
       </header>
+
+      {isError && (
+        <div
+          className="mb-4 border-2 px-3 py-2 text-sm"
+          style={{
+            borderColor: "var(--color-watch)",
+            background: "var(--color-watch-soft)",
+            color: "var(--color-on-watch)",
+          }}
+        >
+          Couldn't load{" "}
+          {districtsError && glaciersError
+            ? "districts or glaciers"
+            : districtsError
+              ? "districts"
+              : "glaciers"}
+          . Showing whatever loaded previously, if anything.
+        </div>
+      )}
 
       <div className="rounded-xl border border-border bg-card">
         <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
@@ -121,19 +152,20 @@ function GlaciersAdmin() {
               </TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground">Status</TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground">RGI ID</TableHead>
+              <TableHead className="text-xs uppercase text-muted-foreground">Observed</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-border">
             {isLoading && (
               <TableRow className="border-border">
-                <TableCell colSpan={7} className="py-6 text-center text-muted-foreground">
+                <TableCell colSpan={8} className="py-6 text-center text-muted-foreground">
                   Loading…
                 </TableCell>
               </TableRow>
             )}
-            {!isLoading && filteredGlaciers.length === 0 && (
+            {!isLoading && !isError && filteredGlaciers.length === 0 && (
               <TableRow className="border-border">
-                <TableCell colSpan={7} className="py-6 text-center text-muted-foreground">
+                <TableCell colSpan={8} className="py-6 text-center text-muted-foreground">
                   No glaciers match the current filters.
                 </TableCell>
               </TableRow>
@@ -166,6 +198,9 @@ function GlaciersAdmin() {
                 </TableCell>
                 <TableCell className="font-mono text-xs text-muted-foreground">
                   {g.rgi_id ?? "—"}
+                </TableCell>
+                <TableCell className="text-xs text-muted-foreground">
+                  {g.last_observed ?? "—"}
                 </TableCell>
               </TableRow>
             ))}
