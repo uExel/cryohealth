@@ -15,6 +15,7 @@ import {
 import heroImage from "@/assets/glacial-hero.jpg";
 import logo from "@/assets/cryohealth-logo.png";
 import { PipelineDiagram } from "@/components/cryohealth/PipelineDiagram";
+import { StatPair } from "@/components/cryohealth/StatCard";
 
 const GITHUB_REPO_URL = "https://github.com/uExel/cryohealth";
 const SITE_URL = "https://cryohealth.io";
@@ -141,10 +142,13 @@ function Landing() {
               worst of it.
             </p>
             <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <Stat label="Glacial lakes across Pakistan's north" value="3,000+" />
-              <Stat label="Classified as critical outburst risk" value="33" />
-              <Stat label="Doctor to population ratio in mountain districts" value="1 : 1,300" />
-              <Stat label="Major flood events since 1994" value="35" />
+              <StatPair label="Glacial lakes across Pakistan's north" value="3,000+" />
+              <StatPair label="Classified as critical outburst risk" value="33" />
+              <StatPair
+                label="Doctor to population ratio in mountain districts"
+                value="1 : 1,300"
+              />
+              <StatPair label="Major flood events since 1994" value="35" />
             </dl>
           </div>
         </div>
@@ -377,15 +381,6 @@ function Landing() {
         </div>
       </section>
     </main>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-[11px] uppercase tracking-widest text-muted-foreground">{label}</dt>
-      <dd className="mt-1 text-lg font-semibold text-foreground">{value}</dd>
-    </div>
   );
 }
 

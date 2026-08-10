@@ -13,6 +13,7 @@ import {
 import { TierBadge, type Tier } from "@/lib/tier";
 import { haversineKm, glacierLakeAssocScore } from "@/lib/geo";
 import { glacierStatusWeight } from "@/lib/geo";
+import { StatCard, StatusPill } from "@/components/cryohealth/StatCard";
 
 export const Route = createFileRoute("/glaciers/$glacierId")({
   head: ({ params }) => ({
@@ -27,14 +28,6 @@ export const Route = createFileRoute("/glaciers/$glacierId")({
   }),
   component: GlacierDetail,
 });
-
-const statusColor: Record<string, string> = {
-  stable: "bg-blue-100 text-blue-800",
-  retreating: "bg-[var(--color-watch-soft)] text-[var(--color-watch)]",
-  advancing: "bg-emerald-100 text-emerald-800",
-  surging: "bg-purple-100 text-purple-800",
-  unknown: "bg-slate-100 text-slate-700",
-};
 
 type GlacierRow = {
   id: string;
@@ -173,27 +166,23 @@ function GlacierDetail() {
             <span className="font-mono">{glacier?.rgi_id ?? "no RGI ID"}</span>
           </p>
         </div>
-        <span
-          className={`inline-flex px-3 py-1 text-sm font-semibold ${statusColor[glacier.status] ?? statusColor.unknown}`}
-        >
-          {glacier.status}
-        </span>
+        <StatusPill status={glacier.status} />
       </header>
 
       <section className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat
+        <StatCard
           label="Area"
           value={glacier.area_km2 ? `${Number(glacier.area_km2).toFixed(1)} km²` : "—"}
         />
-        <Stat
+        <StatCard
           label="Length"
           value={glacier.length_km ? `${Number(glacier.length_km).toFixed(1)} km` : "—"}
         />
-        <Stat
+        <StatCard
           label="Elevation"
           value={`${glacier.elevation_min_m ?? "—"} – ${glacier.elevation_max_m ?? "—"} m`}
         />
-        <Stat
+        <StatCard
           label="Cumulative terminus"
           value={`${totalTerminusChange >= 0 ? "+" : ""}${totalTerminusChange.toFixed(0)} m`}
         />
@@ -299,11 +288,7 @@ function GlacierDetail() {
                         : "—"}
                     </td>
                     <td className="px-4 py-2">
-                      <span
-                        className={`inline-flex px-2 py-0.5 text-xs ${statusColor[o.status ?? "unknown"]}`}
-                      >
-                        {o.status ?? "—"}
-                      </span>
+                      <StatusPill status={o.status ?? "unknown"} />
                     </td>
                     <td className="px-4 py-2 text-xs text-muted-foreground">{o.source}</td>
                   </tr>
@@ -407,15 +392,6 @@ function GlacierDetail() {
         </div>
       </section>
     </main>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-foreground">{value}</div>
-    </div>
   );
 }
 

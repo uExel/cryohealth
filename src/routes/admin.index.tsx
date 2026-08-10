@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { HazardMap } from "@/components/cryohealth/HazardMap";
+import { StatCard, StatusPill } from "@/components/cryohealth/StatCard";
 
 export const Route = createFileRoute("/admin/")({
   component: CryosphereInventory,
@@ -104,12 +105,12 @@ function CryosphereInventory() {
       </header>
 
       <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <Stat label="Total glaciers" value={glaciers?.length ?? 0} />
-        <Stat label="Total ice area" value={`${totalArea.toFixed(0)} km²`} />
+        <StatCard label="Total glaciers" value={glaciers?.length ?? 0} />
+        <StatCard label="Total ice area" value={`${totalArea.toFixed(0)} km²`} />
         {/* Retreating is a concerning status, not an active hazard — "warn" (amber), not "danger" (red). */}
-        <Stat label="Retreating" value={counts.retreating ?? 0} tone="warn" />
-        <Stat label="Surging" value={counts.surging ?? 0} tone="warn" />
-        <Stat label="Stable" value={counts.stable ?? 0} tone="ok" />
+        <StatCard label="Retreating" value={counts.retreating ?? 0} tone="warn" />
+        <StatCard label="Surging" value={counts.surging ?? 0} tone="warn" />
+        <StatCard label="Stable" value={counts.stable ?? 0} tone="ok" />
       </div>
 
       <HazardMap
@@ -226,45 +227,5 @@ function CryosphereInventory() {
         </div>
       </section>
     </main>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  tone = "default",
-}: {
-  label: string;
-  value: React.ReactNode;
-  tone?: "default" | "danger" | "warn" | "ok";
-}) {
-  const toneClass =
-    tone === "danger"
-      ? "text-[var(--color-critical)]"
-      : tone === "warn"
-        ? "text-[var(--color-watch)]"
-        : tone === "ok"
-          ? "text-[var(--color-normal)]"
-          : "text-foreground";
-  return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className={`mt-1 text-xl font-semibold ${toneClass}`}>{value}</div>
-    </div>
-  );
-}
-
-function StatusPill({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    stable: "bg-blue-100 text-blue-800",
-    retreating: "bg-[var(--color-watch-soft)] text-[var(--color-watch)]",
-    advancing: "bg-emerald-100 text-emerald-800",
-    surging: "bg-purple-100 text-purple-800",
-    unknown: "bg-slate-100 text-slate-700",
-  };
-  return (
-    <span className={`inline-flex px-2 py-0.5 text-xs font-semibold ${map[status] ?? map.unknown}`}>
-      {status}
-    </span>
   );
 }

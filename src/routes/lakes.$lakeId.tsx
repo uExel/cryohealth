@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { haversineKm, glacierLakeAssocScore, glacierStatusWeight } from "@/lib/geo";
 import { BreakdownDetails, DriverBadge, DriverLegend } from "./glaciers.$glacierId";
+import { StatCard } from "@/components/cryohealth/StatCard";
 
 export const Route = createFileRoute("/lakes/$lakeId")({
   head: ({ params }) => ({
@@ -129,10 +130,13 @@ function LakeDetail() {
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-4">
-        <Stat label="Risk score" value={Number(lake.current_risk_score).toFixed(0)} />
-        <Stat label="Confidence" value={`${Math.round(Number(lake.current_confidence) * 100)}%`} />
-        <Stat label="Downstream" value={lake.downstream_population.toLocaleString()} />
-        <Stat label="Updated" value={new Date(lake.last_updated).toLocaleDateString()} />
+        <StatCard label="Risk score" value={Number(lake.current_risk_score).toFixed(0)} />
+        <StatCard
+          label="Confidence"
+          value={`${Math.round(Number(lake.current_confidence) * 100)}%`}
+        />
+        <StatCard label="Downstream" value={lake.downstream_population.toLocaleString()} />
+        <StatCard label="Updated" value={new Date(lake.last_updated).toLocaleDateString()} />
       </div>
 
       <section className="mt-6 rounded-xl border border-border bg-card p-5">
@@ -247,14 +251,5 @@ function LakeDetail() {
         </ul>
       </section>
     </main>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-foreground">{value}</div>
-    </div>
   );
 }
