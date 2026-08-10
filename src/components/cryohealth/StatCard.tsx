@@ -37,12 +37,16 @@ export function StatPair({ label, value }: { label: string; value: string }) {
   );
 }
 
+// Glacier stability is a different axis than hazard tier (NORMAL/WATCH/HIGH/CRITICAL)
+// — reuses the design-system tokens, not the Tier type, so surging/retreating never
+// render in tier-red (reserved for CRITICAL hazard alerts). Coherent with StatCard's
+// `tone` mapping on the admin overview: retreating/surging -> warn, stable -> ok.
 const STATUS_CLASSES: Record<string, string> = {
-  stable: "bg-blue-100 text-blue-800",
+  stable: "bg-[var(--color-normal-soft)] text-[var(--color-normal)]",
   retreating: "bg-[var(--color-watch-soft)] text-[var(--color-watch)]",
-  advancing: "bg-emerald-100 text-emerald-800",
-  surging: "bg-purple-100 text-purple-800",
-  unknown: "bg-slate-100 text-slate-700",
+  advancing: "bg-[var(--color-accent-soft)] text-[var(--color-accent-ink)]",
+  surging: "bg-[var(--color-watch-soft)] text-[var(--color-watch)]",
+  unknown: "bg-secondary text-foreground",
 };
 
 export function StatusPill({ status }: { status: string }) {
