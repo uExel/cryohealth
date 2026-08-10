@@ -425,8 +425,8 @@
     "semantic_hash": ""
   },
   "src/lib/auth-guard.ts": {
-    "mtime": 1786335622.9870994,
-    "ast_hash": "914c6c88d01ee66a98e29fbb2e521866",
+    "mtime": 1786343927.2949984,
+    "ast_hash": "470c247de52230846992cb6737ab9e27",
     "semantic_hash": ""
   },
   "src/lib/cloudflare-workers.d.ts": {
@@ -600,8 +600,8 @@
     "semantic_hash": ""
   },
   "docs/ai/HANDOFF.md": {
-    "mtime": 1786333354.9444582,
-    "ast_hash": "d19cfd024f4641bcc2e577f28e23d208",
+    "mtime": 1786344297.5936203,
+    "ast_hash": "5f75bd3280c5d40193ab257da0863949",
     "semantic_hash": ""
   },
   "docs/ai/LEARNINGS.md": {
@@ -610,13 +610,13 @@
     "semantic_hash": ""
   },
   "docs/ai/PLAN.md": {
-    "mtime": 1786333285.4649138,
-    "ast_hash": "18879aedb47f2012406060d69fe87bcc",
+    "mtime": 1786356534.3932576,
+    "ast_hash": "715df0a1d49734f065604b82397575dc",
     "semantic_hash": ""
   },
   "docs/ai/TODO.md": {
-    "mtime": 1786301023.5414648,
-    "ast_hash": "d60067ec02d7c6f37fe9d9f3f0fb4c1b",
+    "mtime": 1786357299.517739,
+    "ast_hash": "a07ad43eef23745f3cd2f18bb1c74e50",
     "semantic_hash": ""
   },
   "docs/ai/sessions/2026-08-01-import-site-history-handoff.md": {
@@ -665,8 +665,8 @@
     "semantic_hash": ""
   },
   "src/components/cryohealth/StatCard.tsx": {
-    "mtime": 1786342792.4835196,
-    "ast_hash": "1ed05f796d7083346a3a24804a7a807f",
+    "mtime": 1786343942.0258527,
+    "ast_hash": "15074127034c03f7068221d93a9c4795",
     "semantic_hash": ""
   },
   "src/lib/admin-schemas.ts": {
@@ -705,8 +705,8 @@
     "semantic_hash": ""
   },
   "src/routes/admin.districts.tsx": {
-    "mtime": 1786292349.0125394,
-    "ast_hash": "ac193c2d0d4eea9ed04cc2252942703a",
+    "mtime": 1786357367.2087276,
+    "ast_hash": "e9924af312b7c3f63d6e93faf7faf902",
     "semantic_hash": ""
   },
   "src/routes/admin.facilities.tsx": {
@@ -715,13 +715,13 @@
     "semantic_hash": ""
   },
   "src/routes/admin.glaciers.$glacierId.tsx": {
-    "mtime": 1786292334.001002,
-    "ast_hash": "5bca297bd8c2f0bf21a51e2871b9f80d",
+    "mtime": 1786357710.427157,
+    "ast_hash": "18423c5034bb27ac67cab8891edc7342",
     "semantic_hash": ""
   },
   "src/routes/admin.glaciers.index.tsx": {
-    "mtime": 1786292322.959525,
-    "ast_hash": "b5f3fc22dcd312877ed7979adc186fb2",
+    "mtime": 1786357650.465278,
+    "ast_hash": "4b7f1ad3e5a404c7947ba436fdbd7ab5",
     "semantic_hash": ""
   },
   "src/routes/admin.glaciers.tsx": {
@@ -730,8 +730,8 @@
     "semantic_hash": ""
   },
   "src/routes/admin.index.tsx": {
-    "mtime": 1786342397.3429143,
-    "ast_hash": "c13e19e8f18f9f877e8049a48b946e90",
+    "mtime": 1786357672.8843524,
+    "ast_hash": "34a20a713d4813a1e88f3c1a1c9810fe",
     "semantic_hash": ""
   },
   "src/routes/admin.lakes.$lakeId.tsx": {
@@ -827,6 +827,26 @@
   "src/assets/cryohealth-logo-mark.svg": {
     "mtime": 1786284968.9555237,
     "ast_hash": "03f99f4ca0e17e00e7fe326c16155bcb",
+    "semantic_hash": ""
+  },
+  "docs/ai/planning/task-6-findings.md": {
+    "mtime": 1786356364.9594784,
+    "ast_hash": "b13e71972276429ca9e05edfea4438f3",
+    "semantic_hash": ""
+  },
+  "docs/ai/sessions/2026-08-10-task5-build-handoff.md": {
+    "mtime": 1786333354.9444582,
+    "ast_hash": "d19cfd024f4641bcc2e577f28e23d208",
+    "semantic_hash": ""
+  },
+  "docs/ai/sessions/2026-08-10-task5-build-verify-handoff.md": {
+    "mtime": 1786344063.3523579,
+    "ast_hash": "52ff50aad057dd428e83ada3e29f76ec",
+    "semantic_hash": ""
+  },
+  "docs/ai/sessions/2026-08-10-task5-verify-report.md": {
+    "mtime": 1786344260.4780731,
+    "ast_hash": "9a7aebb1094fc55e04ad58c5754c69ea",
     "semantic_hash": ""
   }
 }
