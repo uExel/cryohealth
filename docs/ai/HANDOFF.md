@@ -1,122 +1,109 @@
-# HANDOFF — cryohealth — 2026-08-10 15:55 PKT
+# HANDOFF — cryohealth — 2026-08-11 20:30 PKT
 
-Session: task6-build-verify Model: claude-sonnet-5 Branch: main Goal: #3 Task: #6
+Session: doctor-sweep-token-audit Model: claude-sonnet-5 Branch: main Goal: none Task: none
 
 ## State
 
-Task #6 (read-only admin views: Districts, Glaciers, Glacier observations) is **done
-and closed**. All 4 plan steps built and committed, `/uexel:verify` returned a final
-PASS after 1 of 3 fix-loop iterations. Full verdict on issue #6:
-https://github.com/uExel/cryohealth/issues/6#issuecomment-5239281228. Session report:
-`docs/ai/sessions/2026-08-10-task6-verify-report.md`.
+Not task work — a `/doctor` maintenance sweep plus a token-exhaustion investigation the
+user asked for mid-run. Both are done and committed (this repo's piece of it; three
+sibling repos also got commits, see below).
 
-**Notable this session**: the first verifier pass found 6 minor (0 blocking) findings.
-Fixed the 2 worth fixing — all three new admin pages silently rendered "no data" or
-"not found" for real server errors (no `res.ok`/`isError` handling), confirmed live via
-`curl .../glaciers/not-a-uuid` → 500 rendering as "Not found."; and the Step 2 table
-migration (moving the glacier register out of `admin.index.tsx`) had silently dropped
-the "Observed" column and compressed a data-provenance citation — both restored. Filed
-3 follow-up issues (#24, #25, #26) for the remaining nits rather than dropping them.
+Token investigation: pulled real `usage` data (not byte proxies) from the 18 most recent
+transcripts across all projects. Verdict: the uexel-harness pipeline (graphify CLI,
+`uexel:*` skills, hooks) is cheap — ~6.5k tokens/session of real hook text, ~3k tokens of
+CLAUDE.md, graphify queries avg 1.4KB. The actual driver is `cache_read_input_tokens`
+(hundreds of millions in the heaviest sessions) from long sessions re-billing their
+accumulated context every turn — concretely, screenshots taken for visual QA (Playwright/
+browser automation) get `Read` into context early in a session and then ride along,
+re-billed, for every remaining turn. One session's `cache_read` grew 14x (30,908 →
+420,000+ tokens/turn) over ~560 turns after ~13 QA screenshots were read in, then hit a
+forced-compaction event costing ~405k fresh tokens to rebuild. Also checked whether the
+graphify `PreToolUse` hook was over-firing (it appeared to fire on every Bash call this
+session) — verified against source (`graphify/cli.py:_run_hook_guard`) and this session's
+own transcript that it correctly filters on search-token content
+(`grep`/`find`/`rg`/`fd`/`ack`/`ag`) and only looked unconditional because my own
+diagnostic commands kept including `grep`/`find`. No hook fix was needed or applied.
 
-**Live browser QA was never completed this session** — attempted twice via gstack's
-`/browse` skill, both attempts undone by a Playwright browser-cache install that either
-stalled or got killed mid-extraction by my own impatience (second time, right at the
-same failure mode as the first — see "Failed approaches" below). Both verifier passes
-independently judged this an acceptable disclosed gap for a size:s, view-only,
-zero-auth-surface task, not a blocking one. It remains open in `docs/ai/PLAN.md`'s
-"Human verification checklist" if a human wants to spot-check visually (dark mode
-toggle, Tabs switching, filter interaction).
+Doctor sweep, applied after user confirmation (two separate AskUserQuestion gates — one
+for the checked-in-file/plugin cleanup, one for the permission-mode change):
 
-Local commits from this session (`11bae15` through `b37cd70`, 9 commits including
-docs/handoff) plus the 9 from the prior task #5 session are **not pushed to
-`origin/main`** — no push requested.
+- Disabled 2 unused plugins (0 lifetime invocations, no transcript corroboration):
+  `typescript-lsp@claude-plugins-official` → `false` in this repo's
+  `.claude/settings.local.json`; `frontend-design@claude-plugins-official` → `false` in
+  `~/.claude/settings.json` (user scope, where it was enabled).
+- Cut a duplicate section from `cryohealth/CLAUDE.md` ("Working here" restated the
+  workspace-root file's "Cross-repo conventions", both load together every session here).
+- Migrated per-repo dev/test/lint commands out of the workspace-root `cryo/CLAUDE.md`
+  (loads in all 4 repos regardless of which is active) into each repo's own `CLAUDE.md`
+  as a new `## Commands` section — done in all 4 repos: `cryohealth`, `CryoHealth-api`,
+  `CryoHealth-geo`, `CryoHealth-app`. The root file now just points to them.
+- Set `permissions.defaultMode: "auto"` in `~/.claude/settings.json` (was unset at every
+  scope; nothing overrides it).
+- Check 9 (pre-approving frequently-denied commands): scanned 19 denials, found nothing
+  eligible — every read-only-looking one was either a one-off with no reuse value or
+  touched `.env`. No rules added.
 
-`bun dev` (port 8080), `CryoHealth-api` (port 3000), and Postgres (port 5433) were all
-still running from the prior session at the start of this one — check before starting
-new instances. gstack's `/browse` daemon (its own headless Chromium, separate from any
-CDP-port browser noted in earlier handoffs) is still broken — see below.
+A per-repo prettier/markdown formatter hook ran after each `CLAUDE.md` edit and
+normalized style (blank lines after headers, `*em*` → `_em_`) — cosmetic only.
+
+The `cryo/CLAUDE.md` (workspace-root) edit is **not under version control** — no
+top-level `.git` in this multi-repo workspace, so it can't be committed; it's just sitting
+on disk as intended.
 
 ## Done this session
 
-- `/uexel:plan 6`: delegated exploration to uexel-planner, wrote `docs/ai/PLAN.md`
-  (posted as issue #6 comment), deliberately skipped chaining `gstack /autoplan` (would
-  have auto-committed a CLAUDE.md routing section; reviewed inline instead)
-- `/uexel:gate`: presented assumptions/blast-radius/rollback, approved as-is, recorded
-  on issue #6
-- `/uexel:build`, all 4 steps, zero fix-loop iterations during the build itself:
-  - `11bae15` Step 1: `admin.districts.tsx` real Table
-  - `304f614` Step 2: `admin.glaciers.index.tsx` real Table, register moved out of
-    `admin.index.tsx` (the one file-list deviation from the DoD, named + GATE-approved)
-  - `303d8b5` Step 3: `admin.glaciers.$glacierId.tsx` — Tabs (Overview | Observations)
-  - `fe4a382` Step 4: graphify update + `bun run build` clean
-- `/uexel:verify`: 2 verifier passes (PASS WITH FINDINGS → fix → PASS)
-  - `28a0f77`: added `res.ok`/`isError` handling to all 3 pages with an explicit error
-    banner (matching existing `lakes.tsx` precedent); restored the dropped "Observed"
-    column and data-provenance citation
-  - Filed issues #24 (AdminPlaceholder-styled loading chrome, nit), #25 (hardcoded
-    `text-emerald-600`, verbatim port from existing precedent, currently unreachable),
-    #26 (redundant district lookup, nit)
-- Posted final verdict on issue #6, closed it
+- `cryohealth` repo: commit `d19225c` — CLAUDE.md: moved `## Commands` section in,
+  dropped duplicate "Working here" block
+- `CryoHealth-api` repo: commit `8f456bb` — CLAUDE.md: added `## Commands` section
+- `CryoHealth-geo` repo: commit `4b02837` — CLAUDE.md: added `## Commands` section
+- `CryoHealth-app` repo: commit `cb9f22d` — CLAUDE.md: added `## Commands` section
+- Disabled `typescript-lsp` (local scope) and `frontend-design` (user scope) plugins
+- Set `permissions.defaultMode: "auto"` in `~/.claude/settings.json`
 
 ## Not done / deferred
 
-- Not pushed to `origin/main` — say the word if you want it synced
-- Live browser QA — see "Notable this session" above; deferred to a human, tracked in
-  PLAN.md's checklist, not a GitHub issue (it's a one-off verification step, not a code
-  defect)
-- Issues #24/#25/#26 remain open (correctly — real, if minor, deferred cleanup)
+- None of the 4 commits were pushed — no push requested
+- `CryoHealth-api` has pre-existing unrelated pending changes (`package.json`,
+  `cases.controller.ts`, `configuration.ts`, a migration file, untracked
+  `scripts/seed-dev-data.ts`) — left untouched, not part of this session's work, not
+  mine to commit
+- `cryohealth`'s own pending `.gitignore` change and untracked `graphify-out/` cache
+  files — pre-existing, left untouched
 
 ## Next action
 
-Decide whether to push the accumulated local commits (18 total across tasks #5 and #6).
-Then pick the next task under goal #3 (`gh issue list` — #7-#19 are the remaining
-CRUD/read-only-view/platform-monitoring tasks) and `/uexel:plan <issue-number>`.
+Resume actual product work: `/uexel:orient` then `gh issue list` to pick the next task
+under goal #3 (tasks #7–#19 were still open as of the last task-work session).
 
 ## Open questions for a human
 
-- Push now, or hold? Not blocking.
-- Want to spot-check task #6's live browser behavior (dark mode, Tabs) before moving
-  on? Not blocking — both verifier passes judged the disclosed gap acceptable.
+- Push the 4 CLAUDE.md commits (this repo + 3 siblings) now, or hold? Not blocking.
 
 ## Failed approaches (do not retry)
 
-- `npx playwright install chromium` at the repo root downloads whatever version global
-  `npx` resolves, which does NOT match the version gstack's `/browse` binary is
-  compiled against. Run the install from the browse skill's own directory instead:
-  `cd ~/.claude/skills/gstack/browse && bunx playwright install chromium-headless-shell`.
-- **Killing a backgrounded `bunx playwright install` right as its download hits 100% is
-  not safe** — confirmed TWICE this session. It's still extracting the zip after the
-  progress bar completes; killing then leaves only `ABOUT`/`LICENSE.headless_shell` on
-  disk with no actual binary. The second attempt this session stalled for ~7 minutes
-  with near-zero CPU activity (genuinely stuck, not just slow) and was killed — but the
-  first attempt's identical-looking "stuck" state actually turned out to be mid-extract
-  when checked via the completion notification rather than `ls`. Lesson: trust the
-  task-completion notification over polling `ls`/`ps`, and if a second attempt looks
-  stuck with truly flat CPU (not just slow), that's a different failure mode from
-  interrupting a live extraction — don't conflate the two, and don't kill on a hunch
-  either way. If this recurs a third time, consider it a known-broken tool in this
-  sandbox and skip straight to the curl+static-review substitute from the start.
+- None this session. (Note for future token-cost sessions: don't infer image/context
+  cost from base64 byte length — convert via the resolution-based formula or read actual
+  `usage.cache_read_input_tokens` from the transcript; byte-length overstates hook-text
+  cost and can't be trusted for image cost either way.)
 
 ## Loops run
 
-- task #6 fix loop: 1/3 iterations, passed (not escalated) — see
-  `docs/ai/sessions/2026-08-10-task6-verify-report.md` for full detail
+- None (no build/verify loop this session — maintenance/doctor work only)
 
 ## Files touched
 
-Task #6 build: `src/routes/{admin.districts,admin.glaciers.index,
-admin.glaciers.$glacierId,admin.index}.tsx`. Fix-loop: same 3 admin route files (not
-`admin.index.tsx`). Docs: `docs/ai/PLAN.md`, `docs/ai/planning/task-6-findings.md`,
-`docs/ai/TODO.md`, `docs/ai/HANDOFF.md`, 3 session report/handoff files under
-`docs/ai/sessions/`. All committed.
+`cryohealth/CLAUDE.md`, `CryoHealth-api/CLAUDE.md`, `CryoHealth-geo/CLAUDE.md`,
+`CryoHealth-app/CLAUDE.md` (all committed in their own repos). `cryo/CLAUDE.md`
+(workspace root, uncommitted — no git repo there). `~/.claude/settings.json`,
+`cryohealth/.claude/settings.local.json` (plugin/permission config, not part of any git
+repo diff relevant here).
 
 ## Verification status
 
-tests: n/a (no test framework) review: PASS (2 verifier passes, 6 findings — 2 fixed,
-3 deferred to filed issues #24/#25/#26, 1 dropped as inapplicable)
-qa: partial — API/data-level + static code review confirmed; live browser check not run
-this session (disclosed, judged non-blocking)
+tests: n/a (docs/config only, no code changed) review: n/a qa: n/a — diffs were shown to
+the user directly (`git diff` per repo) before commit, not run through `/uexel:verify`
 
 ## Resume with
 
-/uexel:orient (then: push if wanted, `/uexel:plan` the next task under goal #3)
+/uexel:orient (then: `gh issue list` and `/uexel:plan <issue-number>` for the next
+task under goal #3)
