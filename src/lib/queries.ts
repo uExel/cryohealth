@@ -100,6 +100,18 @@ export async function listLakeRiskScores(lakeId: string) {
   `;
 }
 
+export async function listHazardScores(lakeId: string) {
+  const sql = await getDb();
+  return sql`
+    SELECT "runId" AS run_id, score, upper(tier::text) AS tier,
+           components, "computedAt" AS computed_at
+    FROM hazard_scores
+    WHERE "lakeId" = ${lakeId}
+    ORDER BY "computedAt" DESC
+    LIMIT 120
+  `;
+}
+
 export async function listAlertsForLake(lakeId: string) {
   const sql = await getDb();
   return sql`

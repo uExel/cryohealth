@@ -51,6 +51,7 @@ import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as AdminLakesLakeIdRouteImport } from './routes/admin.lakes.$lakeId'
 import { Route as AdminGlaciersGlacierIdRouteImport } from './routes/admin.glaciers.$glacierId'
 import { Route as ApiPublicLakesLakeIdRouteImport } from './routes/api/public/lakes.$lakeId'
+import { Route as ApiPublicHazardScoresLakeIdRouteImport } from './routes/api/public/hazard-scores.$lakeId'
 import { Route as ApiPublicGlaciersGlacierIdRouteImport } from './routes/api/public/glaciers.$glacierId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -263,6 +264,12 @@ const ApiPublicLakesLakeIdRoute = ApiPublicLakesLakeIdRouteImport.update({
   path: '/$lakeId',
   getParentRoute: () => ApiPublicLakesRoute,
 } as any)
+const ApiPublicHazardScoresLakeIdRoute =
+  ApiPublicHazardScoresLakeIdRouteImport.update({
+    id: '/api/public/hazard-scores/$lakeId',
+    path: '/api/public/hazard-scores/$lakeId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicGlaciersGlacierIdRoute =
   ApiPublicGlaciersGlacierIdRouteImport.update({
     id: '/$glacierId',
@@ -313,6 +320,7 @@ export interface FileRoutesByFullPath {
   '/admin/glaciers/': typeof AdminGlaciersIndexRoute
   '/admin/lakes/': typeof AdminLakesIndexRoute
   '/api/public/glaciers/$glacierId': typeof ApiPublicGlaciersGlacierIdRoute
+  '/api/public/hazard-scores/$lakeId': typeof ApiPublicHazardScoresLakeIdRoute
   '/api/public/lakes/$lakeId': typeof ApiPublicLakesLakeIdRoute
 }
 export interface FileRoutesByTo {
@@ -355,6 +363,7 @@ export interface FileRoutesByTo {
   '/admin/glaciers': typeof AdminGlaciersIndexRoute
   '/admin/lakes': typeof AdminLakesIndexRoute
   '/api/public/glaciers/$glacierId': typeof ApiPublicGlaciersGlacierIdRoute
+  '/api/public/hazard-scores/$lakeId': typeof ApiPublicHazardScoresLakeIdRoute
   '/api/public/lakes/$lakeId': typeof ApiPublicLakesLakeIdRoute
 }
 export interface FileRoutesById {
@@ -401,6 +410,7 @@ export interface FileRoutesById {
   '/admin/glaciers/': typeof AdminGlaciersIndexRoute
   '/admin/lakes/': typeof AdminLakesIndexRoute
   '/api/public/glaciers/$glacierId': typeof ApiPublicGlaciersGlacierIdRoute
+  '/api/public/hazard-scores/$lakeId': typeof ApiPublicHazardScoresLakeIdRoute
   '/api/public/lakes/$lakeId': typeof ApiPublicLakesLakeIdRoute
 }
 export interface FileRouteTypes {
@@ -448,6 +458,7 @@ export interface FileRouteTypes {
     | '/admin/glaciers/'
     | '/admin/lakes/'
     | '/api/public/glaciers/$glacierId'
+    | '/api/public/hazard-scores/$lakeId'
     | '/api/public/lakes/$lakeId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -490,6 +501,7 @@ export interface FileRouteTypes {
     | '/admin/glaciers'
     | '/admin/lakes'
     | '/api/public/glaciers/$glacierId'
+    | '/api/public/hazard-scores/$lakeId'
     | '/api/public/lakes/$lakeId'
   id:
     | '__root__'
@@ -535,6 +547,7 @@ export interface FileRouteTypes {
     | '/admin/glaciers/'
     | '/admin/lakes/'
     | '/api/public/glaciers/$glacierId'
+    | '/api/public/hazard-scores/$lakeId'
     | '/api/public/lakes/$lakeId'
   fileRoutesById: FileRoutesById
 }
@@ -563,6 +576,7 @@ export interface RootRouteChildren {
   ApiPublicLakesAdminRoute: typeof ApiPublicLakesAdminRoute
   ApiPublicOpenAlertsRoute: typeof ApiPublicOpenAlertsRoute
   ApiPublicProtocolsRoute: typeof ApiPublicProtocolsRoute
+  ApiPublicHazardScoresLakeIdRoute: typeof ApiPublicHazardScoresLakeIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -861,6 +875,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicLakesLakeIdRouteImport
       parentRoute: typeof ApiPublicLakesRoute
     }
+    '/api/public/hazard-scores/$lakeId': {
+      id: '/api/public/hazard-scores/$lakeId'
+      path: '/api/public/hazard-scores/$lakeId'
+      fullPath: '/api/public/hazard-scores/$lakeId'
+      preLoaderRoute: typeof ApiPublicHazardScoresLakeIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/glaciers/$glacierId': {
       id: '/api/public/glaciers/$glacierId'
       path: '/$glacierId'
@@ -989,6 +1010,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicLakesAdminRoute: ApiPublicLakesAdminRoute,
   ApiPublicOpenAlertsRoute: ApiPublicOpenAlertsRoute,
   ApiPublicProtocolsRoute: ApiPublicProtocolsRoute,
+  ApiPublicHazardScoresLakeIdRoute: ApiPublicHazardScoresLakeIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
