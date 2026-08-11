@@ -183,7 +183,7 @@ function LakesAdmin() {
                   {l.downstream_population != null ? l.downstream_population.toLocaleString() : "—"}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {l.last_updated ?? "—"}
+                  {l.last_updated ? new Date(l.last_updated).toLocaleDateString() : "—"}
                 </TableCell>
               </TableRow>
             ))}
