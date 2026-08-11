@@ -7,20 +7,29 @@ deployed as a Cloudflare Worker. Started as a Lovable Cloud prototype
 rewired onto the shared CryoHealth-api/Postgres stack; see Gotchas below for what that
 migration left in place.
 
-## Working here
-- Start sessions with /uexel:orient, end with /uexel:handoff. Pipeline:
-  orient → plan → gate → build → verify → report → handoff (docs: uExel/cryo-harness).
-- Task state lives in GitHub issues — labels + milestones, no boards.
-- Shared AI working files: docs/ai/ (PLAN, TODO, HANDOFF, LEARNINGS, sessions, decisions).
+## Commands (`bun`)
+
+```bash
+bun install
+bun dev               # vite dev
+bun run build         # vite build
+bun run lint          # eslint .
+bun run format        # prettier --write .
+```
+
+No test script defined in this repo. Deploys as a Cloudflare Worker (`wrangler.jsonc`,
+`main: src/server.ts`).
 
 ## Map
+
 <!-- One line per top-level folder whose purpose a newcomer can't infer from its name.
      Delete rows that are obvious — every line here loads in every session. -->
+
 - `src/routes/` — file-based TanStack routes: `dashboard.tsx`/`lakes.tsx`/`lakes.$lakeId.tsx`
   (public hazard map), `alerts.tsx` (feed + broadcast), `chw.tsx` (CHW workspace),
   `admin.tsx`, `data.tsx` (Open Data page), `login.tsx`.
 - `src/routes/api/` — server route handlers backing the above: `api/auth/login.ts` is
-  this dashboard's *own* login endpoint (see Gotchas); `api/public/*` are the JSON/CSV
+  this dashboard's _own_ login endpoint (see Gotchas); `api/public/*` are the JSON/CSV
   endpoints behind `data.tsx`, almost all reading the shared DB directly via
   `src/lib/queries.ts`.
 - `src/lib/db.ts` — server-only `postgres` client for the **same PostGIS instance
@@ -41,11 +50,13 @@ migration left in place.
   `SiteHeader`, `DemoBanner`); `src/components/ui/` is generic shadcn primitives.
 
 ## Gotchas
+
 <!-- Only repo-wide traps that bite in ANY directory. Local conventions and test/lint
      commands go in that directory's own CLAUDE.md. Date rules that exist to work around
      a current limitation: "added YYYY-MM for <x> — re-evaluate on next model release". -->
+
 - **This dashboard is not a pure CryoHealth-api client.** It has its own server-side
-  Postgres connection (`src/lib/db.ts`) to the *same* database CryoHealth-api owns, and
+  Postgres connection (`src/lib/db.ts`) to the _same_ database CryoHealth-api owns, and
   its own `/api/auth/login` that queries the `users` table directly and mints a JWT
   itself — it does not proxy login to CryoHealth-api. The two services only agree via a
   shared `JWT_SECRET` and shared schema; neither enforces the other's request-time logic
@@ -74,10 +85,12 @@ If GSTACK_MISSING: STOP. Do not proceed. Tell the user:
 
 > gstack is required for all AI-assisted work in this repo.
 > Install it:
+>
 > ```bash
 > git clone --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
 > cd ~/.claude/skills/gstack && ./setup --team
 > ```
+>
 > Then restart your AI coding tool.
 
 Do not skip skills, ignore gstack errors, or work around missing gstack.
@@ -91,6 +104,7 @@ Use ~/.claude/skills/gstack/... for gstack file paths (the global path).
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
 
 Rules:
+
 - For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
