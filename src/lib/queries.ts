@@ -12,8 +12,9 @@ export async function listDistricts() {
 export async function listGlaciers() {
   const sql = await getDb();
   return sql`
-    SELECT g.id, g.name, g.rgi_id, g.district_id, g.lat, g.lng, g.area_km2, g.length_km,
-           g.elevation_min_m, g.elevation_max_m, g.status, g.source, g.last_observed, g.notes,
+    SELECT g.id, g.name, g.rgi_id, g.glims_id, g.district_id, g.lat, g.lng, g.area_km2, g.length_km,
+           g.elevation_min_m, g.elevation_max_m, g.status, g.terminus_type, g.source,
+           g.last_observed, g.notes,
            d.name AS district_name
     FROM glaciers g
     LEFT JOIN districts d ON d.id = g.district_id

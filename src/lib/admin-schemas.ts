@@ -35,7 +35,7 @@ export const glacierCreateSchema = z
     length_km: z.number().positive().nullable().optional(),
     elevation_min_m: z.number().int().nullable().optional(),
     elevation_max_m: z.number().int().nullable().optional(),
-    status: z.enum(GLACIER_STATUSES).default("unknown"),
+    status: z.enum(GLACIER_STATUSES),
     terminus_type: z.string().min(1).nullable().optional(),
     // Required despite the DB column being nullable: the glaciers page header advertises
     // RGI v7 / GLIMS provenance, so a hand-entered row must cite where it came from.
