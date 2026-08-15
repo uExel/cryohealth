@@ -176,6 +176,46 @@ export async function listFacilities() {
   `;
 }
 
+export async function listFacilitiesAdmin() {
+  const sql = await getDb();
+  return sql`
+    SELECT id, name, type, district, vulnerability, contact,
+           ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng,
+           (geom IS NOT NULL) AS has_geom,
+           "lakeId" AS lake_id, "createdAt" AS created_at
+    FROM facilities
+    ORDER BY name
+  `;
+}
+
+export async function listCasesAdmin(limit = 200) {
+  const sql = await getDb();
+  return sql`
+    SELECT c.id, c.chw_id, c.district_id, c.patient_age, c.patient_sex,
+           c.symptoms, c.diagnosis, c.treatment, c.outcome,
+           c.is_disaster_related, c.created_at,
+           u.name AS chw_name, u."lhwId" AS chw_lhw_id,
+           d.name AS district_name
+    FROM cases c
+    LEFT JOIN users u     ON u.id = c.chw_id
+    LEFT JOIN districts d ON d.id = c.district_id
+    ORDER BY c.created_at DESC
+    LIMIT ${limit}
+  `;
+}
+
+export async function listChwProfiles() {
+  const sql = await getDb();
+  return sql`
+    SELECT p.id, p.user_id, p.full_name, p.district_id, p.phone, p.language, p.created_at,
+           d.name AS district_name, u.name AS user_name, u."lhwId" AS user_lhw_id, u.active
+    FROM chw_profiles p
+    LEFT JOIN districts d ON d.id = p.district_id
+    LEFT JOIN users u     ON u.id = p.user_id
+    ORDER BY p.full_name
+  `;
+}
+
 export async function listProtocols() {
   const sql = await getDb();
   return sql`SELECT * FROM protocols ORDER BY is_disaster DESC`;
