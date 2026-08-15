@@ -1,311 +1,362 @@
 # PLAN
 
 Goal: [#3 — CryoHealth admin portal — sidebar CRUD + platform monitoring](https://github.com/uExel/cryohealth/issues/3)
-Task: [#8 — Read-only admin views: Alerts, Alert acknowledgements, Protocols](https://github.com/uExel/cryohealth/issues/8)
+Task: [#9 — Read-only admin views: Facilities, CHW profiles, Cases](https://github.com/uExel/cryohealth/issues/9)
 
-Scope: replace the `admin.alerts.tsx` and `admin.protocols.tsx` placeholders with real,
-view-only pages. Add two columns (`status`, `cleared_at`) to the existing
-`listAllAlerts()` query so the admin table can show cleared alerts distinctly — the
-DoD's "all alerts including cleared" is already satisfied at the row-set level (no
-`WHERE` filters out cleared rows) but not at the display level. No create/edit/delete
-anywhere, no new endpoints, no auth changes.
+Scope: replace the `admin.facilities.tsx`, `admin.chw-profiles.tsx`, and
+`admin.cases.tsx` placeholders with real, view-only tables. Unlike #8, this task has
+real new data-access work: `listFacilities()` returns `[]` today (its geom filter
+correctly excludes the one seeded facility, which has no mapped location), there's no
+listing query or endpoint for `cases` at all, and `chw_profiles` has zero rows and zero
+writers anywhere in the workspace. The headline decision: `cases` holds
+patient-adjacent clinical fields (age, sex, symptoms, diagnosis, treatment, outcome),
+and every existing GET in this repo is unauthenticated — the new cases endpoint must be
+this repo's first gated GET, not a default-ungated one.
 
-Full exploration: [`docs/ai/planning/task-8-findings.md`](planning/task-8-findings.md)
-(written by the uexel-planner agent this session — read it for exact schemas, live
-seed-data state, and the two latent bugs found as a side effect).
+Full exploration: [`docs/ai/planning/task-9-findings.md`](planning/task-9-findings.md)
+(written by the uexel-planner agent this session — read it for exact schemas, live seed
+data, and the reasoning behind each decision below).
 
 **Process note:** Skipping the `/uexel:plan` step 3 chain to `gstack /autoplan`, for the
-same reason tasks #6 and #7's plans did — `/autoplan` reviews an existing plan file's
-preamble and would append an unrequested "Skill routing" section to CLAUDE.md and
-auto-commit it. Reviewed inline instead, via the planner agent above.
+same reason tasks #6-#8's plans did — it would append an unrequested "Skill routing"
+section to CLAUDE.md and auto-commit it. Reviewed inline instead, via the planner agent.
 
 ## Assumptions & blast radius
 
-- **This task is cheaper than #6 or #7.** No new query functions, no new endpoints, no
-  `routeTree.gen.ts` churn, no route-triple/file-layout deviation (both target files are
-  already flat leaf routes on disk, matching the DoD's literal naming), no `TierBadge`
-  narrowing guard needed (`alerts.tier` is a DB enum, unlike #7's `lake_risk_scores.tier`
-  which is unconstrained text).
-- **One shared-query change, scoped to its own commit.** `listAllAlerts()` backs both
-  the new admin page and the existing public `/alerts` page and the documented Open
-  Data endpoint `GET /api/public/alerts` (`src/routes/data.tsx:73`, with a published
-  example payload). Adding `status`/`cleared_at` is additive (existing consumers ignore
-  unknown fields) but it does touch a documented public API surface — flagged for GATE
-  below, not defaulted.
-- **Sidebar and role gate need zero changes.** `AdminShell.tsx:31-38` already has both
-  nav entries; `admin.tsx`'s `isAdmin` gate already wraps every `admin.*` child route.
-- **Working tree clean, branch `main`, up to date with `origin/main`** (verified this
-  session, task #7 pushed as `9fd9c02`).
+- **This task is the most expensive of the four read-only-view tasks.** #8 needed zero
+  new queries and zero new endpoints; #9 needs 3 new query functions, 1-2 new endpoints,
+  and the repo's first gated GET. The `size:s` label may be optimistic — named below,
+  not silently re-scoped.
+- **`GET /api/public/facilities` returns `[]` today, correctly.** The one seeded
+  facility (Hassanabad BHU) has `geom IS NULL` — deliberately, per the workspace's
+  no-fabricated-coordinates rule (`seed-dev-data.ts`: no cited coordinate exists). The
+  existing query's `WHERE geom IS NOT NULL` filter is load-bearing (feeds `HazardMap`
+  markers) and documented as Open Data ("with a mapped location") — it must not be
+  touched. A separate admin query is required, not a judgment call.
+- **`chw_profiles` has 0 rows and zero references anywhere in all four repos** except
+  the migration that creates it and the one that drops it — stronger than #7's
+  `lake_risk_scores` finding. This shapes what the CHW profiles page can honestly show.
+- **⚠️ Auth and user data are both touched.** The new cases endpoint serves
+  patient-adjacent clinical fields and must be the repo's first gated GET — see the
+  named GATE decision below, not defaulted to the repo's existing all-ungated pattern.
+- **Working tree clean, branch `main`, up to date with `origin/main`** (task #8 pushed
+  as `60d8a7c`).
 
-## GATE decision: how `status`/`cleared_at` reach the admin page
+## GATE decision 1 (headline): auth posture for the cases endpoint
 
-The DoD requires showing cleared alerts distinctly. `listAllAlerts()` already returns
-cleared rows (no `WHERE`) but selects neither column.
+`cases` holds `patient_age`, `patient_sex`, `symptoms`, `diagnosis`, `treatment`,
+`outcome`. Every GET in this repo today is unauthenticated — a build agent following
+the existing pattern would default to an ungated endpoint serving clinical records. The
+workspace rule that justifies ungated Open Data is scoped specifically to safety
+information ("must never be gated") — patient records are the opposite category, and
+the PRD itself calls `cases` "clinical-adjacent."
 
-- **Option A (recommended) — add both columns to the existing `listAllAlerts()`.**
-  Additive to a shared query; the public page and Open Data consumers ignore unknown
-  fields. One commit, no new files. Cost: it's an additive change to a _documented_
-  public payload (`data.tsx`'s example response goes one line stale unless updated in
-  the same commit — recommended). Argument beyond convenience: whether an alert is
-  cleared is itself safety information, the exact category the workspace rule says must
-  never be gated behind auth ("Open Data endpoints are intentionally unauthenticated —
-  safety info must never be gated"). Publishing it is arguably a correction, not a leak.
-- **Option B — a new `listAllAlertsAdmin()` + a new admin-only endpoint.** Keeps the
-  public payload byte-identical. Cost: a near-duplicate query, a new route file,
-  `routeTree.gen.ts` churn, and a fresh auth-posture question this repo doesn't have
-  today (zero gated GETs besides #7's hazard-scores endpoint) — reintroducing #7's
-  entire GATE decision for a task that otherwise has none.
+**Recommendation: gate it**, admitting both `cryohealth_admin` and `facility_admin`
+(the sidebar's "Health workforce" group has `adminOnly: false`, so gating to
+`cryohealth_admin` only would make the nav lie to `facility_admin`). Use the exact
+`requireAuth` + `requireRole(claims, roles)` pattern already established at
+`api/public/alerts.ts:12-20` (two-argument `requireRole`, `claims` first — verified
+against `auth-guard.ts`, not guessed).
 
-**Recommendation: Option A**, with `data.tsx`'s example payload updated in the same
-commit.
+**Sub-decision 1a — where the handler lives:**
 
-## GATE decision: acknowledgement display — count, or count + names?
+- **Option A — add a `GET` to the existing `api/public/cases.ts`.** No new file, no
+  `routeTree.gen.ts` churn. Cost: a gated GET under a path segment literally named
+  `public`.
+- **Option B (recommended) — new `src/routes/api/admin/cases.ts`.** Honest path
+  naming, and it's the first file in the `api/admin/` directory the PRD already
+  anticipates. Cost: `routeTree.gen.ts` regenerates (mechanical), and it sets a
+  directory convention the rest of goal #3 should then follow.
 
-The DoD says acks shown "inline on each alert row as view-only." The existing
-`alerts.tsx:85` precedent already does a plain count via the ungated, undocumented
-`/api/public/alert-acks` — zero new code needed for that reading.
+**Sub-decision 1b — CHW attribution on the cases table: name or `lhwId`?** With one CHW
+in the system today, `lhwId` pseudonymizes nobody — it's a stable identifier trivially
+resolvable via Users & roles. Recommend showing `chw_name`, conditional on 1 landing
+gated (behind a gate, knowing which CHW logged a case is the view's supervisory
+purpose). If GATE instead chooses ungated, `lhwId` at most.
 
-- **Count only (recommended).** Fully served by existing code. Showing _who_
-  acknowledged would require a `users` join that doesn't exist anywhere in `queries.ts`
-  today, and would expose CHW identity via an endpoint that is currently ungated and
-  undocumented — a real privacy escalation, not a display change.
-- **Count + most-recent `acknowledged_at`.** `listAlertAcks()` already returns that
-  field — zero new data access, zero privacy escalation (no name, no uuid), more
-  audit-useful than a bare integer. Worth naming since PRD §5 frames these as audit
-  surfaces, but not required by the DoD's literal text.
-- **Declined: names.** Real scope growth (new query, privacy question) that overlaps
-  #9/#16 (CHW profiles, Users & roles) — a separate task, not this one.
+## GATE decision 2: what "CHW profiles" reads from
 
-**Recommendation: count only** (the DoD's literal reading), with count + latest
-timestamp as a cheap upgrade if GATE prefers it — both ship with zero new endpoints.
+- **Option A (recommended) — read `chw_profiles`.** Matches the PRD's domain mapping
+  exactly, zero PII escalation, ships an honest empty state naming that no service
+  writes this table yet (CHW-profiles CRUD, a later task, is what populates it).
+- **Option B — read `users WHERE role = 'chw'`.** Shows one real row, but duplicates
+  #16 (Users & roles) filtered by role, pulls `users` PII into a page the PRD scoped to
+  a different table, and both `phone`/`facilityId` are NULL on that one row anyway —
+  mostly `—` either way.
+- **Option C (compromise) — read `chw_profiles`, but the empty state links to Users &
+  roles** plus shows the live count of `role='chw'` users (`getKpis()` already returns
+  this, zero new cost). Gives the demo something true without duplicating the roster.
+
+**Recommendation: Option A, or C if GATE wants the page to feel less dead.** Either way,
+`passwordHash` never appears in a SELECT, and the endpoint stays ungated — under Option
+A/C the table has zero rows, so there's zero PII to protect and no reason to manufacture
+a second first-gated-GET decision in one task.
 
 ## What already exists (reused, not rebuilt)
 
-- Both target routes already exist as flat 9-line `AdminPlaceholder` files with no
+- All three target routes already exist as flat 9-line `AdminPlaceholder` files with no
   `.index`/`.$id` siblings — the DoD's naming already matches what's on disk. **Do not**
-  convert either into an `Outlet` parent (unlike #6/#7's `admin.lakes.tsx`-style
-  parents, these are leaf routes with no detail view).
-- All three data paths already exist and are wired: `listAllAlerts()` →
-  `GET /api/public/alerts`, `listAlertAcks()` → `GET /api/public/alert-acks`,
-  `listProtocols()` → `GET /api/public/protocols`. `listAllAlerts()` already joins
-  `lakes`/`districts` in-row — no second `useQuery` needed for those columns, unlike
-  #7's `listLakesAdmin()`.
-- `TierBadge`/`Tier` (`src/lib/tier.tsx`) — `alerts.tier` is already
-  `upper(a.tier::text)`, a DB enum, safe to feed directly with **no narrowing guard**
-  (do not copy `admin.lakes.$lakeId.tsx`'s `isTier()` — that guard exists because
-  `lake_risk_scores.tier` is unconstrained text; `alerts.tier` is constrained by the
-  database itself).
-- Structural precedent to copy file-for-file: `admin.districts.tsx` (flat table, no
-  filters — model for `admin.protocols.tsx`) and `admin.glaciers.index.tsx` (search +
-  filter bar + combined error banner — model for `admin.alerts.tsx`).
-- `alerts.tsx:85`'s `ackCount` filter expression — copy the expression only, not that
-  page's query options (`enabled: !!user`, a `user`-scoped `queryKey`); `admin.tsx`
-  already gates the whole `/admin` subtree, so the ack query here needs no auth
-  conditioning.
+  convert any into an `Outlet` parent (no detail views in this task).
+- Sidebar: `AdminShell.tsx:39-47` already has all three "Health workforce" nav entries
+  wired — no sidebar work needed.
+- Structural precedent: `admin.districts.tsx` (flat table, no filters — model for
+  Facilities and CHW profiles) and `admin.protocols.tsx` (badge column + `<details>`
+  expander, shipped in #8 — model for Cases, and the exact disaster-badge markup to
+  reuse verbatim).
+- `requireAuth`/`requireRole` pattern and `AuthError` catch shape, established at
+  `api/public/alerts.ts:12-20` — copy verbatim for the gated cases endpoint.
+- The global `DemoBanner` (`__root.tsx:151`) already discloses "Case and health records
+  shown are sample data" in both languages — **do not add a second banner** on
+  `admin.cases.tsx`.
+
+## Settled, not open: the `is_disaster_related` color question
+
+The DoD says the cases table must flag disaster-related rows "visibly, reusing the
+existing tier/critical color convention, not a new ad hoc red." This reads as
+ambiguous but isn't: `admin.protocols.tsx:101` (shipped in #8, same goal) already
+renders the identical `is_disaster` concept as a `--color-accent-soft`/
+`--color-accent-ink` pill labeled "Disaster" — **match it exactly**, same classes, same
+label. "Reusing the existing color convention" means using the design-system token
+machinery, not painting the row CRITICAL red; "not a new ad hoc red" is the same
+instruction stated prohibitively. `styles.css`'s design-system header is explicit: red
+means CRITICAL and nothing else, never a brand accent. A disaster-related _case_ is not
+a hazard _tier_. Two admin pages rendering the same disaster concept in two different
+colors would be a worse outcome than either color alone.
+
+Reviewer check: `grep -nE "color-critical|bg-red|text-red" src/routes/admin.cases.tsx`
+must return zero matches.
 
 ## NOT in scope (explicit non-goals)
 
-- No create/edit/delete on alerts, acks, or protocols — Alerts CRUD is #12, Protocols
-  CRUD is #13. Acknowledgements are view-only _permanently_ (PRD: "derived from CHW
-  action, not admin-authored"), not a placeholder for a future edit form.
-- No `src/lib/admin-schemas.ts` changes, no new `src/routes/api/admin/` directory, no
-  new endpoints, no PUT/DELETE anywhere.
-- No changes to `src/routes/alerts.tsx` (public feed/broadcast form), `chw.tsx`,
-  `admin.index.tsx`, or `open-alerts.ts`. The only shared file touched is
-  `src/lib/queries.ts` (Step 1), plus `data.tsx`'s example payload if GATE approves the
-  status/cleared_at Option A above.
-- No fixes for the two latent bugs found during exploration (§ below) — filed as a
-  follow-up issue instead, matching the #7 precedent for non-blocking findings.
-- No widening of `StatCard.tsx`'s shared `STATUS_CLASSES` map with `active`/`cleared`
-  keys — that map is documented as glacier-stability-specific; a local inline pill in
-  `admin.alerts.tsx` is the correct scope.
-- No `chips`/`checklist` in any SELECT — jsonb columns, not needed here, same
-  React-child hazard #7 handled for `hazard_scores.components`.
-- No migrations, no seeding, no cleanup of the pre-existing "test smoke check" alert
-  row (dev noise from earlier manual testing — leave it; it's a useful null-safety
-  case, since it has both `lake_name` and `district_name` NULL).
+- No create/edit/delete on any of the three domains — separate G3 CRUD tasks. No forms,
+  no `useMutation`, no PUT/PATCH/DELETE handlers.
+- No `src/lib/admin-schemas.ts` changes — the three schema stubs stay empty.
+- No migrations, no schema changes. In particular: do not add `cases.deleted_at` (a
+  later Cases-CRUD dependency per the PRD, not a #9 dependency — don't block on it), and
+  do not convert `facilities.district` into a FK (it's a plain varchar today; rendering
+  the string is correct, "fixing" it is a CryoHealth-api schema change).
+- No seeding, no fabricated data — specifically, do not invent a coordinate for
+  Hassanabad BHU to make the facilities page "look complete," and do not add
+  `chw_profiles` rows to make that page non-empty.
+- No changes to `listFacilities()`, `listDisasterCasesForDistrict()`, `insertCase()`,
+  `getKpis()`, `lakes.tsx`, `HazardMap.tsx`, `chw.tsx`, `admin.index.tsx`, or
+  `data.tsx` (including _not_ adding either new endpoint to the Open Data catalogue —
+  the cases one explicitly isn't public data, and the facilities-admin one duplicates
+  an existing documented entry).
+- No fix for the two latent bugs found during exploration (`chw.tsx`'s tier-red disaster
+  chip; `data.tsx`'s facilities example payload showing fabricated-looking coordinates
+  against a `[]`-returning endpoint) — roll into #8's existing follow-up issue after
+  this ships, don't fix here.
+- No auth-infrastructure changes beyond the new endpoint's own guard — no changes to
+  `auth-guard.ts`, `jwt.ts`, or `admin.tsx`'s client-side gate.
+- No `TierBadge`/`Tier`/`isTier` anywhere in this task — none of the three tables has a
+  tier column; `facilities.vulnerability` is free text, not a hazard tier.
+- No transform on `cases.diagnosis`/`cases.treatment` beyond `?? "—"` — no
+  summarization, no AI-assist, ever (this is exactly the domain the dosing/diagnosis
+  lookup-table-only rule protects; read-only makes it automatic here, stated anyway).
+- No `SELECT *` and no `passwordHash` in any query this task adds.
 - No `loader:` introduction — repo convention is uniformly `useQuery`.
-- No `isTier` guard and no fallback branch added to `tier.tsx` itself.
-- No AI-assist / "improve wording" affordance on protocols, ever (PRD, both CLAUDE.md
-  files: dosing/diagnosis text is lookup-table-only). Trivially satisfied by read-only,
-  stated because this task's subject matter is exactly what that rule protects.
 
 ## Known traps from the planner's findings
 
-- **No numeric-as-string trap in this task** (notable absence vs. #6/#7) — zero
-  `numeric` columns across `alerts`/`alert_acknowledgements`/`protocols`.
-  `affected_population` is a real `integer`, `is_disaster` a real `boolean`. Do not add
-  defensive `Number(...)` wrappers where none are needed.
-  - **`upper()` on an enum column without `::text` throws at parse time** — verified
-    live (`ERROR: function upper(tier) does not exist`). `listAllAlerts` already gets
-    `tier` right; the new `status::text` column is where this mistake would land if
-    copied wrong. Cast is required, and `"clearedAt"` needs double-quoting (camelCase
-    column), same as the existing `"createdAt"`/`"lakeId"` in that query.
-  - **Keep `status` lowercase** (`a.status::text`, no `upper()`) — format for display in
-    the UI, don't uppercase in SQL. Unlike `tier`, `TierBadge` doesn't consume `status`.
-  - `lake_name`/`district_name` are `LEFT JOIN` results and **are genuinely NULL on a
-    live seeded row** (the "test smoke check" alert) — type them `string | null`, not
-    `string`, and guard before any `.toLowerCase()` in a search filter.
-  - `protocols.body` is long multi-line text (up to 454 chars, `\n`-joined `STEP N ·`
-    lines) — a naive `TableCell` renders it as one unreadable line and breaks table
-    width. Needs truncate + expand with `whitespace-pre-line`, not a raw render.
-  - **Cleared-alert visual treatment must not use tier-red.** Workspace CLAUDE.md: "Red
-    alert severity means CRITICAL and nothing else — never repurpose it." Same trap
-    exists in `chw.tsx:133`'s disaster-protocol chip (not touched by this task, but
-    don't copy that line as a pattern for the protocols "Disaster" column either — use
-    a neutral or `--color-accent-soft` pill for both).
-  - Format `created_at`/`cleared_at` as dates, never raw ISO strings — this is exactly
-    the bug #7's fix-loop commit `0682013` fixed; don't reintroduce it here.
-
-## Two live latent bugs found (not fixed here — filed as a follow-up)
-
-1. **`listOpenAlerts()` has no status filter** — `WHERE tier IN ('high','critical')`
-   with no `AND status = 'active'`. `chw.tsx` renders this under "No active
-   HIGH/CRITICAL alerts," so a cleared HIGH/CRITICAL alert would show as active to a
-   CHW. A genuine, if currently invisible (no cleared HIGH/CRITICAL exists in dev
-   today), safety-UX bug. Out of scope — `chw.tsx` isn't touched by this task.
-2. **Cleared alerts render identically to active ones on two public surfaces** — the
-   public `/alerts` feed and the public lake-detail page (via `listAlertsForLake()`,
-   which also omits `status`). Live today: the seeded cleared Khurdopin alert appears
-   current on both. Out of scope per the DoD ("no changes to the public /alerts page
-   unless truly required") — but if GATE approves this task's Option A, the _feed_
-   half becomes trivial to fix later since `status` would already be in the payload;
-   `listAlertsForLake()` would still need its own column added separately. The
-   follow-up issue must name both call sites so a future fix doesn't close it half-done.
-
-File one follow-up issue covering both after this task ships, same pattern as #27/#28/#29.
+- **`facilities.district` is a bare `varchar`, not a FK** — unlike every other table in
+  this codebase. A pattern-matched join (`LEFT JOIN districts ON d.id = f.district`)
+  throws `operator does not exist: uuid = character varying` — a 500 at query time.
+  Render the string directly.
+- **Mixed column casing across all three tables.** `facilities` uses camelCase
+  (`"createdAt"`, `"lakeId"`, must be double-quoted); `cases` and `chw_profiles` are
+  fully snake_case; `users` mixes both. An unquoted camelCase identifier fails at parse
+  time.
+- **`users.role` is a DB enum** — `upper(role)` throws at parse time exactly like the
+  bug this project has hit before. `WHERE role = 'chw'` is fine; any text function
+  needs `::text`. Only relevant if GATE decision 2 picks Option B.
+- **No numeric-as-string trap in this task** (contrast #6/#7) — zero `numeric` columns
+  across all three tables; `patient_age` is a real `integer`.
+- **Six of eleven `cases` columns are nullable, three are NULL in live data**
+  (`diagnosis` on two rows, `treatment` on one). Type them `| null`, render `—`, don't
+  let `tsc` pass on an untyped `res.json()` value typed too narrowly.
+- **`passwordHash` must never appear in any SELECT, row type, or JSON response** —
+  `queries.ts` has no user-read function today; this task would introduce the first
+  one (only if GATE decision 2 picks Option B). Enumerate columns explicitly.
+- **Empty must be distinguishable from error**, especially on `/admin/chw-profiles`
+  (0 rows by design). This exact bug consumed #6's fix-loop budget (`0682013`'s sibling
+  commit `28a0f77`) — don't reintroduce it.
 
 ## Test coverage note
 
 No test framework in this repo. `bunx tsc --noEmit && bun run lint` passes on the
 current placeholders, so per-step verification pairs it with something that can
-actually fail today: live `curl`/`jq` checks against the dev server (origin read off
-the `bun dev` banner — never assume `:5173`, and never `:3000`, which is
-CryoHealth-api), and a mechanical grep for edit/mutation affordances on both new files.
+actually fail today — direct `psql` checks of each new query's exact SQL (catches the
+`district` join trap and any casing/enum error at parse time, not as a later 500), live
+`curl` checks of each new endpoint including the 401 assertion on the gated one, and a
+mechanical grep for edit affordances on all three new files.
 
 ## Steps
 
 ### Step 0 — pre-flight (not a commit)
 
-Confirm, don't assume: `bunx tsc --noEmit && bun run lint` green on `HEAD` _before any
-edit_ (establishes the baseline so a pre-existing failure isn't misattributed to Step
-1); `bun dev` up, Postgres on `DB_PORT=5433`, seed run; `/admin/alerts` and
-`/admin/protocols` currently render `AdminPlaceholder`; re-confirm
-`CryoHealth-api/src/alerts/alerts.service.ts:167` is still the only `status='cleared'`
-writer.
-**Verify:** all hold. Note the actual dev-server origin as `$DEV_URL`. Live counts:
+Confirm, don't assume: `bunx tsc --noEmit && bun run lint` green on `HEAD` before any
+edit; `bun dev` up, Postgres on `DB_PORT=5433`, seed run; all three target routes
+currently render `AdminPlaceholder`.
+**Verify:** note `$DEV_URL` from the dev-server banner (never `:3000`, that's
+CryoHealth-api).
 
 ```bash
-curl -s "$DEV_URL/api/public/alerts"     | jq '.alerts | length'   # ≥3 (4 in this dev DB)
-curl -s "$DEV_URL/api/public/alert-acks" | jq '.acks | length'     # 1
-curl -s "$DEV_URL/api/public/protocols"  | jq '.protocols | map(.slug)'  # glof-evacuation-checklist first
+curl -s "$DEV_URL/api/public/facilities" | jq '.facilities | length'   # 0 — the live trap
+curl -s "$DEV_URL/api/public/cases"      | jq .                        # no GET handler
+psql -h localhost -p 5433 -U cryohealth -d cryohealth \
+  -c "select count(*) from facilities;" -c "select count(*) from cases;" \
+  -c "select count(*) from chw_profiles;"                              # 1, 4, 0
 ```
 
-### Step 1 — `listAllAlerts()`: add `status` + `cleared_at`
+### Step 1 — three new read functions in `src/lib/queries.ts`
 
-`src/lib/queries.ts:126-138`: add `a.status::text AS status, a."clearedAt" AS
-cleared_at` to the SELECT. No other change — no `WHERE`, no `ORDER BY` change. If GATE
-approved Option A, update `src/routes/data.tsx`'s alerts example payload in the same
-commit.
+Add `listFacilitiesAdmin()`, `listCasesAdmin(limit = 200)`, and (per GATE decision 2)
+`listChwProfiles()`. Do not modify `listFacilities()` or
+`listDisasterCasesForDistrict()`. Double-quote every camelCase identifier. No
+`SELECT *`, no `passwordHash`.
+**Verify:** `bunx tsc --noEmit && bun run lint`, plus direct `psql` checks of each
+SELECT verbatim — facilities: 1 row, `has_geom = f`, `district = 'Hunza'`; cases: 4
+rows, exactly one `is_disaster_related = t`; chw_profiles: 0 rows, no error (proves the
+joins don't throw on an empty table).
+
+### Step 2 — `GET /api/public/facilities-admin` (new endpoint, ungated)
+
+New route returning `{ facilities: await listFacilitiesAdmin() }`, mirroring
+`api/public/lakes-admin.ts`'s 10-line shape. Facilities are infrastructure reference
+data, not PII — ungated is consistent with the existing admin-variant pattern. Do not
+add to `data.tsx`'s Open Data catalogue.
+**Verify:** `bunx tsc --noEmit && bun run lint`.
+
+```bash
+curl -s "$DEV_URL/api/public/facilities-admin" | jq '.facilities | length'   # 1
+curl -s "$DEV_URL/api/public/facilities"       | jq '.facilities | length'   # still 0 — unchanged
+```
+
+The second line is load-bearing: proves the public/map payload wasn't disturbed.
+
+### Step 3 — the cases endpoint, gated (per GATE decision 1)
+
+Per 1/1a: new `src/routes/api/admin/cases.ts` GET, wrapped in `requireAuth` +
+`requireRole(claims, ["cryohealth_admin", "facility_admin"])` inside the same
+`AuthError` catch pattern as `api/public/alerts.ts`. Returns
+`{ cases: await listCasesAdmin() }`. Do not touch the existing POST handler in
+`api/public/cases.ts`. Do not add to `data.tsx`.
 **Verify:** `bunx tsc --noEmit && bun run lint`, plus:
 
 ```bash
-curl -s "$DEV_URL/api/public/alerts" | jq '.alerts[] | {title, status, cleared_at}'
-# → exactly one row status "cleared" with a non-null cleared_at (Khurdopin drainage slowing)
-# → the rest "active" with cleared_at null
+curl -s -o /dev/null -w '%{http_code}\n' "$DEV_URL/api/admin/cases"   # 401, no token
+ADMIN_JWT=$(curl -s -X POST "$DEV_URL/api/auth/login" -H 'content-type: application/json' \
+  -d '{"identifier":"admin-001","password":"1234"}' | jq -r .accessToken)
+curl -s -H "Authorization: Bearer $ADMIN_JWT" "$DEV_URL/api/admin/cases" | jq '.cases | length'   # 4
+curl -s -H "Authorization: Bearer $ADMIN_JWT" "$DEV_URL/api/admin/cases" \
+  | jq '[.cases[] | select(.is_disaster_related)] | length'   # 1
+curl -s -H "Authorization: Bearer $ADMIN_JWT" "$DEV_URL/api/admin/cases" \
+  | jq '[.cases[] | has("passwordHash")] | any'   # false
 ```
 
-Load-bearing: HTTP 200 with both keys present, never a 500 (a 500 means the enum cast
-was written wrong — `upper(a.status)` instead of `a.status::text`). Then reload the
-public `/alerts` page and confirm it's visually unchanged — new fields must not break it.
+The 401 assertion is the one a build pass would otherwise skip — it's the whole point
+of this step.
 
-### Step 2 — `admin.alerts.tsx`: real table
+### Step 4 — `admin.facilities.tsx`: real table
 
-Replace the placeholder. Two `useQuery`s (`admin-alerts` → `/api/public/alerts`,
-`admin-alert-acks` → `/api/public/alert-acks`), plain `fetch` with `isError` handling.
-`ackCount` copied from `alerts.tsx:85`'s filter expression only. Search + tier filter +
-status filter (default ALL — required for "including cleared" to actually show by
-default). Combined `isError` amber banner, shadcn `Table` with house styling
-(`max-w-7xl`, per `admin.glaciers.index.tsx`). Columns: Tier (`TierBadge`, bare), Title
-(not a link — no detail route), Status (+ formatted `cleared_at` on cleared rows,
-neutral pill, never tier-red), Target (`lake_name ?? district_name ?? "—"`), Window,
-Affected (`.toLocaleString()`, no `Number()` needed — real integer), Acks (`ackCount`,
-plain count, no button), Issued (formatted date).
-**Verify:** `bunx tsc --noEmit && bun run lint`. Manual at `/admin/alerts`: ≥4 rows, one
-cleared (Khurdopin, WATCH) visible with status filter on ALL; tier badges match seed
-data (CRITICAL/HIGH/WATCH/NORMAL); ack column shows `1` on "Meltwater surge in
-Hassanabad", `0` elsewhere; "test smoke check" row renders `—` for both lake and
-district; dates formatted, not raw ISO; status filter set to `cleared` leaves exactly
-one row; no-affordance grep (below) clean.
+Replace the placeholder. One `useQuery` → `/api/public/facilities-admin`, plain
+`fetch`. Structure copied from `admin.districts.tsx`. Columns: Name, Type, District
+(the raw string, no join), Vulnerability (plain text, not `TierBadge`), Mapped
+(`has_geom` → "Yes"/"No location" — the honest surfacing of the NULL-geom fact),
+Lat/Lng (`| null` → `—`), Contact (`| null` → `—`), Added (formatted date).
+**Verify:** `bunx tsc --noEmit && bun run lint`. Manual at `/admin/facilities`: 1 row,
+Hassanabad BHU, type `bhu`, district `Hunza`, vulnerability `high`, Mapped reads "No
+location" (proves the new endpoint is in use, not the old `[]`-returning one), contact
+renders `—` not "null", date formatted. No-affordance grep clean.
 
-### Step 3 — `admin.protocols.tsx`: real table
+### Step 5 — `admin.chw-profiles.tsx`: real table (per GATE decision 2)
 
-Replace the placeholder. One `useQuery` (`admin-protocols` → `/api/public/protocols`).
-Structure copied from `admin.districts.tsx`. Columns: Title, Category, Disaster
-(neutral/accent badge on `true`, `—` on `false` — **not** tier-red, not `chw.tsx:133`'s
-pattern), Source, Slug (`font-mono text-xs`), Body (truncate + expand,
-`whitespace-pre-line` when expanded), Created (formatted date). Preserve server-side
-`is_disaster DESC` order — no client-side re-sort.
-**Verify:** `bunx tsc --noEmit && bun run lint`. Manual at `/admin/protocols`: 2 rows,
-`glof-evacuation-checklist` first (proves order preserved); IMCI body shows its 4
-`STEP N ·` lines on separate lines when expanded, doesn't blow out collapsed row width;
-grep the file for `color-critical` → zero matches; no-affordance grep clean.
+Replace the placeholder. One `useQuery` → the chw-profiles endpoint, plain `fetch`
+(ungated per decision 2). Structure copied from `admin.districts.tsx`. Under Option
+A/C the page renders its empty state — that copy is the actual deliverable, and it must
+name that no service writes `chw_profiles` yet (not fabricate rows, not silently fall
+back to `users`).
+**Verify:** `bunx tsc --noEmit && bun run lint`. Manual at `/admin/chw-profiles`:
+renders the honest empty state (not an infinite loading spinner, not an error banner —
+this is exactly the empty-vs-error distinction #6's fix loop existed for), Network
+shows HTTP 200 with an empty array, not a 4xx/5xx. `grep -n "passwordHash"
+src/lib/queries.ts src/routes/admin.chw-profiles.tsx` → zero matches. No-affordance
+grep clean.
 
-### Step 4 — cleanup
+### Step 6 — `admin.cases.tsx`: real table with the disaster flag
 
-`graphify update .` so the graph reflects both real page bodies. No removal step —
-nothing is superseded; the public `/alerts` page and `chw.tsx` both stay untouched.
-**Verify:** `graphify query "admin alerts acknowledgements table"` surfaces
-`admin.alerts.tsx` as a real component node (today it resolves only to
-`AdminPlaceholder`). `bun run build` succeeds.
+Replace the placeholder. One `useQuery` against the gated endpoint using **`authFetch`**
+(`src/lib/auth-client.ts:51`), not bare `fetch` — the one place in this task where #8's
+"plain fetch, all GETs are ungated" guidance does not carry over. Structure copied from
+`admin.protocols.tsx`. Columns: Logged (formatted date, server already sorts DESC),
+Disaster (the `admin.protocols.tsx:101` accent pill, exact classes, label "Disaster",
+`—` on false), Patient (`age · sex`, both nullable → `—`), Symptoms (`<details>`
+expander per the protocols precedent), Diagnosis/Treatment/Outcome (`?? "—"`, verbatim
+from the DB, no transform), District (`| null` → `—`), CHW (name or lhwId per
+sub-decision 1b). No filter bar — 4 live rows doesn't justify one.
+**Verify:** `bunx tsc --noEmit && bun run lint`. Manual at `/admin/cases`: 4 rows,
+newest first; exactly one row carries the Disaster badge; `grep -nE
+"color-critical|bg-red|text-red" src/routes/admin.cases.tsx` → zero matches; badge
+markup visually matches `admin.protocols.tsx`; NULL fields render `—` not "null"; the
+global `DemoBanner` is visible, no second banner added; **sign out and reload** →
+blocked/redirected, and the endpoint returns 401 in Network (proves the gate is
+server-side, not just the client route guard). No-affordance grep clean.
 
-## Mechanical no-affordance check (used across Steps 2-3)
+### Step 7 — cleanup
+
+`graphify update .` so the graph reflects three real page bodies, three new query
+functions, and the new endpoint(s). No removal step — nothing is superseded;
+`listFacilities()`, `listDisasterCasesForDistrict()`, and `chw.tsx` all stay untouched.
+**Verify:** `graphify query "admin cases disaster related table"` surfaces
+`admin.cases.tsx` as a real component node. `bun run build` succeeds.
+
+## Mechanical no-affordance check (used across Steps 4-6)
 
 ```bash
-grep -nE "<button|onClick|<form|Trash|Pencil|Edit|Delete|useMutation" \
-  src/routes/admin.alerts.tsx src/routes/admin.protocols.tsx
+grep -nE "<form|useMutation|Trash|Pencil|Edit|Delete|method=\"post\"" \
+  src/routes/admin.facilities.tsx src/routes/admin.chw-profiles.tsx src/routes/admin.cases.tsx
 ```
 
-Permitted matches: filter pills, a search input's clear control, a `<details>`-style
-body expander — all read-only view state, not edit affordances. Don't strip search
-boxes/selects to force a clean grep. `useMutation` must have zero matches anywhere.
+`useMutation` and `<form>` must have zero matches anywhere. Permitted matches: a
+`<details>` body expander's read-only `onClick`.
 
 ## Human verification checklist
 
-Run `bun dev`, log in as `cryohealth_admin` (or `facility_admin` — identical read access
-per this task's scope):
+Run `bun dev`, log in as `cryohealth_admin` (or `facility_admin` — identical read
+access per this task's scope, including Cases):
 
-- [ ] `/admin/alerts` — ≥4 rows, one cleared alert visible and visually distinguished
-      without using tier-red, status filter defaults to ALL, filtering to `cleared`
-      isolates it, ack counts correct (1 on Meltwater surge, 0 elsewhere)
-- [ ] `/admin/protocols` — 2 rows, disaster protocol first, body text readable
-      (truncated + expandable), no tier-red on the disaster badge
-- [ ] No create/edit/delete UI anywhere on either page
-- [ ] Dark mode toggle — `TierBadge` colors still change on the alerts table
-- [ ] `facility_admin` login reaches both routes without a 403
-- [ ] Public `/alerts` page still renders correctly after Step 1's query change (no
-      visual regression from the two added fields)
+- [ ] `/admin/facilities` — 1 row, Mapped column reads "No location", contact/lat/lng
+      render `—` not "null"
+- [ ] `/admin/chw-profiles` — honest empty state naming that no service writes this
+      table yet, not an infinite spinner or error
+- [ ] `/admin/cases` — 4 rows, exactly one Disaster badge (accent color, not red),
+      diagnosis/treatment render verbatim with `—` on NULL, global demo banner visible
+- [ ] Sign out, try `/admin/cases` directly — blocked, and the endpoint 401s
+- [ ] `facility_admin` login reaches all three routes including Cases without a 403
+- [ ] Dark mode toggle — disaster badge color still renders correctly on both
+      `/admin/cases` and `/admin/protocols`
 
 ## Rollback
 
-Each step is one commit; revert in reverse order (4→3→2→1). Steps 2 and 3 each touch
-exactly one placeholder route file — safe to revert independently. Step 1 changes a
-shared query (`listAllAlerts`) consumed by the public `/alerts` page too — revert it
-last if Steps 2/3 are already live, since the admin page's status filter depends on the
-columns it adds. No migrations, no generated-route-tree conflicts (no new route files
-in this task, unlike #7).
+Each step is one commit; revert in reverse order (7→1). Steps 1's three new functions
+are purely additive — no existing function's body changes, so a revert can't break an
+existing consumer. Steps 2-6 each touch one new file or one placeholder route — safe to
+revert independently. Step 3 (the gated endpoint) is the one step with real blast
+radius if reverted after Step 6 ships — the cases page would start 401ing; revert in
+commit order, not cherry-picked.
 
-## Follow-ups to file (not part of this task, don't fix here)
+## Sizing note
 
-- `listOpenAlerts()` has no `status` filter — a cleared HIGH/CRITICAL alert would
-  render as active on `chw.tsx`. Currently invisible (no such row exists in dev) but a
-  real latent safety-UX bug.
-- Cleared alerts render identically to active ones on the public `/alerts` feed and the
-  public lake-detail page (`listAlertsForLake()`, which also omits `status`). File one
-  issue naming both call sites so a future fix doesn't close it half-done.
+The `size:s` label may be optimistic — #8 needed zero new queries/endpoints; this task
+needs three new query functions, 1-2 new endpoints, and the repo's first gated GET
+(7 commits vs. #8's 4). Not silently re-scoping, naming it here: if the session runs
+long, the separable piece is **Cases** (Steps 3 and 6, the only part carrying the auth
+decision) — Facilities + CHW profiles (Steps 1a/1b, 2, 4, 5) stand alone as a smaller,
+coherent commit set if a split becomes necessary.
 
 ## Loop budget & escalation
 
-Loop budget: 3 (fix loop), copied from issue #8.
+Loop budget: 3 (fix loop), copied from issue #9.
 Escalation: budget exhausted or two identical failure signatures → label
 `agent:needs-human`, comment the trail, stop.
