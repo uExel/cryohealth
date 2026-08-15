@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import type postgres from "postgres";
 
 /** Server-only data-access helpers. Import only inside `server.handlers` route
  *  functions — postgres.js needs Node's `net`/`tls` and must never reach the client bundle. */
@@ -275,4 +276,261 @@ export async function listHotLakes() {
     WHERE "currentTier" IN ('high', 'critical')
     ORDER BY current_risk_score DESC NULLS LAST
   `;
+}
+
+/** Thrown by delete*() functions when dependent rows exist — the DB itself never
+ *  refuses (districts' FKs are ON DELETE SET NULL, glaciers' is ON DELETE CASCADE),
+ *  so this is the only thing standing between a click and silent data loss. */
+export class HasDependentsError extends Error {
+  constructor(public dependents: Record<string, number>) {
+    super("Cannot delete: dependent rows exist");
+  }
+}
+
+/** Inserts one `audit` row. Takes an existing sql handle (top-level or a `sql.begin`
+ *  transaction handle) rather than calling getDb() itself, so every write function
+ *  below can enroll the audit insert in the same transaction as its mutation —
+ *  never mutate-then-audit as two separate statements. */
+async function writeAudit(
+  sql: postgres.ISql,
+  input: {
+    actorId: string;
+    action: string;
+    entityType: string;
+    entityId: string;
+    reason?: string | null;
+    meta?: postgres.JSONValue | null;
+  },
+) {
+  await sql`
+    INSERT INTO audit ("actorId", action, "entityType", "entityId", reason, meta)
+    VALUES (${input.actorId}, ${input.action}, ${input.entityType}, ${input.entityId}, ${input.reason ?? null}, ${input.meta ? sql.json(input.meta) : null})
+  `;
+}
+
+export async function createDistrict(input: {
+  name: string;
+  province: string;
+  population: number | null;
+  centroidLat: number | null;
+  centroidLng: number | null;
+  actorId: string;
+}) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`
+      INSERT INTO districts (name, province, population, centroid_lat, centroid_lng)
+      VALUES (${input.name}, ${input.province}, ${input.population}, ${input.centroidLat}, ${input.centroidLng})
+      RETURNING id, name, province, population, centroid_lat, centroid_lng
+    `;
+    const district = rows[0];
+    await writeAudit(sql, {
+      actorId: input.actorId,
+      action: "district.create",
+      entityType: "District",
+      entityId: district.id,
+      meta: { created: { name: input.name, province: input.province } },
+    });
+    return district;
+  });
+}
+
+export async function updateDistrict(
+  id: string,
+  patch: Partial<{
+    name: string;
+    province: string;
+    population: number | null;
+    centroid_lat: number | null;
+    centroid_lng: number | null;
+  }>,
+  actorId: string,
+) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const before = (
+      await sql`
+        SELECT name, province, population, centroid_lat, centroid_lng
+        FROM districts WHERE id = ${id}
+      `
+    )[0];
+    if (!before) return null;
+
+    const rows = await sql`
+      UPDATE districts SET ${sql(patch)}
+      WHERE id = ${id}
+      RETURNING id, name, province, population, centroid_lat, centroid_lng
+    `;
+    const after = rows[0];
+
+    const changed: Record<string, { from: postgres.JSONValue; to: postgres.JSONValue }> = {};
+    for (const key of Object.keys(patch)) {
+      if (before[key] !== after[key]) changed[key] = { from: before[key], to: after[key] };
+    }
+    await writeAudit(sql, {
+      actorId,
+      action: "district.update",
+      entityType: "District",
+      entityId: id,
+      meta: Object.keys(changed).length ? { changed } : null,
+    });
+    return after;
+  });
+}
+
+export async function deleteDistrict(id: string, reason: string, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const [[alerts], [cases], [chwProfiles], [glaciers], [lakes]] = await Promise.all([
+      sql`SELECT count(*)::int AS n FROM alerts WHERE district_id = ${id}`,
+      sql`SELECT count(*)::int AS n FROM cases WHERE district_id = ${id}`,
+      sql`SELECT count(*)::int AS n FROM chw_profiles WHERE district_id = ${id}`,
+      sql`SELECT count(*)::int AS n FROM glaciers WHERE district_id = ${id}`,
+      sql`SELECT count(*)::int AS n FROM lakes WHERE district_id = ${id}`,
+    ]);
+    const dependents = {
+      alerts: alerts.n,
+      cases: cases.n,
+      chw_profiles: chwProfiles.n,
+      glaciers: glaciers.n,
+      lakes: lakes.n,
+    };
+    if (Object.values(dependents).some((n) => n > 0)) {
+      throw new HasDependentsError(dependents);
+    }
+
+    const rows = await sql`DELETE FROM districts WHERE id = ${id} RETURNING id`;
+    if (!rows[0]) return null;
+    await writeAudit(sql, {
+      actorId,
+      action: "district.delete",
+      entityType: "District",
+      entityId: id,
+      reason,
+    });
+    return rows[0].id;
+  });
+}
+
+export async function createGlacier(input: {
+  name: string;
+  rgiId: string | null;
+  glimsId: string | null;
+  districtId: string | null;
+  lat: number;
+  lng: number;
+  areaKm2: number | null;
+  lengthKm: number | null;
+  elevationMinM: number | null;
+  elevationMaxM: number | null;
+  status: string;
+  terminusType: string | null;
+  source: string;
+  lastObserved: string | null;
+  notes: string | null;
+  actorId: string;
+}) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`
+      INSERT INTO glaciers (
+        name, rgi_id, glims_id, district_id, lat, lng, area_km2, length_km,
+        elevation_min_m, elevation_max_m, status, terminus_type, source, last_observed, notes
+      )
+      VALUES (
+        ${input.name}, ${input.rgiId}, ${input.glimsId}, ${input.districtId}, ${input.lat}, ${input.lng},
+        ${input.areaKm2}, ${input.lengthKm}, ${input.elevationMinM}, ${input.elevationMaxM},
+        ${input.status}, ${input.terminusType}, ${input.source}, ${input.lastObserved}, ${input.notes}
+      )
+      RETURNING id
+    `;
+    const glacier = rows[0];
+    await writeAudit(sql, {
+      actorId: input.actorId,
+      action: "glacier.create",
+      entityType: "Glacier",
+      entityId: glacier.id,
+      meta: { created: { name: input.name, status: input.status, source: input.source } },
+    });
+    return glacier;
+  });
+}
+
+export async function updateGlacier(
+  id: string,
+  patch: Partial<{
+    name: string;
+    rgi_id: string | null;
+    glims_id: string | null;
+    district_id: string | null;
+    lat: number;
+    lng: number;
+    area_km2: number | null;
+    length_km: number | null;
+    elevation_min_m: number | null;
+    elevation_max_m: number | null;
+    status: string;
+    terminus_type: string | null;
+    source: string;
+    last_observed: string | null;
+    notes: string | null;
+  }>,
+  actorId: string,
+) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const before = (
+      await sql`
+        SELECT name, rgi_id, glims_id, district_id, lat, lng, area_km2, length_km,
+               elevation_min_m, elevation_max_m, status, terminus_type, source, last_observed, notes
+        FROM glaciers WHERE id = ${id}
+      `
+    )[0];
+    if (!before) return null;
+
+    const rows = await sql`
+      UPDATE glaciers SET ${sql(patch)}
+      WHERE id = ${id}
+      RETURNING id, name, rgi_id, glims_id, district_id, lat, lng, area_km2, length_km,
+                elevation_min_m, elevation_max_m, status, terminus_type, source, last_observed, notes
+    `;
+    const after = rows[0];
+
+    const changed: Record<string, { from: postgres.JSONValue; to: postgres.JSONValue }> = {};
+    for (const key of Object.keys(patch)) {
+      if (before[key] !== after[key]) changed[key] = { from: before[key], to: after[key] };
+    }
+    await writeAudit(sql, {
+      actorId,
+      action: "glacier.update",
+      entityType: "Glacier",
+      entityId: id,
+      meta: Object.keys(changed).length ? { changed } : null,
+    });
+    return after;
+  });
+}
+
+export async function deleteGlacier(id: string, reason: string, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const [[observations]] = await Promise.all([
+      sql`SELECT count(*)::int AS n FROM glacier_observations WHERE glacier_id = ${id}`,
+    ]);
+    const dependents = { glacier_observations: observations.n };
+    if (Object.values(dependents).some((n) => n > 0)) {
+      throw new HasDependentsError(dependents);
+    }
+
+    const rows = await sql`DELETE FROM glaciers WHERE id = ${id} RETURNING id`;
+    if (!rows[0]) return null;
+    await writeAudit(sql, {
+      actorId,
+      action: "glacier.delete",
+      entityType: "Glacier",
+      entityId: id,
+      reason,
+    });
+    return rows[0].id;
+  });
 }
