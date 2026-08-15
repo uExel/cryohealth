@@ -113,7 +113,7 @@ const ENDPOINTS: Endpoint[] = [
     method: "GET",
     path: "/api/public/districts",
     desc: "Reference list of districts and their province, used to filter every other endpoint.",
-    example: `{ "districts": [{ "id": "hunza", "name": "Hunza", "province": "Gilgit-Baltistan" }] }`,
+    example: `{ "districts": [{ "id": "hunza", "name": "Hunza", "province": "Gilgit-Baltistan", "population": null }] }`,
   },
   {
     method: "GET",

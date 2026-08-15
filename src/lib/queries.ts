@@ -6,7 +6,7 @@ import type postgres from "postgres";
 
 export async function listDistricts() {
   const sql = await getDb();
-  return sql`SELECT id, name, province FROM districts ORDER BY name`;
+  return sql`SELECT id, name, province, population FROM districts ORDER BY name`;
 }
 
 export async function listGlaciers() {
