@@ -42,8 +42,10 @@ import { Route as ApiPublicLakesRouteImport } from './routes/api/public/lakes'
 import { Route as ApiPublicKpisRouteImport } from './routes/api/public/kpis'
 import { Route as ApiPublicHotLakesRouteImport } from './routes/api/public/hot-lakes'
 import { Route as ApiPublicGlaciersRouteImport } from './routes/api/public/glaciers'
+import { Route as ApiPublicFacilitiesAdminRouteImport } from './routes/api/public/facilities-admin'
 import { Route as ApiPublicFacilitiesRouteImport } from './routes/api/public/facilities'
 import { Route as ApiPublicDistrictsRouteImport } from './routes/api/public/districts'
+import { Route as ApiPublicChwProfilesRouteImport } from './routes/api/public/chw-profiles'
 import { Route as ApiPublicCasesRouteImport } from './routes/api/public/cases'
 import { Route as ApiPublicAlertsRouteImport } from './routes/api/public/alerts'
 import { Route as ApiPublicAlertAcksRouteImport } from './routes/api/public/alert-acks'
@@ -219,6 +221,12 @@ const ApiPublicGlaciersRoute = ApiPublicGlaciersRouteImport.update({
   path: '/api/public/glaciers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicFacilitiesAdminRoute =
+  ApiPublicFacilitiesAdminRouteImport.update({
+    id: '/api/public/facilities-admin',
+    path: '/api/public/facilities-admin',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicFacilitiesRoute = ApiPublicFacilitiesRouteImport.update({
   id: '/api/public/facilities',
   path: '/api/public/facilities',
@@ -227,6 +235,11 @@ const ApiPublicFacilitiesRoute = ApiPublicFacilitiesRouteImport.update({
 const ApiPublicDistrictsRoute = ApiPublicDistrictsRouteImport.update({
   id: '/api/public/districts',
   path: '/api/public/districts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicChwProfilesRoute = ApiPublicChwProfilesRouteImport.update({
+  id: '/api/public/chw-profiles',
+  path: '/api/public/chw-profiles',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicCasesRoute = ApiPublicCasesRouteImport.update({
@@ -308,8 +321,10 @@ export interface FileRoutesByFullPath {
   '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
   '/api/public/cases': typeof ApiPublicCasesRoute
+  '/api/public/chw-profiles': typeof ApiPublicChwProfilesRoute
   '/api/public/districts': typeof ApiPublicDistrictsRoute
   '/api/public/facilities': typeof ApiPublicFacilitiesRoute
+  '/api/public/facilities-admin': typeof ApiPublicFacilitiesAdminRoute
   '/api/public/glaciers': typeof ApiPublicGlaciersRouteWithChildren
   '/api/public/hot-lakes': typeof ApiPublicHotLakesRoute
   '/api/public/kpis': typeof ApiPublicKpisRoute
@@ -351,8 +366,10 @@ export interface FileRoutesByTo {
   '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
   '/api/public/cases': typeof ApiPublicCasesRoute
+  '/api/public/chw-profiles': typeof ApiPublicChwProfilesRoute
   '/api/public/districts': typeof ApiPublicDistrictsRoute
   '/api/public/facilities': typeof ApiPublicFacilitiesRoute
+  '/api/public/facilities-admin': typeof ApiPublicFacilitiesAdminRoute
   '/api/public/glaciers': typeof ApiPublicGlaciersRouteWithChildren
   '/api/public/hot-lakes': typeof ApiPublicHotLakesRoute
   '/api/public/kpis': typeof ApiPublicKpisRoute
@@ -398,8 +415,10 @@ export interface FileRoutesById {
   '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
   '/api/public/cases': typeof ApiPublicCasesRoute
+  '/api/public/chw-profiles': typeof ApiPublicChwProfilesRoute
   '/api/public/districts': typeof ApiPublicDistrictsRoute
   '/api/public/facilities': typeof ApiPublicFacilitiesRoute
+  '/api/public/facilities-admin': typeof ApiPublicFacilitiesAdminRoute
   '/api/public/glaciers': typeof ApiPublicGlaciersRouteWithChildren
   '/api/public/hot-lakes': typeof ApiPublicHotLakesRoute
   '/api/public/kpis': typeof ApiPublicKpisRoute
@@ -446,8 +465,10 @@ export interface FileRouteTypes {
     | '/api/public/alert-acks'
     | '/api/public/alerts'
     | '/api/public/cases'
+    | '/api/public/chw-profiles'
     | '/api/public/districts'
     | '/api/public/facilities'
+    | '/api/public/facilities-admin'
     | '/api/public/glaciers'
     | '/api/public/hot-lakes'
     | '/api/public/kpis'
@@ -489,8 +510,10 @@ export interface FileRouteTypes {
     | '/api/public/alert-acks'
     | '/api/public/alerts'
     | '/api/public/cases'
+    | '/api/public/chw-profiles'
     | '/api/public/districts'
     | '/api/public/facilities'
+    | '/api/public/facilities-admin'
     | '/api/public/glaciers'
     | '/api/public/hot-lakes'
     | '/api/public/kpis'
@@ -535,8 +558,10 @@ export interface FileRouteTypes {
     | '/api/public/alert-acks'
     | '/api/public/alerts'
     | '/api/public/cases'
+    | '/api/public/chw-profiles'
     | '/api/public/districts'
     | '/api/public/facilities'
+    | '/api/public/facilities-admin'
     | '/api/public/glaciers'
     | '/api/public/hot-lakes'
     | '/api/public/kpis'
@@ -567,8 +592,10 @@ export interface RootRouteChildren {
   ApiPublicAlertAcksRoute: typeof ApiPublicAlertAcksRoute
   ApiPublicAlertsRoute: typeof ApiPublicAlertsRoute
   ApiPublicCasesRoute: typeof ApiPublicCasesRoute
+  ApiPublicChwProfilesRoute: typeof ApiPublicChwProfilesRoute
   ApiPublicDistrictsRoute: typeof ApiPublicDistrictsRoute
   ApiPublicFacilitiesRoute: typeof ApiPublicFacilitiesRoute
+  ApiPublicFacilitiesAdminRoute: typeof ApiPublicFacilitiesAdminRoute
   ApiPublicGlaciersRoute: typeof ApiPublicGlaciersRouteWithChildren
   ApiPublicHotLakesRoute: typeof ApiPublicHotLakesRoute
   ApiPublicKpisRoute: typeof ApiPublicKpisRoute
@@ -812,6 +839,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicGlaciersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/facilities-admin': {
+      id: '/api/public/facilities-admin'
+      path: '/api/public/facilities-admin'
+      fullPath: '/api/public/facilities-admin'
+      preLoaderRoute: typeof ApiPublicFacilitiesAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/facilities': {
       id: '/api/public/facilities'
       path: '/api/public/facilities'
@@ -824,6 +858,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/districts'
       fullPath: '/api/public/districts'
       preLoaderRoute: typeof ApiPublicDistrictsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/chw-profiles': {
+      id: '/api/public/chw-profiles'
+      path: '/api/public/chw-profiles'
+      fullPath: '/api/public/chw-profiles'
+      preLoaderRoute: typeof ApiPublicChwProfilesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/cases': {
@@ -1001,8 +1042,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicAlertAcksRoute: ApiPublicAlertAcksRoute,
   ApiPublicAlertsRoute: ApiPublicAlertsRoute,
   ApiPublicCasesRoute: ApiPublicCasesRoute,
+  ApiPublicChwProfilesRoute: ApiPublicChwProfilesRoute,
   ApiPublicDistrictsRoute: ApiPublicDistrictsRoute,
   ApiPublicFacilitiesRoute: ApiPublicFacilitiesRoute,
+  ApiPublicFacilitiesAdminRoute: ApiPublicFacilitiesAdminRoute,
   ApiPublicGlaciersRoute: ApiPublicGlaciersRouteWithChildren,
   ApiPublicHotLakesRoute: ApiPublicHotLakesRoute,
   ApiPublicKpisRoute: ApiPublicKpisRoute,
