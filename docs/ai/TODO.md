@@ -15,10 +15,20 @@ Plan: docs/ai/PLAN.md · Task: #10 · Goal: #3
       duplicate name, 409-with-counts on a seeded district with dependents, audit rows
       present for successful ops and absent for the 409'd delete (transaction rollback
       confirmed).
-- [ ] Step 4 — `admin.districts.tsx`: Actions column, create/edit Dialog+Form, delete
-      AlertDialog
-- [ ] Steps 5-7 — same three steps for glaciers (query fns → `api/admin/glaciers.ts` +
-      `glaciers.$glacierId.ts` → `admin.glaciers.index.tsx`, not `admin.glaciers.tsx`)
-- [ ] Step 8 — cleanup: graphify update, full DoD verification command, final audit-table
-      dump confirming all 6 action types
+- [x] Step 4 — `admin.districts.tsx`: Actions column, create/edit Dialog+Form, delete
+      AlertDialog (`6dc799a`). Note: glacier routes/queries were built alongside
+      districts' in steps 2/3 (one commit per layer covering both resources) rather
+      than as separate steps 5/6 — a deliberate deviation from the plan's literal
+      one-step-per-resource split, named in the build report.
+- [x] Steps 5-7 — glacier UI: Actions column, create/edit Dialog+Form (all writable
+      fields), delete AlertDialog on `admin.glaciers.index.tsx` (not `admin.glaciers.tsx`)
+      (`1d48a4c`). Both delete-guard branches verified live, including inserting a real
+      `glacier_observations` row via psql to exercise the 409 branch (0 rows normally).
+      Dropped `glacierSchema.status`'s zod `.default()` — it broke the resolver/Control
+      type interop with react-hook-form; the DB default + form defaultValues cover it.
+- [x] Step 8 — cleanup: graphify update done, full DoD verification command clean
+      (tsc/lint/build), final audit-table dump confirms all 6 action types present
+      (district.create/update/delete ×1 each, glacier.create ×3, glacier.update ×1,
+      glacier.delete ×3 — from verification round-trips, all test rows cleaned up,
+      counts back to baseline: districts=2, glaciers=6, glacier_observations=0)
 - [ ] /uexel:verify

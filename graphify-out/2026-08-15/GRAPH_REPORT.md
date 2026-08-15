@@ -1,7 +1,7 @@
 # Graph Report - cryohealth  (2026-08-15)
 
 ## Corpus Check
-- 171 files · ~174,495 words
+- 171 files · ~174,659 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `131097ba`
+- Built from commit: `8d8c93f4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -141,7 +141,7 @@
 - chart.tsx
 - Session report — /uexel:verify for task #6
 - Session report — /uexel:verify for task #8
-- @cloudflare/vite-plugin
+- cmdk
 - Task #8 findings — read-only admin views: Alerts, Alert acknowledgements, Protocols
 - HANDOFF — cryohealth — 2026-08-11 20:30 PKT
 - AdminShell.tsx
@@ -233,7 +233,7 @@ Nodes (27): getDb(), getGlacier(), getKpis(), getLakeDetail(), insertAlert(), in
 
 ### Community 12 - "dependencies"
 Cohesion: 0.13
-Nodes (15): class-variance-authority, cmdk, dependencies, class-variance-authority, cmdk, @radix-ui/react-scroll-area, @radix-ui/react-slider, @radix-ui/react-slot (+7 more)
+Nodes (15): class-variance-authority, @cloudflare/vite-plugin, dependencies, class-variance-authority, @cloudflare/vite-plugin, @radix-ui/react-scroll-area, @radix-ui/react-slider, @radix-ui/react-slot (+7 more)
 
 ### Community 13 - "admin.lakes.$lakeId.tsx"
 Cohesion: 0.13
@@ -493,7 +493,7 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `cn()` connect `cn` to `sidebar.tsx`, `utils.ts`, `sheet.tsx`, `command.tsx`, `menubar.tsx`, `badge.tsx`, `admin.lakes.$lakeId.tsx`, `drawer.tsx`, `form.tsx`, `context-menu.tsx`, `dropdown-menu.tsx`, `alert-dialog.tsx`, `breadcrumb.tsx`, `navigation-menu.tsx`, `select.tsx`, `card.tsx`, `toggle-group.tsx`, `avatar.tsx`, `table.tsx`, `input-otp.tsx`, `carousel.tsx`, `chart.tsx`?**
   _High betweenness centrality (0.156) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `devDependencies`, `@cloudflare/vite-plugin`, `react`, `bcryptjs`, `input-otp`, `clsx`, `date-fns`, `embla-carousel-react`, `leaflet`, `lucide-react`, `@radix-ui/react-accordion`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-navigation-menu`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `react-day-picker`, `react-hook-form`, `react-leaflet`, `react-resizable-panels`, `recharts`, `sonner`, `@tailwindcss/vite`, `@tanstack/react-start`, `@tanstack/router-plugin`, `@types/leaflet`, `vaul`, `vite-tsconfig-paths`, `zod`, `jose`, `postgres`, `react-dom`, `tailwind-merge`, `tailwindcss`, `@tanstack/react-query`, `@tanstack/react-router`, `@hookform/resolvers`?**
+- **Why does `dependencies` connect `dependencies` to `devDependencies`, `cmdk`, `react`, `bcryptjs`, `input-otp`, `clsx`, `date-fns`, `embla-carousel-react`, `leaflet`, `lucide-react`, `@radix-ui/react-accordion`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-navigation-menu`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `react-day-picker`, `react-hook-form`, `react-leaflet`, `react-resizable-panels`, `recharts`, `sonner`, `@tailwindcss/vite`, `@tanstack/react-start`, `@tanstack/router-plugin`, `@types/leaflet`, `vaul`, `vite-tsconfig-paths`, `zod`, `jose`, `postgres`, `react-dom`, `tailwind-merge`, `tailwindcss`, `@tanstack/react-query`, `@tanstack/react-router`, `@hookform/resolvers`?**
   _High betweenness centrality (0.140) - this node is a cross-community bridge._
 - **Why does `react` connect `react` to `cn`, `dependencies`?**
   _High betweenness centrality (0.126) - this node is a cross-community bridge._
