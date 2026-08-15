@@ -725,7 +725,14 @@ function GlacierFormDialog({
                 <FormItem>
                   <FormLabel>Notes (optional)</FormLabel>
                   <FormControl>
-                    <Textarea {...field} value={field.value ?? ""} rows={3} />
+                    <Textarea
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? null : e.target.value)
+                      }
+                      rows={3}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

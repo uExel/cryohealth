@@ -36,7 +36,7 @@ export const Route = createFileRoute("/api/admin/districts/$districtId")({
           if (!district) return Response.json({ error: "Not found" }, { status: 404 });
           return Response.json({ district });
         } catch (err) {
-          if ((err as { code?: string }).code === "23505") {
+          if ((err as { code?: string })?.code === "23505") {
             return Response.json(
               { error: `A district named "${parsed.data.name}" already exists.` },
               { status: 409 },

@@ -11,12 +11,13 @@ export const districtCreateSchema = z
   .object({
     name: z.string().min(1, "Name is required"),
     province: z.string().min(1, "Province is required"),
-    // .coerce because postgres.js returns some numeric-typed columns (e.g. lakes'
-    // area_km2 elsewhere in this schema file) as strings to avoid float precision
-    // loss -- these forms round-trip DB values back through this same schema on edit.
-    population: z.coerce.number().int().positive().nullable().optional(),
-    centroid_lat: z.coerce.number().min(-90).max(90).nullable().optional(),
-    centroid_lng: z.coerce.number().min(-180).max(180).nullable().optional(),
+    // Plain z.number(), not .coerce: population is `integer` and centroid_lat/lng are
+    // `double precision` -- postgres.js returns both as real JS numbers, never strings,
+    // so there's no round-trip case to coerce for. (.coerce would also accept "", null,
+    // [] etc. as 0 -- see glacierCreateSchema.lat/lng's comment for why that matters.)
+    population: z.number().int().positive().nullable().optional(),
+    centroid_lat: z.number().min(-90).max(90).nullable().optional(),
+    centroid_lng: z.number().min(-180).max(180).nullable().optional(),
   })
   .strict();
 export type DistrictCreate = z.infer<typeof districtCreateSchema>;
@@ -32,17 +33,24 @@ export const glacierCreateSchema = z
     rgi_id: z.string().min(1).nullable().optional(),
     glims_id: z.string().min(1).nullable().optional(),
     district_id: z.string().uuid().nullable().optional(),
-    lat: z.coerce.number().min(-90).max(90),
-    lng: z.coerce.number().min(-180).max(180),
-    // .coerce: area_km2/length_km are Postgres `numeric` -- postgres.js returns numeric
-    // columns as strings (avoids float precision loss), and the edit dialog's
+    // Plain z.number(): lat/lng are `double precision`, NOT NULL, always real JS
+    // numbers from postgres.js. Do NOT switch these to .coerce -- caught in verify
+    // (#10 fix loop, finding N1): Number(null)/Number("")/Number([]) are all 0, which
+    // is a valid latitude, so a client PUTting an explicit null to "clear" a required
+    // field would silently relocate the glacier to 0,0 instead of getting a 400.
+    lat: z.number().min(-90).max(90),
+    lng: z.number().min(-180).max(180),
+    // .coerce ONLY here: area_km2/length_km are Postgres `numeric`, which postgres.js
+    // returns as strings (avoids float precision loss), and the edit dialog's
     // defaultValues come straight from that GET payload. A plain z.number() rejects the
     // round-tripped string the instant a glacier has a recorded area, blocking every
-    // edit on it -- caught in verify (#10 fix loop, finding F1).
+    // edit on it -- caught in verify (#10 fix loop, finding F1). elevation_min/max_m are
+    // plain `integer` (never returned as strings), so they don't need this and stay
+    // z.number() to avoid the same null/""/[]-coerce-to-0 hazard as lat/lng above.
     area_km2: z.coerce.number().positive().nullable().optional(),
     length_km: z.coerce.number().positive().nullable().optional(),
-    elevation_min_m: z.coerce.number().int().nullable().optional(),
-    elevation_max_m: z.coerce.number().int().nullable().optional(),
+    elevation_min_m: z.number().int().nullable().optional(),
+    elevation_max_m: z.number().int().nullable().optional(),
     status: z.enum(GLACIER_STATUSES),
     terminus_type: z.string().min(1).nullable().optional(),
     // Required despite the DB column being nullable: the glaciers page header advertises
@@ -62,7 +70,7 @@ export type GlacierUpdate = z.infer<typeof glacierUpdateSchema>;
 /** Shared by every DELETE handler in api/admin/* — per GATE decision 1, destroying
  *  reference data other tables point at always requires a human-supplied reason. */
 export const deleteReasonSchema = z
-  .object({ reason: z.string().min(1, "Reason is required") })
+  .object({ reason: z.string().trim().min(1, "Reason is required") })
   .strict();
 export type DeleteReason = z.infer<typeof deleteReasonSchema>;
 
