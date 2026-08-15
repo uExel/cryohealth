@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { updateGlacier, deleteGlacier, HasDependentsError } from "@/lib/queries";
 import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
 import { glacierUpdateSchema, deleteReasonSchema } from "@/lib/admin-schemas";
+import { parseJsonBody, mapDbError } from "@/lib/api-errors";
 
 export const Route = createFileRoute("/api/admin/glaciers/$glacierId")({
   server: {
@@ -16,7 +17,10 @@ export const Route = createFileRoute("/api/admin/glaciers/$glacierId")({
           throw e;
         }
 
-        const parsed = glacierUpdateSchema.safeParse(await request.json());
+        const json = await parseJsonBody(request);
+        if (!json.ok) return json.response;
+
+        const parsed = glacierUpdateSchema.safeParse(json.data);
         if (!parsed.success) {
           return Response.json(
             { error: "Invalid request body", issues: parsed.error.issues },
@@ -27,9 +31,15 @@ export const Route = createFileRoute("/api/admin/glaciers/$glacierId")({
           return Response.json({ error: "No fields to update" }, { status: 400 });
         }
 
-        const glacier = await updateGlacier(params.glacierId, parsed.data, claims.sub);
-        if (!glacier) return Response.json({ error: "Not found" }, { status: 404 });
-        return Response.json({ glacier });
+        try {
+          const glacier = await updateGlacier(params.glacierId, parsed.data, claims.sub);
+          if (!glacier) return Response.json({ error: "Not found" }, { status: 404 });
+          return Response.json({ glacier });
+        } catch (err) {
+          const mapped = mapDbError(err);
+          if (mapped) return mapped;
+          throw err;
+        }
       },
       DELETE: async ({ request, params }) => {
         let claims;
@@ -41,7 +51,10 @@ export const Route = createFileRoute("/api/admin/glaciers/$glacierId")({
           throw e;
         }
 
-        const parsed = deleteReasonSchema.safeParse(await request.json());
+        const json = await parseJsonBody(request);
+        if (!json.ok) return json.response;
+
+        const parsed = deleteReasonSchema.safeParse(json.data);
         if (!parsed.success) {
           return Response.json(
             { error: "Invalid request body", issues: parsed.error.issues },
@@ -60,6 +73,8 @@ export const Route = createFileRoute("/api/admin/glaciers/$glacierId")({
               { status: 409 },
             );
           }
+          const mapped = mapDbError(err);
+          if (mapped) return mapped;
           throw err;
         }
       },

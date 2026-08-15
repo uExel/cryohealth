@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createDistrict } from "@/lib/queries";
 import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
 import { districtCreateSchema } from "@/lib/admin-schemas";
+import { parseJsonBody, mapDbError } from "@/lib/api-errors";
 
 export const Route = createFileRoute("/api/admin/districts")({
   server: {
@@ -16,7 +17,10 @@ export const Route = createFileRoute("/api/admin/districts")({
           throw e;
         }
 
-        const parsed = districtCreateSchema.safeParse(await request.json());
+        const json = await parseJsonBody(request);
+        if (!json.ok) return json.response;
+
+        const parsed = districtCreateSchema.safeParse(json.data);
         if (!parsed.success) {
           return Response.json(
             { error: "Invalid request body", issues: parsed.error.issues },
@@ -41,6 +45,8 @@ export const Route = createFileRoute("/api/admin/districts")({
               { status: 409 },
             );
           }
+          const mapped = mapDbError(err);
+          if (mapped) return mapped;
           throw err;
         }
       },

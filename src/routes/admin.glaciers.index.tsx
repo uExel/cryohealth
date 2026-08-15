@@ -488,7 +488,7 @@ function GlacierFormDialog({
                   <FormLabel>District</FormLabel>
                   <Select
                     value={field.value ?? NO_DISTRICT}
-                    onValueChange={(v) => field.onChange(v === NO_DISTRICT ? undefined : v)}
+                    onValueChange={(v) => field.onChange(v === NO_DISTRICT ? null : v)}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -541,7 +541,13 @@ function GlacierFormDialog({
                   <FormItem>
                     <FormLabel>Terminus type (optional)</FormLabel>
                     <FormControl>
-                      <Input {...field} value={field.value ?? ""} />
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) =>
+                          field.onChange(e.target.value === "" ? null : e.target.value)
+                        }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -562,7 +568,7 @@ function GlacierFormDialog({
                         step="any"
                         value={field.value ?? ""}
                         onChange={(e) =>
-                          field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
+                          field.onChange(e.target.value === "" ? null : Number(e.target.value))
                         }
                       />
                     </FormControl>
@@ -582,7 +588,7 @@ function GlacierFormDialog({
                         step="any"
                         value={field.value ?? ""}
                         onChange={(e) =>
-                          field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
+                          field.onChange(e.target.value === "" ? null : Number(e.target.value))
                         }
                       />
                     </FormControl>
@@ -604,7 +610,7 @@ function GlacierFormDialog({
                         type="number"
                         value={field.value ?? ""}
                         onChange={(e) =>
-                          field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
+                          field.onChange(e.target.value === "" ? null : Number(e.target.value))
                         }
                       />
                     </FormControl>
@@ -623,7 +629,7 @@ function GlacierFormDialog({
                         type="number"
                         value={field.value ?? ""}
                         onChange={(e) =>
-                          field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
+                          field.onChange(e.target.value === "" ? null : Number(e.target.value))
                         }
                       />
                     </FormControl>
@@ -641,7 +647,13 @@ function GlacierFormDialog({
                   <FormItem>
                     <FormLabel>RGI ID (optional)</FormLabel>
                     <FormControl>
-                      <Input {...field} value={field.value ?? ""} />
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) =>
+                          field.onChange(e.target.value === "" ? null : e.target.value)
+                        }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -654,7 +666,13 @@ function GlacierFormDialog({
                   <FormItem>
                     <FormLabel>GLIMS ID (optional)</FormLabel>
                     <FormControl>
-                      <Input {...field} value={field.value ?? ""} />
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) =>
+                          field.onChange(e.target.value === "" ? null : e.target.value)
+                        }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -686,7 +704,14 @@ function GlacierFormDialog({
                 <FormItem>
                   <FormLabel>Last observed (optional)</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ""} placeholder="e.g. 2026-06-01" />
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? null : e.target.value)
+                      }
+                      placeholder="e.g. 2026-06-01"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

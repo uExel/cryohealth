@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { updateDistrict, deleteDistrict, HasDependentsError } from "@/lib/queries";
 import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
 import { districtUpdateSchema, deleteReasonSchema } from "@/lib/admin-schemas";
+import { parseJsonBody, mapDbError } from "@/lib/api-errors";
 
 export const Route = createFileRoute("/api/admin/districts/$districtId")({
   server: {
@@ -16,7 +17,10 @@ export const Route = createFileRoute("/api/admin/districts/$districtId")({
           throw e;
         }
 
-        const parsed = districtUpdateSchema.safeParse(await request.json());
+        const json = await parseJsonBody(request);
+        if (!json.ok) return json.response;
+
+        const parsed = districtUpdateSchema.safeParse(json.data);
         if (!parsed.success) {
           return Response.json(
             { error: "Invalid request body", issues: parsed.error.issues },
@@ -38,6 +42,8 @@ export const Route = createFileRoute("/api/admin/districts/$districtId")({
               { status: 409 },
             );
           }
+          const mapped = mapDbError(err);
+          if (mapped) return mapped;
           throw err;
         }
       },
@@ -51,7 +57,10 @@ export const Route = createFileRoute("/api/admin/districts/$districtId")({
           throw e;
         }
 
-        const parsed = deleteReasonSchema.safeParse(await request.json());
+        const json = await parseJsonBody(request);
+        if (!json.ok) return json.response;
+
+        const parsed = deleteReasonSchema.safeParse(json.data);
         if (!parsed.success) {
           return Response.json(
             { error: "Invalid request body", issues: parsed.error.issues },
@@ -70,6 +79,8 @@ export const Route = createFileRoute("/api/admin/districts/$districtId")({
               { status: 409 },
             );
           }
+          const mapped = mapDbError(err);
+          if (mapped) return mapped;
           throw err;
         }
       },

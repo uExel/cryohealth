@@ -314,7 +314,7 @@ function DistrictFormDialog({
                       type="number"
                       value={field.value ?? ""}
                       onChange={(e) =>
-                        field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
+                        field.onChange(e.target.value === "" ? null : Number(e.target.value))
                       }
                     />
                   </FormControl>

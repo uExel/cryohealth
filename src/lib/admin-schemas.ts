@@ -11,9 +11,12 @@ export const districtCreateSchema = z
   .object({
     name: z.string().min(1, "Name is required"),
     province: z.string().min(1, "Province is required"),
-    population: z.number().int().positive().nullable().optional(),
-    centroid_lat: z.number().min(-90).max(90).nullable().optional(),
-    centroid_lng: z.number().min(-180).max(180).nullable().optional(),
+    // .coerce because postgres.js returns some numeric-typed columns (e.g. lakes'
+    // area_km2 elsewhere in this schema file) as strings to avoid float precision
+    // loss -- these forms round-trip DB values back through this same schema on edit.
+    population: z.coerce.number().int().positive().nullable().optional(),
+    centroid_lat: z.coerce.number().min(-90).max(90).nullable().optional(),
+    centroid_lng: z.coerce.number().min(-180).max(180).nullable().optional(),
   })
   .strict();
 export type DistrictCreate = z.infer<typeof districtCreateSchema>;
@@ -29,12 +32,17 @@ export const glacierCreateSchema = z
     rgi_id: z.string().min(1).nullable().optional(),
     glims_id: z.string().min(1).nullable().optional(),
     district_id: z.string().uuid().nullable().optional(),
-    lat: z.number().min(-90).max(90),
-    lng: z.number().min(-180).max(180),
-    area_km2: z.number().positive().nullable().optional(),
-    length_km: z.number().positive().nullable().optional(),
-    elevation_min_m: z.number().int().nullable().optional(),
-    elevation_max_m: z.number().int().nullable().optional(),
+    lat: z.coerce.number().min(-90).max(90),
+    lng: z.coerce.number().min(-180).max(180),
+    // .coerce: area_km2/length_km are Postgres `numeric` -- postgres.js returns numeric
+    // columns as strings (avoids float precision loss), and the edit dialog's
+    // defaultValues come straight from that GET payload. A plain z.number() rejects the
+    // round-tripped string the instant a glacier has a recorded area, blocking every
+    // edit on it -- caught in verify (#10 fix loop, finding F1).
+    area_km2: z.coerce.number().positive().nullable().optional(),
+    length_km: z.coerce.number().positive().nullable().optional(),
+    elevation_min_m: z.coerce.number().int().nullable().optional(),
+    elevation_max_m: z.coerce.number().int().nullable().optional(),
     status: z.enum(GLACIER_STATUSES),
     terminus_type: z.string().min(1).nullable().optional(),
     // Required despite the DB column being nullable: the glaciers page header advertises
