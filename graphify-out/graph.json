@@ -1151,8 +1151,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "package_dependencies_bcryptjs",
-      "community": 102,
-      "community_name": "bcryptjs",
+      "community": 12,
+      "community_name": "dependencies",
       "norm_label": "bcryptjs"
     },
     {
@@ -1162,8 +1162,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "bcryptjs",
-      "community": 102,
-      "community_name": "bcryptjs",
+      "community": 12,
+      "community_name": "dependencies",
       "norm_label": "bcryptjs"
     },
     {
@@ -1283,8 +1283,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "package_dependencies_input_otp",
-      "community": 12,
-      "community_name": "dependencies",
+      "community": 145,
+      "community_name": "input-otp",
       "norm_label": "input-otp"
     },
     {
@@ -1294,8 +1294,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "input_otp",
-      "community": 12,
-      "community_name": "dependencies",
+      "community": 145,
+      "community_name": "input-otp",
       "norm_label": "input-otp"
     },
     {
@@ -1393,8 +1393,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "package_dependencies_react",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 136,
+      "community_name": "react",
       "norm_label": "react"
     },
     {
@@ -1404,8 +1404,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "react",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 136,
+      "community_name": "react",
       "norm_label": "react"
     },
     {
@@ -2121,8 +2121,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_cryohealth_adminshell",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "adminshell.tsx"
     },
     {
@@ -2132,8 +2132,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_components_cryohealth_adminshell_nav_groups",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "nav_groups"
     },
     {
@@ -2144,8 +2144,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_cryohealth_adminshell_adminshell",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "adminshell()"
     },
     {
@@ -2156,7 +2156,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_demobanner",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "demobanner.tsx"
     },
     {
@@ -2168,7 +2168,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_demobanner_demobanner",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "demobanner()"
     },
     {
@@ -2179,7 +2179,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_freshnessstamp",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "freshnessstamp.tsx"
     },
     {
@@ -2191,7 +2191,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_freshnessstamp_freshnessstamp",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "freshnessstamp()"
     },
     {
@@ -2202,7 +2202,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_hazardmap",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "hazardmap.tsx"
     },
     {
@@ -2215,7 +2215,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_hazardmap_lake",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "lake"
     },
     {
@@ -2228,7 +2228,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_hazardmap_facility",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "facility"
     },
     {
@@ -2241,7 +2241,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_hazardmap_glacier",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "glacier"
     },
     {
@@ -2252,7 +2252,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_hazardmap_glacierstatuscolor",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "glacierstatuscolor"
     },
     {
@@ -2264,7 +2264,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_hazardmap_hazardmap",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "hazardmap()"
     },
     {
@@ -2276,7 +2276,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_hazardmap_escapehtml",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "escapehtml()"
     },
     {
@@ -2370,7 +2370,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_siteheader",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "siteheader.tsx"
     },
     {
@@ -2381,7 +2381,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_siteheader_nav",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "nav"
     },
     {
@@ -2393,7 +2393,7 @@
       "_origin": "ast",
       "id": "src_components_cryohealth_siteheader_siteheader",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "siteheader()"
     },
     {
@@ -2427,8 +2427,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_cryohealth_statcard_statpair",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 44,
+      "community_name": "index.tsx",
       "norm_label": "statpair()"
     },
     {
@@ -3112,8 +3112,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_ui_carousel_usecarousel",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 136,
+      "community_name": "react",
       "norm_label": "usecarousel()"
     },
     {
@@ -3238,8 +3238,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_ui_chart_usechart",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 136,
+      "community_name": "react",
       "norm_label": "usechart()"
     },
     {
@@ -3891,8 +3891,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_ui_form_useformfield",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 136,
+      "community_name": "react",
       "norm_label": "useformfield()"
     },
     {
@@ -4755,8 +4755,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_ui_sheet",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 134,
+      "community_name": "sheet.tsx",
       "norm_label": "sheet.tsx"
     },
     {
@@ -4766,8 +4766,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_components_ui_sheet_sheetoverlay",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 134,
+      "community_name": "sheet.tsx",
       "norm_label": "sheetoverlay"
     },
     {
@@ -4777,8 +4777,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_components_ui_sheet_sheetvariants",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 134,
+      "community_name": "sheet.tsx",
       "norm_label": "sheetvariants"
     },
     {
@@ -4790,8 +4790,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_components_ui_sheet_sheetcontentprops",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 134,
+      "community_name": "sheet.tsx",
       "norm_label": "sheetcontentprops"
     },
     {
@@ -4801,8 +4801,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_components_ui_sheet_sheetcontent",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 134,
+      "community_name": "sheet.tsx",
       "norm_label": "sheetcontent"
     },
     {
@@ -4813,8 +4813,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_ui_sheet_sheetheader",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 134,
+      "community_name": "sheet.tsx",
       "norm_label": "sheetheader()"
     },
     {
@@ -4825,8 +4825,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_ui_sheet_sheetfooter",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 134,
+      "community_name": "sheet.tsx",
       "norm_label": "sheetfooter()"
     },
     {
@@ -4836,8 +4836,8 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "src_components_ui_sheet_sheettitle",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 134,
+      "community_name": "sheet.tsx",
       "norm_label": "sheettitle"
     },
     {
@@ -4847,8 +4847,8 @@
       "source_location": "L99",
       "_origin": "ast",
       "id": "src_components_ui_sheet_sheetdescription",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 134,
+      "community_name": "sheet.tsx",
       "norm_label": "sheetdescription"
     },
     {
@@ -4894,8 +4894,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_ui_sidebar_usesidebar",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 136,
+      "community_name": "react",
       "norm_label": "usesidebar()"
     },
     {
@@ -4905,8 +4905,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "src_components_ui_sidebar_sidebarprovider",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "sidebarprovider"
     },
     {
@@ -4916,8 +4916,8 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "src_components_ui_sidebar_sidebar",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "sidebar"
     },
     {
@@ -5004,8 +5004,8 @@
       "source_location": "L392",
       "_origin": "ast",
       "id": "src_components_ui_sidebar_sidebarcontent",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "sidebarcontent"
     },
     {
@@ -5015,8 +5015,8 @@
       "source_location": "L409",
       "_origin": "ast",
       "id": "src_components_ui_sidebar_sidebargroup",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "sidebargroup"
     },
     {
@@ -5026,8 +5026,8 @@
       "source_location": "L423",
       "_origin": "ast",
       "id": "src_components_ui_sidebar_sidebargrouplabel",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "sidebargrouplabel"
     },
     {
@@ -5048,8 +5048,8 @@
       "source_location": "L467",
       "_origin": "ast",
       "id": "src_components_ui_sidebar_sidebargroupcontent",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "sidebargroupcontent"
     },
     {
@@ -5059,8 +5059,8 @@
       "source_location": "L479",
       "_origin": "ast",
       "id": "src_components_ui_sidebar_sidebarmenu",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "sidebarmenu"
     },
     {
@@ -5070,8 +5070,8 @@
       "source_location": "L491",
       "_origin": "ast",
       "id": "src_components_ui_sidebar_sidebarmenuitem",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "sidebarmenuitem"
     },
     {
@@ -5092,8 +5092,8 @@
       "source_location": "L525",
       "_origin": "ast",
       "id": "src_components_ui_sidebar_sidebarmenubutton",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 133,
+      "community_name": "AdminShell.tsx",
       "norm_label": "sidebarmenubutton"
     },
     {
@@ -5272,8 +5272,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_ui_table",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "table.tsx"
     },
     {
@@ -5283,8 +5283,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_components_ui_table_table",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "table"
     },
     {
@@ -5294,8 +5294,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_components_ui_table_tableheader",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "tableheader"
     },
     {
@@ -5305,8 +5305,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_components_ui_table_tablebody",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "tablebody"
     },
     {
@@ -5316,8 +5316,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_components_ui_table_tablefooter",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "tablefooter"
     },
     {
@@ -5327,8 +5327,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_components_ui_table_tablerow",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "tablerow"
     },
     {
@@ -5338,8 +5338,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_components_ui_table_tablehead",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "tablehead"
     },
     {
@@ -5349,8 +5349,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_components_ui_table_tablecell",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "tablecell"
     },
     {
@@ -5360,8 +5360,8 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "src_components_ui_table_tablecaption",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "tablecaption"
     },
     {
@@ -5536,8 +5536,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_hooks_use_mobile",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 136,
+      "community_name": "react",
       "norm_label": "use-mobile.tsx"
     },
     {
@@ -5548,8 +5548,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_hooks_use_mobile_useismobile",
-      "community": 4,
-      "community_name": "sidebar.tsx",
+      "community": 136,
+      "community_name": "react",
       "norm_label": "useismobile()"
     },
     {
@@ -5786,7 +5786,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_auth_client",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "auth-client.ts"
     },
@@ -5799,7 +5799,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_lib_auth_client_authuser",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "authuser"
     },
@@ -5811,8 +5811,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_auth_client_gettoken",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "gettoken()"
     },
     {
@@ -5823,7 +5823,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_auth_client_settoken",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "settoken()"
     },
@@ -5835,7 +5835,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_auth_client_cleartoken",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "cleartoken()"
     },
@@ -5847,7 +5847,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_auth_client_decodeuser",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "decodeuser()"
     },
@@ -5859,7 +5859,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_auth_client_login",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "login()"
     },
@@ -5871,7 +5871,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_auth_client_signout",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "signout()"
     },
@@ -5883,8 +5883,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_auth_client_authfetch",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "authfetch()"
     },
     {
@@ -5954,7 +5954,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_auth",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "auth.tsx"
     },
@@ -5967,7 +5967,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_lib_auth_authctx",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "authctx"
     },
@@ -5978,7 +5978,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_lib_auth_ctx",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "ctx"
     },
@@ -5990,7 +5990,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_auth_authprovider",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "authprovider()"
     },
@@ -6002,8 +6002,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_auth_useauth",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "useauth()"
     },
     {
@@ -6035,8 +6035,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_cryohealth_api",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 137,
+      "community_name": "cryohealth-api.ts",
       "norm_label": "cryohealth-api.ts"
     },
     {
@@ -6046,8 +6046,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_lib_cryohealth_api_api_tier",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 137,
+      "community_name": "cryohealth-api.ts",
       "norm_label": "api_tier"
     },
     {
@@ -6059,8 +6059,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_lib_cryohealth_api_apigeompoint",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 137,
+      "community_name": "cryohealth-api.ts",
       "norm_label": "apigeompoint"
     },
     {
@@ -6072,8 +6072,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_lib_cryohealth_api_apilake",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 137,
+      "community_name": "cryohealth-api.ts",
       "norm_label": "apilake"
     },
     {
@@ -6085,8 +6085,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_lib_cryohealth_api_lake",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 137,
+      "community_name": "cryohealth-api.ts",
       "norm_label": "lake"
     },
     {
@@ -6097,8 +6097,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_cryohealth_api_apibaseurl",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 137,
+      "community_name": "cryohealth-api.ts",
       "norm_label": "apibaseurl()"
     },
     {
@@ -6109,8 +6109,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_cryohealth_api_tolake",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 137,
+      "community_name": "cryohealth-api.ts",
       "norm_label": "tolake()"
     },
     {
@@ -6121,8 +6121,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_cryohealth_api_fetchlakesfromapi",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 137,
+      "community_name": "cryohealth-api.ts",
       "norm_label": "fetchlakesfromapi()"
     },
     {
@@ -6134,7 +6134,7 @@
       "_origin": "ast",
       "id": "src_lib_cryohealth_api_fetchlakes",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "fetchlakes()"
     },
     {
@@ -6274,7 +6274,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_geo",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "geo.ts"
     },
@@ -6286,7 +6286,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_geo_haversinekm",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "haversinekm()"
     },
@@ -6297,7 +6297,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_lib_geo_glacierstatusweight",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "glacierstatusweight"
     },
@@ -6309,7 +6309,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_geo_glacierlakeassocscore",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "glacierlakeassocscore()"
     },
@@ -6321,7 +6321,7 @@
       "_origin": "ast",
       "id": "src_lib_i18n",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "i18n.tsx"
     },
     {
@@ -6334,7 +6334,7 @@
       "_origin": "ast",
       "id": "src_lib_i18n_lang",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "lang"
     },
     {
@@ -6345,7 +6345,7 @@
       "_origin": "ast",
       "id": "src_lib_i18n_dict",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "dict"
     },
     {
@@ -6356,7 +6356,7 @@
       "_origin": "ast",
       "id": "src_lib_i18n_ctx",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "ctx"
     },
     {
@@ -6368,7 +6368,7 @@
       "_origin": "ast",
       "id": "src_lib_i18n_i18nprovider",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "i18nprovider()"
     },
     {
@@ -6380,7 +6380,7 @@
       "_origin": "ast",
       "id": "src_lib_i18n_usei18n",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "usei18n()"
     },
     {
@@ -6403,7 +6403,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_lib_jwt_role",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "role"
     },
@@ -6615,7 +6615,7 @@
       "label": "listOpenAlerts()",
       "file_type": "code",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L140",
+      "source_location": "L141",
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_queries_listopenalerts",
@@ -6627,7 +6627,7 @@
       "label": "insertAlert()",
       "file_type": "code",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L151",
+      "source_location": "L152",
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_queries_insertalert",
@@ -6639,7 +6639,7 @@
       "label": "listFacilities()",
       "file_type": "code",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L169",
+      "source_location": "L170",
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_queries_listfacilities",
@@ -6651,7 +6651,7 @@
       "label": "listProtocols()",
       "file_type": "code",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L178",
+      "source_location": "L179",
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_queries_listprotocols",
@@ -6663,7 +6663,7 @@
       "label": "listAlertAcks()",
       "file_type": "code",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L183",
+      "source_location": "L184",
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_queries_listalertacks",
@@ -6675,7 +6675,7 @@
       "label": "insertAlertAck()",
       "file_type": "code",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L188",
+      "source_location": "L189",
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_queries_insertalertack",
@@ -6687,7 +6687,7 @@
       "label": "insertCase()",
       "file_type": "code",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L197",
+      "source_location": "L198",
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_queries_insertcase",
@@ -6699,7 +6699,7 @@
       "label": "getKpis()",
       "file_type": "code",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L215",
+      "source_location": "L216",
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_queries_getkpis",
@@ -6711,7 +6711,7 @@
       "label": "listHotLakes()",
       "file_type": "code",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L229",
+      "source_location": "L230",
       "_callable": true,
       "_origin": "ast",
       "id": "src_lib_queries_listhotlakes",
@@ -6727,7 +6727,7 @@
       "_origin": "ast",
       "id": "src_lib_theme",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "theme.tsx"
     },
     {
@@ -6740,7 +6740,7 @@
       "_origin": "ast",
       "id": "src_lib_theme_theme",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "theme"
     },
     {
@@ -6751,7 +6751,7 @@
       "_origin": "ast",
       "id": "src_lib_theme_ctx",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "ctx"
     },
     {
@@ -6763,7 +6763,7 @@
       "_origin": "ast",
       "id": "src_lib_theme_themeprovider",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "themeprovider()"
     },
     {
@@ -6775,7 +6775,7 @@
       "_origin": "ast",
       "id": "src_lib_theme_usetheme",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "usetheme()"
     },
     {
@@ -6786,7 +6786,7 @@
       "_origin": "ast",
       "id": "src_lib_tier",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "tier.tsx"
     },
     {
@@ -6799,7 +6799,7 @@
       "_origin": "ast",
       "id": "src_lib_tier_tier",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "tier"
     },
     {
@@ -6810,7 +6810,7 @@
       "_origin": "ast",
       "id": "src_lib_tier_tierclasses",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "tierclasses"
     },
     {
@@ -6821,7 +6821,7 @@
       "_origin": "ast",
       "id": "src_lib_tier_tier_soft_var",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "tier_soft_var"
     },
     {
@@ -6832,7 +6832,7 @@
       "_origin": "ast",
       "id": "src_lib_tier_tier_solid_var",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "tier_solid_var"
     },
     {
@@ -6843,7 +6843,7 @@
       "_origin": "ast",
       "id": "src_lib_tier_tier_on_solid_var",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "tier_on_solid_var"
     },
     {
@@ -6854,7 +6854,7 @@
       "_origin": "ast",
       "id": "src_lib_tier_tier_icon",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "tier_icon"
     },
     {
@@ -6866,7 +6866,7 @@
       "_origin": "ast",
       "id": "src_lib_tier_tierbadge",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "tierbadge()"
     },
     {
@@ -7422,8 +7422,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_routetree_gen_fileroutesbyid",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 149,
+      "community_name": "Route",
       "norm_label": "fileroutesbyid"
     },
     {
@@ -7627,8 +7627,8 @@
       "source_location": "L1015",
       "_origin": "ast",
       "id": "src_routetree_gen_routetree",
-      "community": 1,
-      "community_name": "routeTree.gen.ts",
+      "community": 142,
+      "community_name": "router.tsx",
       "norm_label": "routetree"
     },
     {
@@ -7651,8 +7651,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_routetree_gen_register",
-      "community": 1,
-      "community_name": "routeTree.gen.ts",
+      "community": 142,
+      "community_name": "router.tsx",
       "norm_label": "register"
     },
     {
@@ -7662,8 +7662,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_router",
-      "community": 1,
-      "community_name": "routeTree.gen.ts",
+      "community": 142,
+      "community_name": "router.tsx",
       "norm_label": "router.tsx"
     },
     {
@@ -7674,8 +7674,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_router_getrouter",
-      "community": 1,
-      "community_name": "routeTree.gen.ts",
+      "community": 142,
+      "community_name": "router.tsx",
       "norm_label": "getrouter()"
     },
     {
@@ -7686,7 +7686,7 @@
       "_origin": "ast",
       "id": "src_routes_root",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "__root.tsx"
     },
     {
@@ -7698,7 +7698,7 @@
       "_origin": "ast",
       "id": "src_routes_root_notfoundcomponent",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "notfoundcomponent()"
     },
     {
@@ -7710,7 +7710,7 @@
       "_origin": "ast",
       "id": "src_routes_root_errorcomponent",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "errorcomponent()"
     },
     {
@@ -7720,8 +7720,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "src_routes_root_route",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 149,
+      "community_name": "Route",
       "norm_label": "route"
     },
     {
@@ -7733,7 +7733,7 @@
       "_origin": "ast",
       "id": "src_routes_root_rootshell",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "rootshell()"
     },
     {
@@ -7745,7 +7745,7 @@
       "_origin": "ast",
       "id": "src_routes_root_rootcomponent",
       "community": 14,
-      "community_name": "__root.tsx",
+      "community_name": "auth.tsx",
       "norm_label": "rootcomponent()"
     },
     {
@@ -7800,20 +7800,58 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_admin_alerts",
-      "community": 18,
-      "community_name": "AdminPlaceholder.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "admin.alerts.tsx"
     },
     {
       "label": "Route",
       "file_type": "code",
       "source_file": "src/routes/admin.alerts.tsx",
-      "source_location": "L4",
+      "source_location": "L14",
       "_origin": "ast",
       "id": "src_routes_admin_alerts_route",
-      "community": 18,
-      "community_name": "AdminPlaceholder.tsx",
+      "community": 35,
+      "community_name": "FileRoutesByPath",
       "norm_label": "route"
+    },
+    {
+      "label": "AlertRow",
+      "file_type": "code",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L21",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "src_routes_admin_alerts_alertrow",
+      "community": 33,
+      "community_name": "table.tsx",
+      "norm_label": "alertrow"
+    },
+    {
+      "label": "AckRow",
+      "file_type": "code",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L34",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "src_routes_admin_alerts_ackrow",
+      "community": 33,
+      "community_name": "table.tsx",
+      "norm_label": "ackrow"
+    },
+    {
+      "label": "AlertsAdmin()",
+      "file_type": "code",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L36",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_routes_admin_alerts_alertsadmin",
+      "community": 33,
+      "community_name": "table.tsx",
+      "norm_label": "alertsadmin()"
     },
     {
       "label": "admin.audit.tsx",
@@ -7833,8 +7871,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_routes_admin_audit_route",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 18,
+      "community_name": "AdminPlaceholder.tsx",
       "norm_label": "route"
     },
     {
@@ -7845,8 +7883,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_admin_audit_auditadmin",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 18,
+      "community_name": "AdminPlaceholder.tsx",
       "norm_label": "auditadmin()"
     },
     {
@@ -7900,8 +7938,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_admin_districts",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "admin.districts.tsx"
     },
     {
@@ -7924,8 +7962,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_routes_admin_districts_districtrow",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "districtrow"
     },
     {
@@ -7936,8 +7974,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_admin_districts_districtsadmin",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "districtsadmin()"
     },
     {
@@ -7980,8 +8018,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_routes_admin_glaciers_glacierid_route",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 35,
+      "community_name": "FileRoutesByPath",
       "norm_label": "route"
     },
     {
@@ -8041,8 +8079,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_admin_glaciers_index",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "admin.glaciers.index.tsx"
     },
     {
@@ -8065,8 +8103,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_routes_admin_glaciers_index_districtrow",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "districtrow"
     },
     {
@@ -8078,8 +8116,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_routes_admin_glaciers_index_glacierrow",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "glacierrow"
     },
     {
@@ -8090,8 +8128,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_admin_glaciers_index_glaciersadmin",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "glaciersadmin()"
     },
     {
@@ -8101,8 +8139,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_admin_glaciers",
-      "community": 1,
-      "community_name": "routeTree.gen.ts",
+      "community": 146,
+      "community_name": "Route",
       "norm_label": "admin.glaciers.tsx"
     },
     {
@@ -8112,8 +8150,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_routes_admin_glaciers_route",
-      "community": 1,
-      "community_name": "routeTree.gen.ts",
+      "community": 146,
+      "community_name": "Route",
       "norm_label": "route"
     },
     {
@@ -8168,8 +8206,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_routes_admin_lakes_lakeid_route",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 35,
+      "community_name": "FileRoutesByPath",
       "norm_label": "route"
     },
     {
@@ -8265,8 +8303,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_admin_lakes_index",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "admin.lakes.index.tsx"
     },
     {
@@ -8289,8 +8327,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_routes_admin_lakes_index_districtrow",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "districtrow"
     },
     {
@@ -8302,8 +8340,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_routes_admin_lakes_index_lakerow",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "lakerow"
     },
     {
@@ -8314,8 +8352,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_admin_lakes_index_lakesadmin",
-      "community": 13,
-      "community_name": "admin.lakes.$lakeId.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "lakesadmin()"
     },
     {
@@ -8325,8 +8363,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_admin_lakes",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 147,
+      "community_name": "Route",
       "norm_label": "admin.lakes.tsx"
     },
     {
@@ -8336,8 +8374,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_routes_admin_lakes_route",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 147,
+      "community_name": "Route",
       "norm_label": "route"
     },
     {
@@ -8347,20 +8385,45 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_admin_protocols",
-      "community": 18,
-      "community_name": "AdminPlaceholder.tsx",
+      "community": 33,
+      "community_name": "table.tsx",
       "norm_label": "admin.protocols.tsx"
     },
     {
       "label": "Route",
       "file_type": "code",
       "source_file": "src/routes/admin.protocols.tsx",
-      "source_location": "L4",
+      "source_location": "L12",
       "_origin": "ast",
       "id": "src_routes_admin_protocols_route",
       "community": 35,
       "community_name": "FileRoutesByPath",
       "norm_label": "route"
+    },
+    {
+      "label": "ProtocolRow",
+      "file_type": "code",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L19",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "src_routes_admin_protocols_protocolrow",
+      "community": 33,
+      "community_name": "table.tsx",
+      "norm_label": "protocolrow"
+    },
+    {
+      "label": "ProtocolsAdmin()",
+      "file_type": "code",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L30",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_routes_admin_protocols_protocolsadmin",
+      "community": 33,
+      "community_name": "table.tsx",
+      "norm_label": "protocolsadmin()"
     },
     {
       "label": "admin.system-health.tsx",
@@ -8392,8 +8455,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_admin_system_health_systemhealthadmin",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 18,
+      "community_name": "AdminPlaceholder.tsx",
       "norm_label": "systemhealthadmin()"
     },
     {
@@ -8403,8 +8466,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_admin",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "admin.tsx"
     },
     {
@@ -8414,8 +8477,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_routes_admin_route",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "route"
     },
     {
@@ -8426,8 +8489,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_admin_adminpage",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "adminpage()"
     },
     {
@@ -8448,8 +8511,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_routes_admin_users_route",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 18,
+      "community_name": "AdminPlaceholder.tsx",
       "norm_label": "route"
     },
     {
@@ -8460,8 +8523,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_admin_users_usersadmin",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 18,
+      "community_name": "AdminPlaceholder.tsx",
       "norm_label": "usersadmin()"
     },
     {
@@ -8471,8 +8534,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_alerts",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "alerts.tsx"
     },
     {
@@ -8482,8 +8545,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_routes_alerts_route",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "route"
     },
     {
@@ -8494,8 +8557,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_alerts_alertspage",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "alertspage()"
     },
     {
@@ -8506,8 +8569,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_alerts_broadcastform",
-      "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "broadcastform()"
     },
     {
@@ -8550,8 +8613,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_routes_api_public_alert_acks_route",
-      "community": 11,
-      "community_name": "queries.ts",
+      "community": 35,
+      "community_name": "FileRoutesByPath",
       "norm_label": "route"
     },
     {
@@ -8572,8 +8635,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_routes_api_public_alerts_route",
-      "community": 11,
-      "community_name": "queries.ts",
+      "community": 35,
+      "community_name": "FileRoutesByPath",
       "norm_label": "route"
     },
     {
@@ -8594,8 +8657,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_routes_api_public_cases_route",
-      "community": 11,
-      "community_name": "queries.ts",
+      "community": 35,
+      "community_name": "FileRoutesByPath",
       "norm_label": "route"
     },
     {
@@ -8704,8 +8767,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_routes_api_public_hazard_scores_lakeid_route",
-      "community": 11,
-      "community_name": "queries.ts",
+      "community": 35,
+      "community_name": "FileRoutesByPath",
       "norm_label": "route"
     },
     {
@@ -8803,8 +8866,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_api_public_lakes",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 148,
+      "community_name": "lakes.ts",
       "norm_label": "lakes.ts"
     },
     {
@@ -8814,8 +8877,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_routes_api_public_lakes_route",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 148,
+      "community_name": "lakes.ts",
       "norm_label": "route"
     },
     {
@@ -8869,8 +8932,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_chw",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "chw.tsx"
     },
     {
@@ -8880,8 +8943,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_routes_chw_route",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "route"
     },
     {
@@ -8892,8 +8955,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_chw_chwhome",
-      "community": 126,
-      "community_name": "useAuth",
+      "community": 14,
+      "community_name": "auth.tsx",
       "norm_label": "chwhome()"
     },
     {
@@ -8904,7 +8967,7 @@
       "_origin": "ast",
       "id": "src_routes_dashboard",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "dashboard.tsx"
     },
     {
@@ -8914,8 +8977,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_routes_dashboard_route",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 0,
+      "community_name": "tier.tsx",
       "norm_label": "route"
     },
     {
@@ -8927,7 +8990,7 @@
       "_origin": "ast",
       "id": "src_routes_dashboard_index",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "index()"
     },
     {
@@ -8939,7 +9002,7 @@
       "_origin": "ast",
       "id": "src_routes_dashboard_kpi",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "kpi()"
     },
     {
@@ -8992,7 +9055,7 @@
       "label": "DataPage()",
       "file_type": "code",
       "source_file": "src/routes/data.tsx",
-      "source_location": "L130",
+      "source_location": "L132",
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_data_datapage",
@@ -9007,7 +9070,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "glaciers.$glacierid.tsx"
     },
@@ -9018,8 +9081,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_route",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 102,
+      "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "route"
     },
     {
@@ -9031,7 +9094,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_glacierrow",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "glacierrow"
     },
@@ -9044,7 +9107,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_observationrow",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "observationrow"
     },
@@ -9057,7 +9120,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_caserow",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "caserow"
     },
@@ -9069,7 +9132,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_glacierdetail",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "glacierdetail()"
     },
@@ -9081,7 +9144,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_meta",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "meta()"
     },
@@ -9092,7 +9155,7 @@
       "source_location": "L407",
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_drivermeta",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "drivermeta"
     },
@@ -9104,7 +9167,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_driverbadge",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "driverbadge()"
     },
@@ -9116,7 +9179,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_breakdowndetails",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "breakdowndetails()"
     },
@@ -9128,7 +9191,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_driverlegend",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "driverlegend()"
     },
@@ -9140,7 +9203,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_glaciers_glacierid_rankformula",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "rankformula()"
     },
@@ -9221,7 +9284,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_lakes_lakeid",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "lakes.$lakeid.tsx"
     },
@@ -9232,8 +9295,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_routes_lakes_lakeid_route",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 102,
+      "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "route"
     },
     {
@@ -9244,7 +9307,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_lakes_lakeid_lakedetail",
-      "community": 0,
+      "community": 102,
       "community_name": "glaciers.$glacierId.tsx",
       "norm_label": "lakedetail()"
     },
@@ -9256,7 +9319,7 @@
       "_origin": "ast",
       "id": "src_routes_lakes",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "lakes.tsx"
     },
     {
@@ -9266,8 +9329,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_routes_lakes_route",
-      "community": 35,
-      "community_name": "FileRoutesByPath",
+      "community": 0,
+      "community_name": "tier.tsx",
       "norm_label": "route"
     },
     {
@@ -9279,7 +9342,7 @@
       "_origin": "ast",
       "id": "src_routes_lakes_lakespage",
       "community": 0,
-      "community_name": "glaciers.$glacierId.tsx",
+      "community_name": "tier.tsx",
       "norm_label": "lakespage()"
     },
     {
@@ -9289,7 +9352,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_routes_login",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "login.tsx"
     },
@@ -9300,7 +9363,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_routes_login_route",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "route"
     },
@@ -9312,7 +9375,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_routes_login_loginpage",
-      "community": 33,
+      "community": 14,
       "community_name": "auth.tsx",
       "norm_label": "loginpage()"
     },
@@ -9464,8 +9527,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_start_startinstance",
-      "community": 1,
-      "community_name": "routeTree.gen.ts",
+      "community": 142,
+      "community_name": "router.tsx",
       "norm_label": "startinstance"
     },
     {
@@ -10675,19 +10738,19 @@
       "_origin": "ast",
       "id": "docs_ai_handoff",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "handoff.md"
     },
     {
-      "label": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "label": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "file_type": "document",
       "source_file": "docs/ai/HANDOFF.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "id": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
-      "norm_label": "handoff \u2014 cryohealth \u2014 2026-08-11 20:30 pkt"
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
+      "norm_label": "handoff \u2014 cryohealth \u2014 2026-08-15 20:56 pkt"
     },
     {
       "label": "State",
@@ -10697,106 +10760,106 @@
       "_origin": "ast",
       "id": "docs_ai_handoff_state",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "state"
     },
     {
       "label": "Done this session",
       "file_type": "document",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L53",
+      "source_location": "L48",
       "_origin": "ast",
       "id": "docs_ai_handoff_done_this_session",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "done this session"
     },
     {
       "label": "Not done / deferred",
       "file_type": "document",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L63",
+      "source_location": "L66",
       "_origin": "ast",
       "id": "docs_ai_handoff_not_done_deferred",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "not done / deferred"
     },
     {
       "label": "Next action",
       "file_type": "document",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L73",
+      "source_location": "L74",
       "_origin": "ast",
       "id": "docs_ai_handoff_next_action",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "next action"
     },
     {
       "label": "Open questions for a human",
       "file_type": "document",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L78",
+      "source_location": "L80",
       "_origin": "ast",
       "id": "docs_ai_handoff_open_questions_for_a_human",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "open questions for a human"
     },
     {
       "label": "Failed approaches (do not retry)",
       "file_type": "document",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L82",
+      "source_location": "L86",
       "_origin": "ast",
       "id": "docs_ai_handoff_failed_approaches_do_not_retry",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "failed approaches (do not retry)"
     },
     {
       "label": "Loops run",
       "file_type": "document",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L89",
+      "source_location": "L101",
       "_origin": "ast",
       "id": "docs_ai_handoff_loops_run",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "loops run"
     },
     {
       "label": "Files touched",
       "file_type": "document",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L93",
+      "source_location": "L106",
       "_origin": "ast",
       "id": "docs_ai_handoff_files_touched",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "files touched"
     },
     {
       "label": "Verification status",
       "file_type": "document",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L101",
+      "source_location": "L116",
       "_origin": "ast",
       "id": "docs_ai_handoff_verification_status",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "verification status"
     },
     {
       "label": "Resume with",
       "file_type": "document",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L106",
+      "source_location": "L125",
       "_origin": "ast",
       "id": "docs_ai_handoff_resume_with",
       "community": 66,
-      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-15 20:56 PKT",
       "norm_label": "resume with"
     },
     {
@@ -10828,8 +10891,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_ai_plan",
-      "community": 106,
-      "community_name": "PLAN",
+      "community": 144,
+      "community_name": "PLAN.md",
       "norm_label": "plan.md"
     },
     {
@@ -10839,7 +10902,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_ai_plan_plan",
-      "community": 106,
+      "community": 126,
       "community_name": "PLAN",
       "norm_label": "plan"
     },
@@ -10847,32 +10910,43 @@
       "label": "Assumptions & blast radius",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L24",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "docs_ai_plan_assumptions_blast_radius",
-      "community": 106,
+      "community": 126,
       "community_name": "PLAN",
       "norm_label": "assumptions & blast radius"
     },
     {
-      "label": "GATE decision: hazard-scores endpoint auth posture",
+      "label": "GATE decision: how `status`/`cleared_at` reach the admin page",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
       "source_location": "L40",
       "_origin": "ast",
-      "id": "docs_ai_plan_gate_decision_hazard_scores_endpoint_auth_posture",
-      "community": 106,
+      "id": "docs_ai_plan_gate_decision_how_status_cleared_at_reach_the_admin_page",
+      "community": 126,
       "community_name": "PLAN",
-      "norm_label": "gate decision: hazard-scores endpoint auth posture"
+      "norm_label": "gate decision: how `status`/`cleared_at` reach the admin page"
+    },
+    {
+      "label": "GATE decision: acknowledgement display \u2014 count, or count + names?",
+      "file_type": "document",
+      "source_file": "docs/ai/PLAN.md",
+      "source_location": "L62",
+      "_origin": "ast",
+      "id": "docs_ai_plan_gate_decision_acknowledgement_display_count_or_count_names",
+      "community": 126,
+      "community_name": "PLAN",
+      "norm_label": "gate decision: acknowledgement display \u2014 count, or count + names?"
     },
     {
       "label": "What already exists (reused, not rebuilt)",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L58",
+      "source_location": "L82",
       "_origin": "ast",
       "id": "docs_ai_plan_what_already_exists_reused_not_rebuilt",
-      "community": 106,
+      "community": 126,
       "community_name": "PLAN",
       "norm_label": "what already exists (reused, not rebuilt)"
     },
@@ -10880,43 +10954,43 @@
       "label": "NOT in scope (explicit non-goals)",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L77",
+      "source_location": "L106",
       "_origin": "ast",
       "id": "docs_ai_plan_not_in_scope_explicit_non_goals",
-      "community": 106,
+      "community": 126,
       "community_name": "PLAN",
       "norm_label": "not in scope (explicit non-goals)"
     },
     {
-      "label": "Deviations from the DoD's literal text (state now, don't let /uexel:verify discover them)",
+      "label": "Known traps from the planner's findings",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L95",
+      "source_location": "L133",
       "_origin": "ast",
-      "id": "docs_ai_plan_deviations_from_the_dod_s_literal_text_state_now_don_t_let_uexel_verify_discover_them",
-      "community": 106,
+      "id": "docs_ai_plan_known_traps_from_the_planner_s_findings",
+      "community": 126,
       "community_name": "PLAN",
-      "norm_label": "deviations from the dod's literal text (state now, don't let /uexel:verify discover them)"
+      "norm_label": "known traps from the planner's findings"
     },
     {
-      "label": "Known runtime traps `tsc`/lint cannot catch (from the planner's findings)",
+      "label": "Two live latent bugs found (not fixed here \u2014 filed as a follow-up)",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L121",
+      "source_location": "L160",
       "_origin": "ast",
-      "id": "docs_ai_plan_known_runtime_traps_tsc_lint_cannot_catch_from_the_planner_s_findings",
-      "community": 106,
+      "id": "docs_ai_plan_two_live_latent_bugs_found_not_fixed_here_filed_as_a_follow_up",
+      "community": 126,
       "community_name": "PLAN",
-      "norm_label": "known runtime traps `tsc`/lint cannot catch (from the planner's findings)"
+      "norm_label": "two live latent bugs found (not fixed here \u2014 filed as a follow-up)"
     },
     {
       "label": "Test coverage note",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L141",
+      "source_location": "L178",
       "_origin": "ast",
       "id": "docs_ai_plan_test_coverage_note",
-      "community": 106,
+      "community": 126,
       "community_name": "PLAN",
       "norm_label": "test coverage note"
     },
@@ -10924,76 +10998,87 @@
       "label": "Steps",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L149",
+      "source_location": "L186",
       "_origin": "ast",
       "id": "docs_ai_plan_steps",
-      "community": 106,
-      "community_name": "PLAN",
+      "community": 139,
+      "community_name": "Steps",
       "norm_label": "steps"
     },
     {
       "label": "Step 0 \u2014 pre-flight (not a commit)",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L151",
+      "source_location": "L188",
       "_origin": "ast",
       "id": "docs_ai_plan_step_0_pre_flight_not_a_commit",
-      "community": 106,
-      "community_name": "PLAN",
+      "community": 139,
+      "community_name": "Steps",
       "norm_label": "step 0 \u2014 pre-flight (not a commit)"
     },
     {
-      "label": "Step 1 \u2014 `listHazardScores()` + `hazard-scores.$lakeId` endpoint",
+      "label": "Step 1 \u2014 `listAllAlerts()`: add `status` + `cleared_at`",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L162",
+      "source_location": "L204",
       "_origin": "ast",
-      "id": "docs_ai_plan_step_1_listhazardscores_hazard_scores_lakeid_endpoint",
-      "community": 106,
-      "community_name": "PLAN",
-      "norm_label": "step 1 \u2014 `listhazardscores()` + `hazard-scores.$lakeid` endpoint"
+      "id": "docs_ai_plan_step_1_listallalerts_add_status_cleared_at",
+      "community": 139,
+      "community_name": "Steps",
+      "norm_label": "step 1 \u2014 `listallalerts()`: add `status` + `cleared_at`"
     },
     {
-      "label": "Step 2 \u2014 `admin.lakes.index.tsx`: real list",
+      "label": "Step 2 \u2014 `admin.alerts.tsx`: real table",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L191",
+      "source_location": "L222",
       "_origin": "ast",
-      "id": "docs_ai_plan_step_2_admin_lakes_index_tsx_real_list",
-      "community": 106,
-      "community_name": "PLAN",
-      "norm_label": "step 2 \u2014 `admin.lakes.index.tsx`: real list"
+      "id": "docs_ai_plan_step_2_admin_alerts_tsx_real_table",
+      "community": 139,
+      "community_name": "Steps",
+      "norm_label": "step 2 \u2014 `admin.alerts.tsx`: real table"
     },
     {
-      "label": "Step 3 \u2014 `admin.lakes.$lakeId.tsx`: detail with both time series",
+      "label": "Step 3 \u2014 `admin.protocols.tsx`: real table",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L205",
+      "source_location": "L241",
       "_origin": "ast",
-      "id": "docs_ai_plan_step_3_admin_lakes_lakeid_tsx_detail_with_both_time_series",
-      "community": 106,
-      "community_name": "PLAN",
-      "norm_label": "step 3 \u2014 `admin.lakes.$lakeid.tsx`: detail with both time series"
+      "id": "docs_ai_plan_step_3_admin_protocols_tsx_real_table",
+      "community": 139,
+      "community_name": "Steps",
+      "norm_label": "step 3 \u2014 `admin.protocols.tsx`: real table"
     },
     {
       "label": "Step 4 \u2014 cleanup",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L228",
+      "source_location": "L254",
       "_origin": "ast",
       "id": "docs_ai_plan_step_4_cleanup",
-      "community": 106,
-      "community_name": "PLAN",
+      "community": 139,
+      "community_name": "Steps",
       "norm_label": "step 4 \u2014 cleanup"
+    },
+    {
+      "label": "Mechanical no-affordance check (used across Steps 2-3)",
+      "file_type": "document",
+      "source_file": "docs/ai/PLAN.md",
+      "source_location": "L262",
+      "_origin": "ast",
+      "id": "docs_ai_plan_mechanical_no_affordance_check_used_across_steps_2_3",
+      "community": 126,
+      "community_name": "PLAN",
+      "norm_label": "mechanical no-affordance check (used across steps 2-3)"
     },
     {
       "label": "Human verification checklist",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L235",
+      "source_location": "L273",
       "_origin": "ast",
       "id": "docs_ai_plan_human_verification_checklist",
-      "community": 106,
+      "community": 126,
       "community_name": "PLAN",
       "norm_label": "human verification checklist"
     },
@@ -11001,10 +11086,10 @@
       "label": "Rollback",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L251",
+      "source_location": "L289",
       "_origin": "ast",
       "id": "docs_ai_plan_rollback",
-      "community": 106,
+      "community": 126,
       "community_name": "PLAN",
       "norm_label": "rollback"
     },
@@ -11012,10 +11097,10 @@
       "label": "Follow-ups to file (not part of this task, don't fix here)",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L260",
+      "source_location": "L298",
       "_origin": "ast",
       "id": "docs_ai_plan_follow_ups_to_file_not_part_of_this_task_don_t_fix_here",
-      "community": 106,
+      "community": 126,
       "community_name": "PLAN",
       "norm_label": "follow-ups to file (not part of this task, don't fix here)"
     },
@@ -11023,10 +11108,10 @@
       "label": "Loop budget & escalation",
       "file_type": "document",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L271",
+      "source_location": "L307",
       "_origin": "ast",
       "id": "docs_ai_plan_loop_budget_escalation",
-      "community": 106,
+      "community": 126,
       "community_name": "PLAN",
       "norm_label": "loop budget & escalation"
     },
@@ -11192,7 +11277,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "task-7-findings.md"
     },
     {
@@ -11203,7 +11288,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_task_7_findings_read_only_admin_views_lakes_lake_risk_scores_hazard_scores",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "task #7 findings \u2014 read-only admin views: lakes, lake risk scores, hazard scores"
     },
     {
@@ -11214,7 +11299,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_headline",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "headline"
     },
     {
@@ -11225,7 +11310,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_1_exact_current_state_of_the_three_route_files",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "1. exact current state of the three route files"
     },
     {
@@ -11236,7 +11321,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_2_exact_return_shapes",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "2. exact return shapes"
     },
     {
@@ -11247,7 +11332,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_listlakesadmin_src_lib_queries_ts_67_76",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "`listlakesadmin()` \u2014 `src/lib/queries.ts:67-76`"
     },
     {
@@ -11258,7 +11343,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_listlakeriskscores_lakeid_src_lib_queries_ts_92_101",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "`listlakeriskscores(lakeid)` \u2014 `src/lib/queries.ts:92-101`"
     },
     {
@@ -11269,7 +11354,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_hazard_scores_no_query_function_exists",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "`hazard_scores` \u2014 no query function exists"
     },
     {
@@ -11280,7 +11365,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_3_writers_provenance_and_what_the_empty_state_may_honestly_say",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "3. writers \u2014 provenance, and what the empty state may honestly say"
     },
     {
@@ -11291,7 +11376,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_4_existing_api_routes_and_the_data_path_decision",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "4. existing api routes, and the data-path decision"
     },
     {
@@ -11302,7 +11387,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_gate_decision_where_does_hazard_scores_come_from",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "gate decision: where does `hazard_scores` come from?"
     },
     {
@@ -11313,7 +11398,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_5_today_s_single_page_inventory_table_logic_there_is_nothing_left_to_supersede",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "5. \"today's single-page inventory table logic\" \u2014 there is nothing left to supersede"
     },
     {
@@ -11324,7 +11409,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_explicit_negative_constraint_for_the_build_agent",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "explicit negative constraint for the build agent"
     },
     {
@@ -11335,7 +11420,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_6_tierbadge_precedent_and_prd_5_rationale",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "6. `tierbadge` precedent and prd \u00a75 rationale"
     },
     {
@@ -11346,7 +11431,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_prd_5_rationale_docs_admin_portal_prd_md_quoted",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "prd \u00a75 rationale (`docs/admin-portal-prd.md`), quoted"
     },
     {
@@ -11357,7 +11442,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_7_draft_plan_steps",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "7. draft plan steps"
     },
     {
@@ -11368,7 +11453,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_step_0_pre_flight_no_commit",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "step 0 \u2014 pre-flight (no commit)"
     },
     {
@@ -11379,7 +11464,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_step_1_listhazardscores_hazard_score_endpoint",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "step 1 \u2014 `listhazardscores()` + hazard-score endpoint"
     },
     {
@@ -11390,7 +11475,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_step_2_admin_lakes_index_tsx_real_list",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "step 2 \u2014 `admin.lakes.index.tsx`: real list"
     },
     {
@@ -11401,7 +11486,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_step_3_admin_lakes_lakeid_tsx_detail_with_both_time_series",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "step 3 \u2014 `admin.lakes.$lakeid.tsx`: detail with both time series"
     },
     {
@@ -11412,7 +11497,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_step_4_graphify_update_close_out",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "step 4 \u2014 `graphify update .` + close-out"
     },
     {
@@ -11423,7 +11508,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_8_deviations_from_the_dod_s_literal_text_name_these_at_gate",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "8. deviations from the dod's literal text \u2192 name these at gate"
     },
     {
@@ -11434,7 +11519,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_9_explicitly_not_in_scope",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "9. explicitly not in scope"
     },
     {
@@ -11445,7 +11530,7 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_risks_assumptions_that_change_the_plan_if_wrong",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
       "norm_label": "risks / assumptions that change the plan if wrong"
     },
     {
@@ -11456,7 +11541,381 @@
       "_origin": "ast",
       "id": "docs_ai_planning_task_7_findings_key_file_paths",
       "community": 106,
-      "community_name": "PLAN",
+      "community_name": "Task #7 findings \u2014 read-only admin views: Lakes, Lake risk scores, Hazard scores",
+      "norm_label": "key file paths"
+    },
+    {
+      "label": "task-8-findings.md",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings",
+      "community": 144,
+      "community_name": "PLAN.md",
+      "norm_label": "task-8-findings.md"
+    },
+    {
+      "label": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "task #8 findings \u2014 read-only admin views: alerts, alert acknowledgements, protocols"
+    },
+    {
+      "label": "Headline",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_headline",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "headline"
+    },
+    {
+      "label": "1. Exact current state of the two route files",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_1_exact_current_state_of_the_two_route_files",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "1. exact current state of the two route files"
+    },
+    {
+      "label": "2. Exact schemas (read from CryoHealth-api migrations, then verified against the live DB)",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L87",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_2_exact_schemas_read_from_cryohealth_api_migrations_then_verified_against_the_live_db",
+      "community": 141,
+      "community_name": "2. Exact schemas (read from CryoHealth-api migrations, then verified against the live DB)",
+      "norm_label": "2. exact schemas (read from cryohealth-api migrations, then verified against the live db)"
+    },
+    {
+      "label": "`alerts` \u2014 `1785608131024-InitialSchema.ts:41`, extended by `1785700000000-WebSchema.ts:44-60` and `1786204276808-AlertChipsAndChecklist.ts:14-17`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L92",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_alerts_1785608131024_initialschema_ts_41_extended_by_1785700000000_webschema_ts_44_60_and_1786204276808_alertchipsandchecklist_ts_14_17",
+      "community": 141,
+      "community_name": "2. Exact schemas (read from CryoHealth-api migrations, then verified against the live DB)",
+      "norm_label": "`alerts` \u2014 `1785608131024-initialschema.ts:41`, extended by `1785700000000-webschema.ts:44-60` and `1786204276808-alertchipsandchecklist.ts:14-17`"
+    },
+    {
+      "label": "`alert_acknowledgements` \u2014 `1785700000000-WebSchema.ts:171-179`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L121",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_alert_acknowledgements_1785700000000_webschema_ts_171_179",
+      "community": 141,
+      "community_name": "2. Exact schemas (read from CryoHealth-api migrations, then verified against the live DB)",
+      "norm_label": "`alert_acknowledgements` \u2014 `1785700000000-webschema.ts:171-179`"
+    },
+    {
+      "label": "`protocols` \u2014 `1785700000000-WebSchema.ts:70-81`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L135",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_protocols_1785700000000_webschema_ts_70_81",
+      "community": 141,
+      "community_name": "2. Exact schemas (read from CryoHealth-api migrations, then verified against the live DB)",
+      "norm_label": "`protocols` \u2014 `1785700000000-webschema.ts:70-81`"
+    },
+    {
+      "label": "There is no numeric-as-string trap in #8",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L151",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_there_is_no_numeric_as_string_trap_in_8",
+      "community": 141,
+      "community_name": "2. Exact schemas (read from CryoHealth-api migrations, then verified against the live DB)",
+      "norm_label": "there is no numeric-as-string trap in #8"
+    },
+    {
+      "label": "3. Exact return shapes of the three existing query functions",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L164",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_3_exact_return_shapes_of_the_three_existing_query_functions",
+      "community": 138,
+      "community_name": "3. Exact return shapes of the three existing query functions",
+      "norm_label": "3. exact return shapes of the three existing query functions"
+    },
+    {
+      "label": "`listAllAlerts(limit = 200)` \u2014 `src/lib/queries.ts:126-138`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L166",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_listallalerts_limit_200_src_lib_queries_ts_126_138",
+      "community": 138,
+      "community_name": "3. Exact return shapes of the three existing query functions",
+      "norm_label": "`listallalerts(limit = 200)` \u2014 `src/lib/queries.ts:126-138`"
+    },
+    {
+      "label": "`listAlertAcks()` \u2014 `src/lib/queries.ts:183-186`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L205",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_listalertacks_src_lib_queries_ts_183_186",
+      "community": 138,
+      "community_name": "3. Exact return shapes of the three existing query functions",
+      "norm_label": "`listalertacks()` \u2014 `src/lib/queries.ts:183-186`"
+    },
+    {
+      "label": "`listAlertsForLake(lakeId)` \u2014 `src/lib/queries.ts:115-124` (not used by #8, but load-bearing for \u00a78)",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L214",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_listalertsforlake_lakeid_src_lib_queries_ts_115_124_not_used_by_8_but_load_bearing_for_8",
+      "community": 138,
+      "community_name": "3. Exact return shapes of the three existing query functions",
+      "norm_label": "`listalertsforlake(lakeid)` \u2014 `src/lib/queries.ts:115-124` (not used by #8, but load-bearing for \u00a78)"
+    },
+    {
+      "label": "`listOpenAlerts(limit = 5)` \u2014 `src/lib/queries.ts:140-149`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L226",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_listopenalerts_limit_5_src_lib_queries_ts_140_149",
+      "community": 138,
+      "community_name": "3. Exact return shapes of the three existing query functions",
+      "norm_label": "`listopenalerts(limit = 5)` \u2014 `src/lib/queries.ts:140-149`"
+    },
+    {
+      "label": "`insertAlert(...)` / `insertAlertAck(alertId, chwId)` \u2014 `src/lib/queries.ts:151-167`, `:188-195`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L236",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_insertalert_insertalertack_alertid_chwid_src_lib_queries_ts_151_167_188_195",
+      "community": 138,
+      "community_name": "3. Exact return shapes of the three existing query functions",
+      "norm_label": "`insertalert(...)` / `insertalertack(alertid, chwid)` \u2014 `src/lib/queries.ts:151-167`, `:188-195`"
+    },
+    {
+      "label": "`listProtocols()` \u2014 `src/lib/queries.ts:178-181`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L243",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_listprotocols_src_lib_queries_ts_178_181",
+      "community": 138,
+      "community_name": "3. Exact return shapes of the three existing query functions",
+      "norm_label": "`listprotocols()` \u2014 `src/lib/queries.ts:178-181`"
+    },
+    {
+      "label": "4. Existing API routes \u2014 nothing new is needed",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L256",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_4_existing_api_routes_nothing_new_is_needed",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "4. existing api routes \u2014 nothing new is needed"
+    },
+    {
+      "label": "5. `TierBadge` on `alerts.tier` \u2014 no narrowing guard needed",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L277",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_5_tierbadge_on_alerts_tier_no_narrowing_guard_needed",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "5. `tierbadge` on `alerts.tier` \u2014 no narrowing guard needed"
+    },
+    {
+      "label": "The enum-cast rule, stated correctly",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L302",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_the_enum_cast_rule_stated_correctly",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "the enum-cast rule, stated correctly"
+    },
+    {
+      "label": "6. Live seeded state (verified against Postgres on :5433, not inferred)",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L324",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_6_live_seeded_state_verified_against_postgres_on_5433_not_inferred",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "6. live seeded state (verified against postgres on :5433, not inferred)"
+    },
+    {
+      "label": "7. What each page should show",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L380",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_7_what_each_page_should_show",
+      "community": 143,
+      "community_name": "7. What each page should show",
+      "norm_label": "7. what each page should show"
+    },
+    {
+      "label": "`admin.alerts.tsx`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L382",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_admin_alerts_tsx",
+      "community": 143,
+      "community_name": "7. What each page should show",
+      "norm_label": "`admin.alerts.tsx`"
+    },
+    {
+      "label": "`admin.protocols.tsx`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L415",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_admin_protocols_tsx",
+      "community": 143,
+      "community_name": "7. What each page should show",
+      "norm_label": "`admin.protocols.tsx`"
+    },
+    {
+      "label": "8. Two live latent bugs \u2014 file them, do not fix them",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L445",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_8_two_live_latent_bugs_file_them_do_not_fix_them",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "8. two live latent bugs \u2014 file them, do not fix them"
+    },
+    {
+      "label": "9. Deviations / decisions to name at GATE",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L477",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_9_deviations_decisions_to_name_at_gate",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "9. deviations / decisions to name at gate"
+    },
+    {
+      "label": "10. Draft plan steps",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L531",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_10_draft_plan_steps",
+      "community": 140,
+      "community_name": "10. Draft plan steps",
+      "norm_label": "10. draft plan steps"
+    },
+    {
+      "label": "Step 0 \u2014 pre-flight (no commit)",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L558",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_step_0_pre_flight_no_commit",
+      "community": 140,
+      "community_name": "10. Draft plan steps",
+      "norm_label": "step 0 \u2014 pre-flight (no commit)"
+    },
+    {
+      "label": "Step 1 \u2014 `listAllAlerts()` returns `status` + `cleared_at`",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L585",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_step_1_listallalerts_returns_status_cleared_at",
+      "community": 140,
+      "community_name": "10. Draft plan steps",
+      "norm_label": "step 1 \u2014 `listallalerts()` returns `status` + `cleared_at`"
+    },
+    {
+      "label": "Step 2 \u2014 `admin.alerts.tsx`: real table",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L611",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_step_2_admin_alerts_tsx_real_table",
+      "community": 140,
+      "community_name": "10. Draft plan steps",
+      "norm_label": "step 2 \u2014 `admin.alerts.tsx`: real table"
+    },
+    {
+      "label": "Step 3 \u2014 `admin.protocols.tsx`: real table",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L637",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_step_3_admin_protocols_tsx_real_table",
+      "community": 140,
+      "community_name": "10. Draft plan steps",
+      "norm_label": "step 3 \u2014 `admin.protocols.tsx`: real table"
+    },
+    {
+      "label": "Step 4 \u2014 `graphify update .` + close-out",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L654",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_step_4_graphify_update_close_out",
+      "community": 140,
+      "community_name": "10. Draft plan steps",
+      "norm_label": "step 4 \u2014 `graphify update .` + close-out"
+    },
+    {
+      "label": "11. Explicitly NOT in scope",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L666",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_11_explicitly_not_in_scope",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "11. explicitly not in scope"
+    },
+    {
+      "label": "Risks / assumptions that change the plan if wrong",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L692",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_risks_assumptions_that_change_the_plan_if_wrong",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
+      "norm_label": "risks / assumptions that change the plan if wrong"
+    },
+    {
+      "label": "Key file paths",
+      "file_type": "document",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L733",
+      "_origin": "ast",
+      "id": "docs_ai_planning_task_8_findings_key_file_paths",
+      "community": 131,
+      "community_name": "Task #8 findings \u2014 read-only admin views: Alerts, Alert acknowledgements, Protocols",
       "norm_label": "key file paths"
     },
     {
@@ -13426,6 +13885,226 @@
       "id": "docs_ai_sessions_2026_08_10_task6_verify_report_final_verdict",
       "community": 128,
       "community_name": "Session report \u2014 /uexel:verify for task #6",
+      "norm_label": "final verdict"
+    },
+    {
+      "label": "2026-08-11-doctor-sweep-close-handoff.md",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "2026-08-11-doctor-sweep-close-handoff.md"
+    },
+    {
+      "label": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "handoff \u2014 cryohealth \u2014 2026-08-11 20:30 pkt"
+    },
+    {
+      "label": "State",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_state",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "state"
+    },
+    {
+      "label": "Done this session",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_done_this_session",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "done this session"
+    },
+    {
+      "label": "Not done / deferred",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L63",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_not_done_deferred",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "not done / deferred"
+    },
+    {
+      "label": "Next action",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_next_action",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "next action"
+    },
+    {
+      "label": "Open questions for a human",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L78",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_open_questions_for_a_human",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "open questions for a human"
+    },
+    {
+      "label": "Failed approaches (do not retry)",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L82",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_failed_approaches_do_not_retry",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "failed approaches (do not retry)"
+    },
+    {
+      "label": "Loops run",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_loops_run",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "loops run"
+    },
+    {
+      "label": "Files touched",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L93",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_files_touched",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "files touched"
+    },
+    {
+      "label": "Verification status",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L101",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_verification_status",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "verification status"
+    },
+    {
+      "label": "Resume with",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L106",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_resume_with",
+      "community": 132,
+      "community_name": "HANDOFF \u2014 cryohealth \u2014 2026-08-11 20:30 PKT",
+      "norm_label": "resume with"
+    },
+    {
+      "label": "2026-08-15-task7-verify-report.md",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_15_task7_verify_report",
+      "community": 135,
+      "community_name": "Session report \u2014 /uexel:verify for task #7",
+      "norm_label": "2026-08-15-task7-verify-report.md"
+    },
+    {
+      "label": "Session report \u2014 /uexel:verify for task #7",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_15_task7_verify_report_session_report_uexel_verify_for_task_7",
+      "community": 135,
+      "community_name": "Session report \u2014 /uexel:verify for task #7",
+      "norm_label": "session report \u2014 /uexel:verify for task #7"
+    },
+    {
+      "label": "What was built and verified",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_15_task7_verify_report_what_was_built_and_verified",
+      "community": 135,
+      "community_name": "Session report \u2014 /uexel:verify for task #7",
+      "norm_label": "what was built and verified"
+    },
+    {
+      "label": "Build phase (no fix loop needed)",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_15_task7_verify_report_build_phase_no_fix_loop_needed",
+      "community": 135,
+      "community_name": "Session report \u2014 /uexel:verify for task #7",
+      "norm_label": "build phase (no fix loop needed)"
+    },
+    {
+      "label": "Fix-loop: 1 of 3 iterations used",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_15_task7_verify_report_fix_loop_1_of_3_iterations_used",
+      "community": 135,
+      "community_name": "Session report \u2014 /uexel:verify for task #7",
+      "norm_label": "fix-loop: 1 of 3 iterations used"
+    },
+    {
+      "label": "Why the loop stopped",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L65",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_15_task7_verify_report_why_the_loop_stopped",
+      "community": 135,
+      "community_name": "Session report \u2014 /uexel:verify for task #7",
+      "norm_label": "why the loop stopped"
+    },
+    {
+      "label": "A note on process",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L70",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_15_task7_verify_report_a_note_on_process",
+      "community": 135,
+      "community_name": "Session report \u2014 /uexel:verify for task #7",
+      "norm_label": "a note on process"
+    },
+    {
+      "label": "Final verdict",
+      "file_type": "document",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L91",
+      "_origin": "ast",
+      "id": "docs_ai_sessions_2026_08_15_task7_verify_report_final_verdict",
+      "community": 135,
+      "community_name": "Session report \u2014 /uexel:verify for task #7",
       "norm_label": "final verdict"
     }
   ],
@@ -15628,18 +16307,6 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "src/routes/admin.alerts.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_routes_admin_alerts",
-      "target": "src_components_cryohealth_adminplaceholder",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "src/routes/admin.audit.tsx",
       "source_location": "L3",
       "weight": 1.0,
@@ -15705,18 +16372,6 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_routes_admin_lakes_lakeid",
-      "target": "src_components_cryohealth_adminplaceholder",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/routes/admin.protocols.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_routes_admin_protocols",
       "target": "src_components_cryohealth_adminplaceholder",
       "confidence_score": 1.0
     },
@@ -15748,18 +16403,6 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "src/routes/admin.alerts.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_routes_admin_alerts",
-      "target": "src_components_cryohealth_adminplaceholder_adminplaceholder",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "src/routes/admin.audit.tsx",
       "source_location": "L3",
       "weight": 1.0,
@@ -15825,18 +16468,6 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_routes_admin_lakes_lakeid",
-      "target": "src_components_cryohealth_adminplaceholder_adminplaceholder",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/routes/admin.protocols.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_routes_admin_protocols",
       "target": "src_components_cryohealth_adminplaceholder_adminplaceholder",
       "confidence_score": 1.0
     },
@@ -20945,6 +21576,18 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_components_ui_table",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/routes/admin.districts.tsx",
       "source_location": "L3",
       "weight": 1.0,
@@ -21002,6 +21645,30 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_protocols",
+      "target": "src_components_ui_table",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_components_ui_table_table",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -21059,6 +21726,30 @@
       "_origin": "ast",
       "source": "src_routes_admin_lakes_lakeid",
       "target": "src_components_ui_table_table",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_protocols",
+      "target": "src_components_ui_table_table",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_components_ui_table_tableheader",
       "confidence_score": 1.0
     },
     {
@@ -21125,6 +21816,30 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_protocols",
+      "target": "src_components_ui_table_tableheader",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_components_ui_table_tablebody",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/routes/admin.districts.tsx",
       "source_location": "L3",
       "weight": 1.0,
@@ -21185,6 +21900,30 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_protocols",
+      "target": "src_components_ui_table_tablebody",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_components_ui_table_tablerow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/routes/admin.districts.tsx",
       "source_location": "L3",
       "weight": 1.0,
@@ -21245,6 +21984,30 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_protocols",
+      "target": "src_components_ui_table_tablerow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_components_ui_table_tablehead",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/routes/admin.districts.tsx",
       "source_location": "L3",
       "weight": 1.0,
@@ -21299,6 +22062,30 @@
       "_origin": "ast",
       "source": "src_routes_admin_lakes_lakeid",
       "target": "src_components_ui_table_tablehead",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_protocols",
+      "target": "src_components_ui_table_tablehead",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_components_ui_table_tablecell",
       "confidence_score": 1.0
     },
     {
@@ -21358,6 +22145,18 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_routes_admin_lakes_lakeid",
+      "target": "src_components_ui_table_tablecell",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_protocols",
       "target": "src_components_ui_table_tablecell",
       "confidence_score": 1.0
     },
@@ -23264,7 +24063,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/queries.ts",
-      "source_location": "L216",
+      "source_location": "L217",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries_getkpis",
@@ -23288,7 +24087,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/queries.ts",
-      "source_location": "L162",
+      "source_location": "L163",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries_insertalert",
@@ -23300,7 +24099,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/queries.ts",
-      "source_location": "L189",
+      "source_location": "L190",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries_insertalertack",
@@ -23312,7 +24111,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/queries.ts",
-      "source_location": "L208",
+      "source_location": "L209",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries_insertcase",
@@ -23324,7 +24123,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/queries.ts",
-      "source_location": "L184",
+      "source_location": "L185",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries_listalertacks",
@@ -23384,7 +24183,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/queries.ts",
-      "source_location": "L170",
+      "source_location": "L171",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries_listfacilities",
@@ -23432,7 +24231,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/queries.ts",
-      "source_location": "L230",
+      "source_location": "L231",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries_listhotlakes",
@@ -23480,7 +24279,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/queries.ts",
-      "source_location": "L141",
+      "source_location": "L142",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries_listopenalerts",
@@ -23492,7 +24291,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/queries.ts",
-      "source_location": "L179",
+      "source_location": "L180",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries_listprotocols",
@@ -24013,7 +24812,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L215",
+      "source_location": "L216",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries",
@@ -24035,7 +24834,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L151",
+      "source_location": "L152",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries",
@@ -24046,7 +24845,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L188",
+      "source_location": "L189",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries",
@@ -24057,7 +24856,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L197",
+      "source_location": "L198",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries",
@@ -24068,7 +24867,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L183",
+      "source_location": "L184",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries",
@@ -24123,7 +24922,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L169",
+      "source_location": "L170",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries",
@@ -24167,7 +24966,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L229",
+      "source_location": "L230",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries",
@@ -24211,7 +25010,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L140",
+      "source_location": "L141",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries",
@@ -24222,7 +25021,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/queries.ts",
-      "source_location": "L178",
+      "source_location": "L179",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_queries",
@@ -24810,6 +25609,18 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_lib_tier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/routes/admin.lakes.index.tsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -24900,6 +25711,18 @@
       "_origin": "ast",
       "source": "src_routes_lakes_lakeid",
       "target": "src_lib_tier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_lib_tier_tier",
       "confidence_score": 1.0
     },
     {
@@ -25008,6 +25831,18 @@
       "_origin": "ast",
       "source": "src_routes_lakes_lakeid",
       "target": "src_lib_tier_tierclasses",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_lib_tier_tierbadge",
       "confidence_score": 1.0
     },
     {
@@ -27667,7 +28502,41 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/routes/admin.alerts.tsx",
-      "source_location": "L4",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_routes_admin_alerts_ackrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_alerts",
+      "target": "src_routes_admin_alerts_alertrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "indirect_call",
+      "confidence": "INFERRED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "context": "collection",
+      "source": "src_routes_admin_alerts",
+      "target": "src_routes_admin_alerts_alertsadmin",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.alerts.tsx",
+      "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_routes_admin_alerts",
@@ -28060,7 +28929,30 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/routes/admin.protocols.tsx",
-      "source_location": "L4",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_routes_admin_protocols",
+      "target": "src_routes_admin_protocols_protocolrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "indirect_call",
+      "confidence": "INFERRED",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "_origin": "ast",
+      "context": "collection",
+      "source": "src_routes_admin_protocols",
+      "target": "src_routes_admin_protocols_protocolsadmin",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/routes/admin.protocols.tsx",
+      "source_location": "L12",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_routes_admin_protocols",
@@ -29974,17 +30866,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_handoff",
-      "target": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L53",
+      "source_location": "L48",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
       "target": "docs_ai_handoff_done_this_session",
       "confidence_score": 1.0
     },
@@ -29992,66 +30884,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L82",
+      "source_location": "L86",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
       "target": "docs_ai_handoff_failed_approaches_do_not_retry",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L93",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
-      "target": "docs_ai_handoff_files_touched",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L89",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
-      "target": "docs_ai_handoff_loops_run",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L73",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
-      "target": "docs_ai_handoff_next_action",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L63",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
-      "target": "docs_ai_handoff_not_done_deferred",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L78",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
-      "target": "docs_ai_handoff_open_questions_for_a_human",
       "confidence_score": 1.0
     },
     {
@@ -30061,7 +30898,62 @@
       "source_location": "L106",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
+      "target": "docs_ai_handoff_files_touched",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/HANDOFF.md",
+      "source_location": "L101",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
+      "target": "docs_ai_handoff_loops_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/HANDOFF.md",
+      "source_location": "L74",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
+      "target": "docs_ai_handoff_next_action",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/HANDOFF.md",
+      "source_location": "L66",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
+      "target": "docs_ai_handoff_not_done_deferred",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/HANDOFF.md",
+      "source_location": "L80",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
+      "target": "docs_ai_handoff_open_questions_for_a_human",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/HANDOFF.md",
+      "source_location": "L125",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
       "target": "docs_ai_handoff_resume_with",
       "confidence_score": 1.0
     },
@@ -30072,7 +30964,7 @@
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
       "target": "docs_ai_handoff_state",
       "confidence_score": 1.0
     },
@@ -30080,10 +30972,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/HANDOFF.md",
-      "source_location": "L101",
+      "source_location": "L116",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "source": "docs_ai_handoff_handoff_cryohealth_2026_08_15_20_56_pkt",
       "target": "docs_ai_handoff_verification_status",
       "confidence_score": 1.0
     },
@@ -30117,14 +31009,14 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan",
-      "target": "docs_ai_planning_task_7_findings",
+      "target": "docs_ai_planning_task_8_findings",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L24",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
@@ -30135,18 +31027,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L95",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "docs_ai_plan_plan",
-      "target": "docs_ai_plan_deviations_from_the_dod_s_literal_text_state_now_don_t_let_uexel_verify_discover_them",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/ai/PLAN.md",
-      "source_location": "L260",
+      "source_location": "L298",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
@@ -30157,18 +31038,29 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L40",
+      "source_location": "L62",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
-      "target": "docs_ai_plan_gate_decision_hazard_scores_endpoint_auth_posture",
+      "target": "docs_ai_plan_gate_decision_acknowledgement_display_count_or_count_names",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L235",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_plan_plan",
+      "target": "docs_ai_plan_gate_decision_how_status_cleared_at_reach_the_admin_page",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/PLAN.md",
+      "source_location": "L273",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
@@ -30179,18 +31071,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L121",
+      "source_location": "L133",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
-      "target": "docs_ai_plan_known_runtime_traps_tsc_lint_cannot_catch_from_the_planner_s_findings",
+      "target": "docs_ai_plan_known_traps_from_the_planner_s_findings",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L271",
+      "source_location": "L307",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
@@ -30201,7 +31093,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L77",
+      "source_location": "L262",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_plan_plan",
+      "target": "docs_ai_plan_mechanical_no_affordance_check_used_across_steps_2_3",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/PLAN.md",
+      "source_location": "L106",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
@@ -30212,7 +31115,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L251",
+      "source_location": "L289",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
@@ -30223,7 +31126,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L149",
+      "source_location": "L186",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
@@ -30234,7 +31137,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L141",
+      "source_location": "L178",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
@@ -30245,7 +31148,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L58",
+      "source_location": "L160",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_plan_plan",
+      "target": "docs_ai_plan_two_live_latent_bugs_found_not_fixed_here_filed_as_a_follow_up",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/PLAN.md",
+      "source_location": "L82",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_plan",
@@ -30256,7 +31170,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L151",
+      "source_location": "L188",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_steps",
@@ -30267,40 +31181,40 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L162",
+      "source_location": "L204",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_steps",
-      "target": "docs_ai_plan_step_1_listhazardscores_hazard_scores_lakeid_endpoint",
+      "target": "docs_ai_plan_step_1_listallalerts_add_status_cleared_at",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L191",
+      "source_location": "L222",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_steps",
-      "target": "docs_ai_plan_step_2_admin_lakes_index_tsx_real_list",
+      "target": "docs_ai_plan_step_2_admin_alerts_tsx_real_table",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L205",
+      "source_location": "L241",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_steps",
-      "target": "docs_ai_plan_step_3_admin_lakes_lakeid_tsx_detail_with_both_time_series",
+      "target": "docs_ai_plan_step_3_admin_protocols_tsx_real_table",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/ai/PLAN.md",
-      "source_location": "L228",
+      "source_location": "L254",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_ai_plan_steps",
@@ -30701,6 +31615,369 @@
       "_origin": "ast",
       "source": "docs_ai_planning_task_7_findings_7_draft_plan_steps",
       "target": "docs_ai_planning_task_7_findings_step_4_graphify_update_close_out",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings",
+      "target": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L531",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_10_draft_plan_steps",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L666",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_11_explicitly_not_in_scope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_1_exact_current_state_of_the_two_route_files",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L87",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_2_exact_schemas_read_from_cryohealth_api_migrations_then_verified_against_the_live_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L164",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_3_exact_return_shapes_of_the_three_existing_query_functions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L256",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_4_existing_api_routes_nothing_new_is_needed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L277",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_5_tierbadge_on_alerts_tier_no_narrowing_guard_needed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L324",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_6_live_seeded_state_verified_against_postgres_on_5433_not_inferred",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L380",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_7_what_each_page_should_show",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L445",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_8_two_live_latent_bugs_file_them_do_not_fix_them",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L477",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_9_deviations_decisions_to_name_at_gate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_headline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L733",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_key_file_paths",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L692",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_task_8_findings_read_only_admin_views_alerts_alert_acknowledgements_protocols",
+      "target": "docs_ai_planning_task_8_findings_risks_assumptions_that_change_the_plan_if_wrong",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L121",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_2_exact_schemas_read_from_cryohealth_api_migrations_then_verified_against_the_live_db",
+      "target": "docs_ai_planning_task_8_findings_alert_acknowledgements_1785700000000_webschema_ts_171_179",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L92",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_2_exact_schemas_read_from_cryohealth_api_migrations_then_verified_against_the_live_db",
+      "target": "docs_ai_planning_task_8_findings_alerts_1785608131024_initialschema_ts_41_extended_by_1785700000000_webschema_ts_44_60_and_1786204276808_alertchipsandchecklist_ts_14_17",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L135",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_2_exact_schemas_read_from_cryohealth_api_migrations_then_verified_against_the_live_db",
+      "target": "docs_ai_planning_task_8_findings_protocols_1785700000000_webschema_ts_70_81",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L151",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_2_exact_schemas_read_from_cryohealth_api_migrations_then_verified_against_the_live_db",
+      "target": "docs_ai_planning_task_8_findings_there_is_no_numeric_as_string_trap_in_8",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L236",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_3_exact_return_shapes_of_the_three_existing_query_functions",
+      "target": "docs_ai_planning_task_8_findings_insertalert_insertalertack_alertid_chwid_src_lib_queries_ts_151_167_188_195",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L205",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_3_exact_return_shapes_of_the_three_existing_query_functions",
+      "target": "docs_ai_planning_task_8_findings_listalertacks_src_lib_queries_ts_183_186",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L214",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_3_exact_return_shapes_of_the_three_existing_query_functions",
+      "target": "docs_ai_planning_task_8_findings_listalertsforlake_lakeid_src_lib_queries_ts_115_124_not_used_by_8_but_load_bearing_for_8",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L166",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_3_exact_return_shapes_of_the_three_existing_query_functions",
+      "target": "docs_ai_planning_task_8_findings_listallalerts_limit_200_src_lib_queries_ts_126_138",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L226",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_3_exact_return_shapes_of_the_three_existing_query_functions",
+      "target": "docs_ai_planning_task_8_findings_listopenalerts_limit_5_src_lib_queries_ts_140_149",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L243",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_3_exact_return_shapes_of_the_three_existing_query_functions",
+      "target": "docs_ai_planning_task_8_findings_listprotocols_src_lib_queries_ts_178_181",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L302",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_5_tierbadge_on_alerts_tier_no_narrowing_guard_needed",
+      "target": "docs_ai_planning_task_8_findings_the_enum_cast_rule_stated_correctly",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L382",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_7_what_each_page_should_show",
+      "target": "docs_ai_planning_task_8_findings_admin_alerts_tsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L415",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_7_what_each_page_should_show",
+      "target": "docs_ai_planning_task_8_findings_admin_protocols_tsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L558",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_10_draft_plan_steps",
+      "target": "docs_ai_planning_task_8_findings_step_0_pre_flight_no_commit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L585",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_10_draft_plan_steps",
+      "target": "docs_ai_planning_task_8_findings_step_1_listallalerts_returns_status_cleared_at",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L611",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_10_draft_plan_steps",
+      "target": "docs_ai_planning_task_8_findings_step_2_admin_alerts_tsx_real_table",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L637",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_10_draft_plan_steps",
+      "target": "docs_ai_planning_task_8_findings_step_3_admin_protocols_tsx_real_table",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/planning/task-8-findings.md",
+      "source_location": "L654",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_planning_task_8_findings_10_draft_plan_steps",
+      "target": "docs_ai_planning_task_8_findings_step_4_graphify_update_close_out",
       "confidence_score": 1.0
     },
     {
@@ -32495,8 +33772,206 @@
       "source": "docs_ai_sessions_2026_08_10_task6_verify_report_session_report_uexel_verify_for_task_6",
       "target": "docs_ai_sessions_2026_08_10_task6_verify_report_why_the_loop_stopped",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_done_this_session",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L82",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_failed_approaches_do_not_retry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L93",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_files_touched",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L89",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_loops_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L73",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_next_action",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L63",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_not_done_deferred",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L78",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_open_questions_for_a_human",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L106",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_resume_with",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_state",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md",
+      "source_location": "L101",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_handoff_cryohealth_2026_08_11_20_30_pkt",
+      "target": "docs_ai_sessions_2026_08_11_doctor_sweep_close_handoff_verification_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_15_task7_verify_report",
+      "target": "docs_ai_sessions_2026_08_15_task7_verify_report_session_report_uexel_verify_for_task_7",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L70",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_15_task7_verify_report_session_report_uexel_verify_for_task_7",
+      "target": "docs_ai_sessions_2026_08_15_task7_verify_report_a_note_on_process",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_15_task7_verify_report_session_report_uexel_verify_for_task_7",
+      "target": "docs_ai_sessions_2026_08_15_task7_verify_report_build_phase_no_fix_loop_needed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L91",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_15_task7_verify_report_session_report_uexel_verify_for_task_7",
+      "target": "docs_ai_sessions_2026_08_15_task7_verify_report_final_verdict",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_15_task7_verify_report_session_report_uexel_verify_for_task_7",
+      "target": "docs_ai_sessions_2026_08_15_task7_verify_report_fix_loop_1_of_3_iterations_used",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_15_task7_verify_report_session_report_uexel_verify_for_task_7",
+      "target": "docs_ai_sessions_2026_08_15_task7_verify_report_what_was_built_and_verified",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ai/sessions/2026-08-15-task7-verify-report.md",
+      "source_location": "L65",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_ai_sessions_2026_08_15_task7_verify_report_session_report_uexel_verify_for_task_7",
+      "target": "docs_ai_sessions_2026_08_15_task7_verify_report_why_the_loop_stopped",
+      "confidence_score": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f37b19fcedfc548d4568c50cca451b3753f80f00"
+  "built_at_commit": "147676710e3fba5e9254aa3471f5d34d77b9277a"
 }

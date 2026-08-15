@@ -360,8 +360,8 @@
     "semantic_hash": ""
   },
   "src/routes/data.tsx": {
-    "mtime": 1786284968.9841795,
-    "ast_hash": "575dc014821587a5b6a6b5e138e15da0",
+    "mtime": 1786810597.8164978,
+    "ast_hash": "e88f5602618f4d3d68bdadabbdd6bc44",
     "semantic_hash": ""
   },
   "src/routes/glaciers.$glacierId.tsx": {
@@ -450,8 +450,8 @@
     "semantic_hash": ""
   },
   "src/lib/queries.ts": {
-    "mtime": 1786463830.7983668,
-    "ast_hash": "b907f6713756f4f34260c1f65dbb29ac",
+    "mtime": 1786810581.9262557,
+    "ast_hash": "593626f3750d531fb5d6e8645ff5eff1",
     "semantic_hash": ""
   },
   "src/routes/api/auth/login.ts": {
@@ -600,8 +600,8 @@
     "semantic_hash": ""
   },
   "docs/ai/HANDOFF.md": {
-    "mtime": 1786462253.0472207,
-    "ast_hash": "14d2b66a6ef0125faa5edab437286bef",
+    "mtime": 1786809430.6413214,
+    "ast_hash": "28e56ef3593e0f9ec1ea14c25b1a4a24",
     "semantic_hash": ""
   },
   "docs/ai/LEARNINGS.md": {
@@ -610,13 +610,13 @@
     "semantic_hash": ""
   },
   "docs/ai/PLAN.md": {
-    "mtime": 1786463474.1926785,
-    "ast_hash": "f21785c2a23a5ec280a22d671e7fda17",
+    "mtime": 1786810326.560544,
+    "ast_hash": "75c6ac78116a14ceb2f7584432108b9f",
     "semantic_hash": ""
   },
   "docs/ai/TODO.md": {
-    "mtime": 1786463966.2473855,
-    "ast_hash": "4ae70528c38f92503677d9fb90b47cf8",
+    "mtime": 1786809360.754078,
+    "ast_hash": "b30ff9f247465727337fd8dd0f765917",
     "semantic_hash": ""
   },
   "docs/ai/sessions/2026-08-01-import-site-history-handoff.md": {
@@ -685,8 +685,8 @@
     "semantic_hash": ""
   },
   "src/routes/admin.alerts.tsx": {
-    "mtime": 1786292355.2328775,
-    "ast_hash": "e25cf30a44b2a92fb71f45e7d307c62f",
+    "mtime": 1786810645.2752044,
+    "ast_hash": "94cf63bcbc773e121db8506ab1e583ab",
     "semantic_hash": ""
   },
   "src/routes/admin.audit.tsx": {
@@ -740,8 +740,8 @@
     "semantic_hash": ""
   },
   "src/routes/admin.lakes.index.tsx": {
-    "mtime": 1786463917.4442081,
-    "ast_hash": "d10dc6b7eec42906f9c4ac4470fb1ef2",
+    "mtime": 1786464667.2475429,
+    "ast_hash": "b63354c9456388687eba864396268b89",
     "semantic_hash": ""
   },
   "src/routes/admin.lakes.tsx": {
@@ -750,8 +750,8 @@
     "semantic_hash": ""
   },
   "src/routes/admin.protocols.tsx": {
-    "mtime": 1786292362.1566176,
-    "ast_hash": "03dfc82d75b2a8f146c87f8bf4d95936",
+    "mtime": 1786810695.8606303,
+    "ast_hash": "f465db91fdb14e4617cbccc074c65783",
     "semantic_hash": ""
   },
   "src/routes/admin.system-health.tsx": {
@@ -877,6 +877,21 @@
   "docs/ai/sessions/2026-08-10-task6-verify-report.md": {
     "mtime": 1786359823.8661146,
     "ast_hash": "4aad17c432597a33cec3b6384e954d13",
+    "semantic_hash": ""
+  },
+  "docs/ai/planning/task-8-findings.md": {
+    "mtime": 1786810226.9750733,
+    "ast_hash": "8e75d4ed9fb71dedc51e3e3f20af0060",
+    "semantic_hash": ""
+  },
+  "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md": {
+    "mtime": 1786809294.1589541,
+    "ast_hash": "14d2b66a6ef0125faa5edab437286bef",
+    "semantic_hash": ""
+  },
+  "docs/ai/sessions/2026-08-15-task7-verify-report.md": {
+    "mtime": 1786809393.4373064,
+    "ast_hash": "91beca55ceb3b43fd402a5df0e3a45b2",
     "semantic_hash": ""
   }
 }

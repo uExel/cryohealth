@@ -1,12 +1,12 @@
 # TODO
 
 Working checklist for the active plan. Kept current by /uexel:build.
-Plan: docs/ai/PLAN.md · Task: #7 · Goal: #3
+Plan: docs/ai/PLAN.md · Task: #8 · Goal: #3
 
-- [x] Step 0 — pre-flight: dev stack up (8080/3000/5433), clean tree, tsc+lint baseline green (10 warnings), admin.lakes.index.tsx confirmed placeholder, lake_risk_scores re-confirmed no writer
-- [x] Step 1 — listHazardScores() + gated hazard-scores.$lakeId endpoint: requireAuth+requireRole(cryohealth_admin, facility_admin), verified live (401 bare, 200 both admin roles, 403 chw, no 500)
-- [x] Step 2 — admin.lakes.index.tsx: real list, verified live (6 lakes, 5 Hunza + 1 Ghizer, Badswat shows WATCH — real state, not all-NORMAL as planning assumed), admin.index.tsx untouched
-- [x] Step 3 — admin.lakes.$lakeId.tsx: Tabs (Overview | Risk scores | Hazard scores), verified live (Badswat detail, both time-series tabs show distinct empty states, 404 on unknown lakeId, no edit-affordance grep match)
-- [x] Step 4 — cleanup: graphify update done (listHazardScores() resolves as a node), `bun run build` succeeds
-- [x] Live browser QA — not attempted this task. Per the recorded lesson from task #6 ("if this recurs a third time, consider it a known-broken tool in this sandbox and skip straight to the curl+static-review substitute"), the gstack `/browse` Playwright install already failed twice in task #6 with the same signature — skipped a third attempt and went straight to the curl+static-review substitute, which is complete: tsc/lint/build all green, every endpoint verified live via curl (401/200/403 role matrix, 404 handling, empty-state payloads), mechanical no-edit-affordance grep. Still open for a human to spot-check visually (dark mode toggle, tab switching, keyboard-only tab navigation on the two audit tabs).
-- [x] /uexel:verify — PASS (fix-loop 1/3 used: 1-line date-formatting fix; 3 non-blocking findings filed as follow-up issues #27/#28/#29)
+- [x] Step 0 — pre-flight: tsc+lint baseline green (10 warnings) on HEAD before edits, dev stack up (8080/3000/5433), admin.alerts/protocols confirmed placeholders, 4 alerts/1 ack/2 protocols live
+- [x] Step 1 — listAllAlerts() adds status + cleared_at: additive to the shared public query, data.tsx example payload updated same commit, verified live (1 cleared row, rest active, public /alerts unaffected)
+- [x] Step 2 — admin.alerts.tsx: real table with tier/status/target/window/affected/acks/issued columns, search + tier + status filters (default ALL), verified live (4 rows, cleared alert visible by default, ack count 1/0 correct)
+- [x] Step 3 — admin.protocols.tsx: real table with disaster badge (neutral, not tier-red), body truncate+expand, verified live (2 rows, disaster-first order preserved, zero tier-red matches)
+- [x] Step 4 — cleanup: graphify update done (admin.alerts.tsx resolves as AlertsAdmin() node), `bun run build` succeeds
+- [x] Live browser QA — not attempted this task, consistent with #6/#7's disclosed and accepted gap (gstack /browse's Playwright dependency known-broken in this sandbox). Substitute complete: tsc/lint/build all green, every data path verified live via curl, mechanical no-edit-affordance grep clean on both new files. Still open for a human to spot-check visually (dark mode, cleared-alert pill contrast, protocol body expander).
+- [ ] /uexel:verify
