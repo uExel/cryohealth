@@ -310,8 +310,8 @@
     "semantic_hash": "d9837f38cc05303254571985e3164050"
   },
   "src/routeTree.gen.ts": {
-    "mtime": 1786814091.7659454,
-    "ast_hash": "9b95fb7858166e9c42c1952bc576e9f6",
+    "mtime": 1786292402.8440526,
+    "ast_hash": "02d376c5bf1b2fc1dfef696d76d555b5",
     "semantic_hash": ""
   },
   "src/router.tsx": {
@@ -360,8 +360,8 @@
     "semantic_hash": ""
   },
   "src/routes/data.tsx": {
-    "mtime": 1786810597.8164978,
-    "ast_hash": "e88f5602618f4d3d68bdadabbdd6bc44",
+    "mtime": 1786284968.9841795,
+    "ast_hash": "575dc014821587a5b6a6b5e138e15da0",
     "semantic_hash": ""
   },
   "src/routes/glaciers.$glacierId.tsx": {
@@ -415,8 +415,8 @@
     "semantic_hash": "b34d45c1ec804af27126cb2a0af9d295"
   },
   ".claude/settings.local.json": {
-    "mtime": 1786461423.8436427,
-    "ast_hash": "0b13122f8e08bbee0fb76d07df8c368c",
+    "mtime": 1786293586.2936418,
+    "ast_hash": "1b6a4a619a5c576792f7e975114e8092",
     "semantic_hash": ""
   },
   "src/lib/auth-client.ts": {
@@ -450,8 +450,8 @@
     "semantic_hash": ""
   },
   "src/lib/queries.ts": {
-    "mtime": 1786812497.3166132,
-    "ast_hash": "5d9c1d1a8f3539a9d93c37125e451026",
+    "mtime": 1786287429.7726414,
+    "ast_hash": "fb540f4af15c22c9655411f3dff2193c",
     "semantic_hash": ""
   },
   "src/routes/api/auth/login.ts": {
@@ -595,13 +595,13 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1786461379.9375944,
-    "ast_hash": "b313f60e4a70a0362ca78337356952f4",
+    "mtime": 1786202701.0310812,
+    "ast_hash": "c995e38c7caeb908eac79c357fc48c04",
     "semantic_hash": ""
   },
   "docs/ai/HANDOFF.md": {
-    "mtime": 1786811298.1193914,
-    "ast_hash": "fce7898edeb43f7d6e9f6711c5fb5ffb",
+    "mtime": 1786344297.5936203,
+    "ast_hash": "5f75bd3280c5d40193ab257da0863949",
     "semantic_hash": ""
   },
   "docs/ai/LEARNINGS.md": {
@@ -610,13 +610,13 @@
     "semantic_hash": ""
   },
   "docs/ai/PLAN.md": {
-    "mtime": 1786812184.6726236,
-    "ast_hash": "e25b3af7227c8e4d2fe484f62bab9fad",
+    "mtime": 1786356534.3932576,
+    "ast_hash": "715df0a1d49734f065604b82397575dc",
     "semantic_hash": ""
   },
   "docs/ai/TODO.md": {
-    "mtime": 1786812770.4039743,
-    "ast_hash": "f4b2692c1083f61eff3d9b57b29b948a",
+    "mtime": 1786357299.517739,
+    "ast_hash": "a07ad43eef23745f3cd2f18bb1c74e50",
     "semantic_hash": ""
   },
   "docs/ai/sessions/2026-08-01-import-site-history-handoff.md": {
@@ -685,8 +685,8 @@
     "semantic_hash": ""
   },
   "src/routes/admin.alerts.tsx": {
-    "mtime": 1786810645.2752044,
-    "ast_hash": "94cf63bcbc773e121db8506ab1e583ab",
+    "mtime": 1786292355.2328775,
+    "ast_hash": "e25cf30a44b2a92fb71f45e7d307c62f",
     "semantic_hash": ""
   },
   "src/routes/admin.audit.tsx": {
@@ -695,33 +695,33 @@
     "semantic_hash": ""
   },
   "src/routes/admin.cases.tsx": {
-    "mtime": 1786814109.9208212,
-    "ast_hash": "4c88cfc00fdf8ac005d535049c98a474",
+    "mtime": 1786292366.5158958,
+    "ast_hash": "0298ab6d8294236c9e1ec51216ae43ca",
     "semantic_hash": ""
   },
   "src/routes/admin.chw-profiles.tsx": {
-    "mtime": 1786812659.150589,
-    "ast_hash": "1c255afbf1dc7bd42a1c1b206a979eef",
+    "mtime": 1786292379.822094,
+    "ast_hash": "8bad470fb7b8c731e58c5ba4ee96a09b",
     "semantic_hash": ""
   },
   "src/routes/admin.districts.tsx": {
-    "mtime": 1786359286.8823652,
-    "ast_hash": "54051b88a0c34062eeb101bd92489296",
+    "mtime": 1786357367.2087276,
+    "ast_hash": "e9924af312b7c3f63d6e93faf7faf902",
     "semantic_hash": ""
   },
   "src/routes/admin.facilities.tsx": {
-    "mtime": 1786812619.6138155,
-    "ast_hash": "a6d6fdee7e3675d12ecb7c57defa3ac3",
+    "mtime": 1786292373.9651444,
+    "ast_hash": "ab972d6bd6c5775784e2302a492b9eac",
     "semantic_hash": ""
   },
   "src/routes/admin.glaciers.$glacierId.tsx": {
-    "mtime": 1786359343.618612,
-    "ast_hash": "90548ea1853dab353d57aeb9b9f413d6",
+    "mtime": 1786357710.427157,
+    "ast_hash": "18423c5034bb27ac67cab8891edc7342",
     "semantic_hash": ""
   },
   "src/routes/admin.glaciers.index.tsx": {
-    "mtime": 1786359319.7160168,
-    "ast_hash": "95f9a4085d61b2fede9a3ac7edd0563c",
+    "mtime": 1786357650.465278,
+    "ast_hash": "4b7f1ad3e5a404c7947ba436fdbd7ab5",
     "semantic_hash": ""
   },
   "src/routes/admin.glaciers.tsx": {
@@ -735,13 +735,13 @@
     "semantic_hash": ""
   },
   "src/routes/admin.lakes.$lakeId.tsx": {
-    "mtime": 1786464047.8108974,
-    "ast_hash": "0052d0f6ddeb4f3b85536de1739c9a00",
+    "mtime": 1786292344.148206,
+    "ast_hash": "e86d869c0943ea7fb0ace1db6aef35d6",
     "semantic_hash": ""
   },
   "src/routes/admin.lakes.index.tsx": {
-    "mtime": 1786464667.2475429,
-    "ast_hash": "b63354c9456388687eba864396268b89",
+    "mtime": 1786292338.918362,
+    "ast_hash": "473917830e593906d8b4cd2bee4f458c",
     "semantic_hash": ""
   },
   "src/routes/admin.lakes.tsx": {
@@ -750,8 +750,8 @@
     "semantic_hash": ""
   },
   "src/routes/admin.protocols.tsx": {
-    "mtime": 1786810695.8606303,
-    "ast_hash": "f465db91fdb14e4617cbccc074c65783",
+    "mtime": 1786292362.1566176,
+    "ast_hash": "03dfc82d75b2a8f146c87f8bf4d95936",
     "semantic_hash": ""
   },
   "src/routes/admin.system-health.tsx": {
@@ -847,81 +847,6 @@
   "docs/ai/sessions/2026-08-10-task5-verify-report.md": {
     "mtime": 1786344260.4780731,
     "ast_hash": "9a7aebb1094fc55e04ad58c5754c69ea",
-    "semantic_hash": ""
-  },
-  "src/routes/api/public/hazard-scores.$lakeId.ts": {
-    "mtime": 1786463832.5865119,
-    "ast_hash": "6c76885849114ee1fc5be996c0ebbc9e",
-    "semantic_hash": ""
-  },
-  "docs/ai/planning/task-7-findings.md": {
-    "mtime": 1786463355.064485,
-    "ast_hash": "cb41aa90927e2f74ced321e3249c17b6",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-10-task5-close-handoff.md": {
-    "mtime": 1786358226.1284773,
-    "ast_hash": "5f75bd3280c5d40193ab257da0863949",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-10-task6-build-handoff.md": {
-    "mtime": 1786359880.591271,
-    "ast_hash": "bc13cf04a937b4a6fdc4961f5d514af5",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-10-task6-close-out-handoff.md": {
-    "mtime": 1786462220.9422557,
-    "ast_hash": "731400f4d0c6cc97ee86be3bfe0310f1",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-10-task6-verify-report.md": {
-    "mtime": 1786359823.8661146,
-    "ast_hash": "4aad17c432597a33cec3b6384e954d13",
-    "semantic_hash": ""
-  },
-  "docs/ai/planning/task-8-findings.md": {
-    "mtime": 1786810226.9750733,
-    "ast_hash": "8e75d4ed9fb71dedc51e3e3f20af0060",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-11-doctor-sweep-close-handoff.md": {
-    "mtime": 1786809294.1589541,
-    "ast_hash": "14d2b66a6ef0125faa5edab437286bef",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-15-task7-verify-report.md": {
-    "mtime": 1786809393.4373064,
-    "ast_hash": "91beca55ceb3b43fd402a5df0e3a45b2",
-    "semantic_hash": ""
-  },
-  "src/routes/api/admin/cases.ts": {
-    "mtime": 1786812567.8797958,
-    "ast_hash": "dd722949d7bc8b2c643ab32fbacc697a",
-    "semantic_hash": ""
-  },
-  "src/routes/api/public/chw-profiles.ts": {
-    "mtime": 1786814106.334505,
-    "ast_hash": "c73ab5fe70ad7a4d8a74ca5d50c08325",
-    "semantic_hash": ""
-  },
-  "src/routes/api/public/facilities-admin.ts": {
-    "mtime": 1786814091.677074,
-    "ast_hash": "971734dee579dc12348c4a2a4563f40d",
-    "semantic_hash": ""
-  },
-  "docs/ai/planning/task-9-findings.md": {
-    "mtime": 1786812081.6488996,
-    "ast_hash": "ceb9874b54143f6d675473575f4f2431",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-15-task7-close-handoff.md": {
-    "mtime": 1786811270.3454983,
-    "ast_hash": "28e56ef3593e0f9ec1ea14c25b1a4a24",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-15-task8-verify-report.md": {
-    "mtime": 1786811266.364817,
-    "ast_hash": "163649bbc0ccb7bf51ac6dbfb91a4712",
     "semantic_hash": ""
   }
 }

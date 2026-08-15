@@ -33,3 +33,4 @@ dist-ssr
 graphify-out/cost.json
 .env
 .env.local
+.gstack/

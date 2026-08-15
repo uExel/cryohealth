@@ -403,8 +403,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "package_dependencies_cloudflare_vite_plugin",
-      "community": 12,
-      "community_name": "dependencies",
+      "community": 130,
+      "community_name": "@cloudflare/vite-plugin",
       "norm_label": "@cloudflare/vite-plugin"
     },
     {
@@ -414,8 +414,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "cloudflare_vite_plugin",
-      "community": 12,
-      "community_name": "dependencies",
+      "community": 130,
+      "community_name": "@cloudflare/vite-plugin",
       "norm_label": "@cloudflare/vite-plugin"
     },
     {
@@ -1217,8 +1217,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "package_dependencies_cmdk",
-      "community": 130,
-      "community_name": "cmdk",
+      "community": 12,
+      "community_name": "dependencies",
       "norm_label": "cmdk"
     },
     {
@@ -1228,8 +1228,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "cmdk",
-      "community": 130,
-      "community_name": "cmdk",
+      "community": 12,
+      "community_name": "dependencies",
       "norm_label": "cmdk"
     },
     {
@@ -8842,7 +8842,7 @@
       "label": "Route",
       "file_type": "code",
       "source_file": "src/routes/api/public/chw-profiles.ts",
-      "source_location": "L7",
+      "source_location": "L4",
       "_origin": "ast",
       "id": "src_routes_api_public_chw_profiles_route",
       "community": 35,
@@ -30650,7 +30650,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/routes/api/public/chw-profiles.ts",
-      "source_location": "L7",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_routes_api_public_chw_profiles",
@@ -36206,5 +36206,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8d8c93f4aafacfc11753e48f21e664548ea02cca"
+  "built_at_commit": "131097baf6d78433b0a7cc3b11560eb5def9c30b"
 }

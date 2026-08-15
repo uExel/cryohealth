@@ -12,4 +12,11 @@ Plan: docs/ai/PLAN.md · Task: #9 · Goal: #3
 - [x] Step 6 — admin.cases.tsx: real table, authFetch against the gated endpoint, disaster badge matches admin.protocols.tsx's exact markup (not tier-red), verified live (4 rows newest-first, exactly 1 disaster badge, no-token access 401s)
 - [x] Step 7 — cleanup: graphify update done (CasesAdmin() resolves as a node), `bun run build` succeeds
 - [x] Live browser QA — not attempted this task, consistent with #6/#7/#8's disclosed and accepted gap (gstack /browse's Playwright dependency known-broken in this sandbox). Substitute complete: tsc/lint/build all green, every data path (including the full auth role matrix on the new gated endpoint) verified live via curl, mechanical no-edit-affordance and no-tier-red greps clean on all three new files. Still open for a human to spot-check visually (dark mode, disaster badge contrast, symptoms/protocol body expanders).
-- [ ] /uexel:verify
+- [x] /uexel:verify — PASS WITH FINDINGS (0 blocking). 1 fix-loop iteration: precondition
+      comment added to `chw-profiles.ts` (ungated-because-empty-table is a recorded GATE
+      decision, not an oversight — revisit at #14), `chw_lhw_id` wired as a fallback in
+      `admin.cases.tsx`'s CHW column (was fetched, never rendered). Pagination/truncation
+      finding filed as #33 (same class as #27/#31, not reproducible at current volume).
+      Path-prefix inconsistency finding (`/api/public/chw-profiles`, `/api/public/facilities-admin`)
+      matches pre-existing repo precedent (`lakes-admin.ts`, predates this task sequence) —
+      left as-is, already tracked by #29. Full verdict: issue #9 comment.

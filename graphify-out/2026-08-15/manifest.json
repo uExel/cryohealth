@@ -310,7 +310,7 @@
     "semantic_hash": "d9837f38cc05303254571985e3164050"
   },
   "src/routeTree.gen.ts": {
-    "mtime": 1786814091.7659454,
+    "mtime": 1786812569.0661087,
     "ast_hash": "9b95fb7858166e9c42c1952bc576e9f6",
     "semantic_hash": ""
   },
@@ -615,8 +615,8 @@
     "semantic_hash": ""
   },
   "docs/ai/TODO.md": {
-    "mtime": 1786812770.4039743,
-    "ast_hash": "f4b2692c1083f61eff3d9b57b29b948a",
+    "mtime": 1786811242.5977514,
+    "ast_hash": "f6734c1387c926df34978e0cc8b9f64f",
     "semantic_hash": ""
   },
   "docs/ai/sessions/2026-08-01-import-site-history-handoff.md": {
@@ -695,8 +695,8 @@
     "semantic_hash": ""
   },
   "src/routes/admin.cases.tsx": {
-    "mtime": 1786814109.9208212,
-    "ast_hash": "4c88cfc00fdf8ac005d535049c98a474",
+    "mtime": 1786812705.4154708,
+    "ast_hash": "d84a7857dfdb64cce78707662a703790",
     "semantic_hash": ""
   },
   "src/routes/admin.chw-profiles.tsx": {
@@ -900,12 +900,12 @@
     "semantic_hash": ""
   },
   "src/routes/api/public/chw-profiles.ts": {
-    "mtime": 1786814106.334505,
-    "ast_hash": "c73ab5fe70ad7a4d8a74ca5d50c08325",
+    "mtime": 1786812532.7513409,
+    "ast_hash": "13849c09fe1d660567500511cd409121",
     "semantic_hash": ""
   },
   "src/routes/api/public/facilities-admin.ts": {
-    "mtime": 1786814091.677074,
+    "mtime": 1786812520.962775,
     "ast_hash": "971734dee579dc12348c4a2a4563f40d",
     "semantic_hash": ""
   },

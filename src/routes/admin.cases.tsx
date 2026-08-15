@@ -135,7 +135,9 @@ function CasesAdmin() {
                   {c.outcome ?? "—"}
                 </TableCell>
                 <TableCell className="text-muted-foreground">{c.district_name ?? "—"}</TableCell>
-                <TableCell className="text-muted-foreground">{c.chw_name ?? "—"}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {c.chw_name ?? c.chw_lhw_id ?? "—"}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
