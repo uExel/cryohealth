@@ -7,11 +7,49 @@ import { z } from "zod";
  * yet (a bare `z.object({})` would silently accept anything).
  */
 
-export const districtSchema = z.object({}).strict();
-export type District = z.infer<typeof districtSchema>;
+export const districtCreateSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    province: z.string().min(1, "Province is required"),
+    population: z.number().int().positive().nullable().optional(),
+    centroid_lat: z.number().min(-90).max(90).nullable().optional(),
+    centroid_lng: z.number().min(-180).max(180).nullable().optional(),
+  })
+  .strict();
+export type DistrictCreate = z.infer<typeof districtCreateSchema>;
 
-export const glacierSchema = z.object({}).strict();
-export type Glacier = z.infer<typeof glacierSchema>;
+export const districtUpdateSchema = districtCreateSchema.partial();
+export type DistrictUpdate = z.infer<typeof districtUpdateSchema>;
+
+const GLACIER_STATUSES = ["stable", "retreating", "advancing", "surging", "unknown"] as const;
+
+export const glacierCreateSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    rgi_id: z.string().min(1).nullable().optional(),
+    glims_id: z.string().min(1).nullable().optional(),
+    district_id: z.string().uuid().nullable().optional(),
+    lat: z.number().min(-90).max(90),
+    lng: z.number().min(-180).max(180),
+    area_km2: z.number().positive().nullable().optional(),
+    length_km: z.number().positive().nullable().optional(),
+    elevation_min_m: z.number().int().nullable().optional(),
+    elevation_max_m: z.number().int().nullable().optional(),
+    status: z.enum(GLACIER_STATUSES).default("unknown"),
+    terminus_type: z.string().min(1).nullable().optional(),
+    // Required despite the DB column being nullable: the glaciers page header advertises
+    // RGI v7 / GLIMS provenance, so a hand-entered row must cite where it came from.
+    source: z
+      .string()
+      .min(1, "Source is required — cite the inventory or publication this entry comes from"),
+    last_observed: z.string().min(1).nullable().optional(),
+    notes: z.string().nullable().optional(),
+  })
+  .strict();
+export type GlacierCreate = z.infer<typeof glacierCreateSchema>;
+
+export const glacierUpdateSchema = glacierCreateSchema.partial();
+export type GlacierUpdate = z.infer<typeof glacierUpdateSchema>;
 
 /** currentTier and current_risk_score must never appear here — that's tier-policy
  *  output owned by CryoHealth-api's alert service, not an admin-editable field. */
