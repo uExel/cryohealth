@@ -128,6 +128,7 @@ export async function listAllAlerts(limit = 200) {
   return sql`
     SELECT a.id, a."lakeId" AS lake_id, a.district_id, upper(a.tier::text) AS tier, a.title, a.body_en, a.body_ur,
            a.estimated_window, a.affected_population, a."createdAt" AS created_at,
+           a.status::text AS status, a."clearedAt" AS cleared_at,
            l.name AS lake_name, d.name AS district_name
     FROM alerts a
     LEFT JOIN lakes l ON l.id = a."lakeId"

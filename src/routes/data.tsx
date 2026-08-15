@@ -83,6 +83,8 @@ const ENDPOINTS: Endpoint[] = [
       "estimated_window": "next 24h",
       "affected_population": 4200,
       "created_at": "2026-08-09T04:12:00Z",
+      "status": "active",
+      "cleared_at": null,
       "lake_name": "Shishper glacial lake",
       "district_name": "Hunza"
     }
