@@ -9,4 +9,4 @@ Plan: docs/ai/PLAN.md · Task: #8 · Goal: #3
 - [x] Step 3 — admin.protocols.tsx: real table with disaster badge (neutral, not tier-red), body truncate+expand, verified live (2 rows, disaster-first order preserved, zero tier-red matches)
 - [x] Step 4 — cleanup: graphify update done (admin.alerts.tsx resolves as AlertsAdmin() node), `bun run build` succeeds
 - [x] Live browser QA — not attempted this task, consistent with #6/#7's disclosed and accepted gap (gstack /browse's Playwright dependency known-broken in this sandbox). Substitute complete: tsc/lint/build all green, every data path verified live via curl, mechanical no-edit-affordance grep clean on both new files. Still open for a human to spot-check visually (dark mode, cleared-alert pill contrast, protocol body expander).
-- [ ] /uexel:verify
+- [x] /uexel:verify — PASS WITH FINDINGS, none blocking, 0/3 fix-loop iterations used; 3 non-blocking findings filed as follow-up issues #30/#31/#32
