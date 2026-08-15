@@ -31,4 +31,18 @@ Plan: docs/ai/PLAN.md · Task: #10 · Goal: #3
       (district.create/update/delete ×1 each, glacier.create ×3, glacier.update ×1,
       glacier.delete ×3 — from verification round-trips, all test rows cleaned up,
       counts back to baseline: districts=2, glaciers=6, glacier_observations=0)
-- [ ] /uexel:verify
+- [x] /uexel:verify — pass 1: FAIL (1 blocking: F1, glacier edit broken whenever
+      area/length recorded — z.number() rejected postgres.js's numeric-as-string
+      return; 8 non-blocking). Fix-loop iteration 1 (`f753c16`): F1 fixed via
+      z.coerce.number(); folded in F2/F3 (clearing an optional field silently
+      no-op'd or hard-blocked submission) and F4/F5/F6 (malformed body/bad FK/bad
+      UUID param all 500'd instead of 400, new `src/lib/api-errors.ts`). Re-verify:
+      PASS WITH FINDINGS — confirmed F1-F6 genuinely fixed live, but found the fix
+      itself over-applied `.coerce` to required non-nullable `lat`/`lng`, letting
+      null/""/[]/true silently coerce to 0 (a fabricated coordinate) instead of
+      400ing (N1). One more commit (`76157bb`) scoped `.coerce` to only the two
+      genuinely Postgres-`numeric` fields (area_km2/length_km), added a null-guard
+      to two error checks (N2), and `.trim()` to the delete-reason schema (N6).
+      F7 (delete-guard TOCTOU), F8 (population not shown in table), F9
+      (DELETE-with-body transport) filed as follow-ups #34/#35/#36 — real but
+      non-blocking, deliberately deferred. Full verdict: issue #10 comment.

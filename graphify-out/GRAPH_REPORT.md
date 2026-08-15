@@ -1,21 +1,21 @@
 # Graph Report - cryohealth  (2026-08-15)
 
 ## Corpus Check
-- 179 files · ~185,647 words
+- 180 files · ~186,346 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1443 nodes · 2084 edges · 152 communities (87 shown, 65 thin omitted)
+- 1446 nodes · 2098 edges · 154 communities (88 shown, 66 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.51)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1d48a4c4`
+- Built from commit: `76157bb9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- tier.tsx
+- glaciers.$glacierId.tsx
 - routeTree.gen.ts
 - devDependencies
 - compilerOptions
@@ -28,7 +28,7 @@
 - server.ts
 - queries.ts
 - dependencies
-- HazardMap.tsx
+- AdminShell.tsx
 - auth.tsx
 - drawer.tsx
 - form.tsx
@@ -55,11 +55,11 @@
 - HANDOFF — cryohealth — 2026-08-09 22:10 PKT
 - check-gstack.sh
 - HANDOFF — cryohealth — 2026-08-09 23:20 PKT
-- auth-guard.ts
+- react
 - date-fns
 - embla-carousel-react
 - HANDOFF — cryohealth — 2026-08-09 01:25 PKT
-- StatCard.tsx
+- index.tsx
 - leaflet
 - lucide-react
 - @radix-ui/react-accordion
@@ -113,7 +113,7 @@
 - data.tsx
 - graphify reference: GitHub clone and cross-repo merge
 - graphify reference: transcribe video and audio
-- glaciers.$glacierId.tsx
+- select.tsx
 - .claude/CLAUDE.md
 - extraction-spec.md
 - LEARNINGS.md
@@ -147,22 +147,24 @@
 - Task #10 findings — CRUD: Districts + Glaciers
 - sheet.tsx
 - Session report — /uexel:verify for task #7
-- cryohealth-api.ts
+- lakes.ts
 - Plan steps
 - badge.tsx
-- bcryptjs
-- facilities.ts
+- router.tsx
+- accordion.tsx
 - 10. Draft plan steps (one atomic commit each)
 - 9. Deviations / decisions to name at GATE
 - Session report — /uexel:verify + close for task #9
-- alert.tsx
+- avatar.tsx
 - input-otp
 - 3. The `audit` table — exact live schema
 - 4. `districts` / `glaciers` schemas and the delete problem
 - 1. Exact current state of the four route files
 - @cloudflare/vite-plugin
-- lakes-admin.ts
-- open-alerts.ts
+- tailwind-merge
+- Route
+- Route
+- Route
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 69 edges
@@ -191,15 +193,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (152 total, 65 thin omitted)
+## Communities (154 total, 66 thin omitted)
 
-### Community 0 - "tier.tsx"
-Cohesion: 0.15
-Nodes (14): FreshnessStamp(), fetchLakes(), Tier, TIER_ICON, TIER_ON_SOLID_VAR, TIER_SOFT_VAR, TIER_SOLID_VAR, TierBadge() (+6 more)
+### Community 0 - "glaciers.$glacierId.tsx"
+Cohesion: 0.06
+Nodes (45): FreshnessStamp(), escapeHtml(), Facility, Glacier, glacierStatusColor, HazardMap(), Lake, StatCard() (+37 more)
 
 ### Community 1 - "routeTree.gen.ts"
 Cohesion: 0.03
-Nodes (81): getRouter(), Route, Route, Route, AboutRoute, AdminAlertsRoute, AdminAuditRoute, AdminCasesRoute (+73 more)
+Nodes (73): AboutRoute, AdminAlertsRoute, AdminAuditRoute, AdminCasesRoute, AdminChwProfilesRoute, AdminDistrictsRoute, AdminFacilitiesRoute, AdminGlaciersGlacierIdRoute (+65 more)
 
 ### Community 2 - "devDependencies"
 Cohesion: 0.04
@@ -210,48 +212,48 @@ Cohesion: 0.07
 Nodes (26): DOM, DOM.Iterable, ES2022, eslint.config.js, src/**/*.ts, src/**/*.tsx, vite/client, vite.config.ts (+18 more)
 
 ### Community 4 - "sidebar.tsx"
-Cohesion: 0.07
-Nodes (32): NAV_GROUPS, Input, Separator, Sidebar, SidebarContent, SidebarContext, SidebarContextProps, SidebarFooter (+24 more)
+Cohesion: 0.09
+Nodes (20): Input, Separator, SidebarContext, SidebarContextProps, SidebarFooter, SidebarGroupAction, SidebarHeader, SidebarInput (+12 more)
 
 ### Community 5 - "utils.ts"
-Cohesion: 0.07
-Nodes (16): AccordionContent, AccordionItem, AccordionTrigger, Avatar, AvatarFallback, AvatarImage, Checkbox, HoverCardContent (+8 more)
+Cohesion: 0.08
+Nodes (14): Alert, AlertDescription, AlertTitle, alertVariants, Checkbox, HoverCardContent, PopoverContent, Progress (+6 more)
 
 ### Community 6 - "components.json"
 Cohesion: 0.11
 Nodes (18): aliases, components, hooks, lib, ui, utils, iconLibrary, registries (+10 more)
 
 ### Community 7 - "command.tsx"
-Cohesion: 0.12
-Nodes (14): Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut() (+6 more)
+Cohesion: 0.13
+Nodes (13): Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut() (+5 more)
 
 ### Community 8 - "menubar.tsx"
 Cohesion: 0.12
 Nodes (11): Menubar, MenubarCheckboxItem, MenubarContent, MenubarItem, MenubarLabel, MenubarRadioItem, MenubarSeparator, MenubarShortcut() (+3 more)
 
 ### Community 9 - "cn"
-Cohesion: 0.19
-Nodes (16): Button, ButtonProps, buttonVariants, Calendar(), CalendarDayButton(), Pagination(), PaginationContent, PaginationEllipsis() (+8 more)
+Cohesion: 0.17
+Nodes (17): Button, ButtonProps, buttonVariants, Calendar(), CalendarDayButton(), Pagination(), PaginationContent, PaginationEllipsis() (+9 more)
 
 ### Community 10 - "server.ts"
 Cohesion: 0.25
 Nodes (9): consumeLastCapturedError(), renderErrorPage(), brandedErrorResponse(), fetch(), getServerEntry(), isCatastrophicSsrErrorBody(), normalizeCatastrophicSsrResponse(), ServerEntry (+1 more)
 
 ### Community 11 - "queries.ts"
-Cohesion: 0.11
-Nodes (32): getDb(), createDistrict(), createGlacier(), deleteDistrict(), deleteGlacier(), getGlacier(), getKpis(), getLakeDetail() (+24 more)
+Cohesion: 0.06
+Nodes (52): deleteReasonSchema, mapDbError(), parseJsonBody(), AuthError, requireAuth(), requireRole(), createSql(), getDb() (+44 more)
 
 ### Community 12 - "dependencies"
 Cohesion: 0.13
-Nodes (15): class-variance-authority, dependencies, class-variance-authority, @radix-ui/react-scroll-area, @radix-ui/react-slider, @radix-ui/react-slot, @radix-ui/react-tooltip, tailwind-merge (+7 more)
+Nodes (15): bcryptjs, class-variance-authority, dependencies, bcryptjs, class-variance-authority, @radix-ui/react-scroll-area, @radix-ui/react-slider, @radix-ui/react-slot (+7 more)
 
-### Community 13 - "HazardMap.tsx"
-Cohesion: 0.22
-Nodes (8): escapeHtml(), Facility, Glacier, glacierStatusColor, HazardMap(), Lake, StatCard(), Route
+### Community 13 - "AdminShell.tsx"
+Cohesion: 0.18
+Nodes (10): NAV_GROUPS, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton (+2 more)
 
 ### Community 14 - "auth.tsx"
 Cohesion: 0.06
-Nodes (46): AdminPlaceholder(), CryoHealthAdminOnly(), AdminShell(), DemoBanner(), NAV, SiteHeader(), AuthCtx, AuthProvider() (+38 more)
+Nodes (41): AdminPlaceholder(), CryoHealthAdminOnly(), AdminShell(), DemoBanner(), NAV, SiteHeader(), AuthCtx, AuthProvider() (+33 more)
 
 ### Community 15 - "drawer.tsx"
 Cohesion: 0.25
@@ -278,12 +280,12 @@ Cohesion: 0.20
 Nodes (9): DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut(), DropdownMenuSubContent (+1 more)
 
 ### Community 21 - "admin.districts.tsx"
-Cohesion: 0.15
-Nodes (15): AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter(), AlertDialogHeader(), AlertDialogOverlay, AlertDialogTitle (+7 more)
+Cohesion: 0.14
+Nodes (16): AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter(), AlertDialogHeader(), AlertDialogOverlay, AlertDialogTitle (+8 more)
 
 ### Community 22 - "admin-schemas.ts"
-Cohesion: 0.09
-Nodes (21): Alert, alertSchema, Case, caseSchema, ChwProfile, chwProfileSchema, DeleteReason, DistrictUpdate (+13 more)
+Cohesion: 0.10
+Nodes (20): Alert, alertSchema, Case, caseSchema, ChwProfile, chwProfileSchema, DeleteReason, DistrictUpdate (+12 more)
 
 ### Community 23 - "HANDOFF — cryohealth — 2026-08-10 01:10 PKT"
 Cohesion: 0.17
@@ -302,8 +304,8 @@ Cohesion: 0.25
 Nodes (7): NavigationMenu, NavigationMenuContent, NavigationMenuIndicator, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle, NavigationMenuViewport
 
 ### Community 27 - "admin.glaciers.index.tsx"
-Cohesion: 0.12
-Nodes (16): SelectContent, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, Textarea (+8 more)
+Cohesion: 0.16
+Nodes (10): Textarea, GlacierCreate, glacierCreateSchema, dependentsMessage(), DialogState, DistrictRow, GLACIER_STATUSES, GlacierRow (+2 more)
 
 ### Community 28 - "card.tsx"
 Cohesion: 0.29
@@ -322,16 +324,16 @@ Cohesion: 0.17
 Nodes (11): Done this session, Failed approaches (do not retry), Files touched, HANDOFF — cryohealth — 2026-08-15 21:27 PKT, Loops run, Next action, Not done / deferred, Open questions for a human (+3 more)
 
 ### Community 33 - "admin.lakes.$lakeId.tsx"
-Cohesion: 0.09
-Nodes (33): Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow (+25 more)
+Cohesion: 0.08
+Nodes (35): Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow (+27 more)
 
 ### Community 34 - "HANDOFF — cryohealth — 2026-08-10 02:15 PKT"
 Cohesion: 0.17
 Nodes (11): Done this session, Failed approaches (do not retry), Files touched, HANDOFF — cryohealth — 2026-08-10 02:15 PKT, Loops run, Next action, Not done / deferred, Open questions for a human (+3 more)
 
 ### Community 35 - "FileRoutesByPath"
-Cohesion: 0.07
-Nodes (26): Route, Route, Route, Route, Route, Route, Route, Route (+18 more)
+Cohesion: 0.11
+Nodes (19): Route, Route, Route, Route, Route, Route, Route, Route (+11 more)
 
 ### Community 37 - "HANDOFF — cryohealth — 2026-08-09 22:10 PKT"
 Cohesion: 0.17
@@ -341,17 +343,17 @@ Nodes (11): Done this session, Failed approaches (do not retry), Files touched, 
 Cohesion: 0.17
 Nodes (11): Done this session, Failed approaches (do not retry), Files touched, HANDOFF — cryohealth — 2026-08-09 23:20 PKT, Loops run, Next action, Not done / deferred, Open questions for a human (+3 more)
 
-### Community 40 - "auth-guard.ts"
-Cohesion: 0.32
-Nodes (5): deleteReasonSchema, AuthError, requireAuth(), requireRole(), HasDependentsError
+### Community 40 - "react"
+Cohesion: 0.25
+Nodes (7): react, react, useCarousel(), useChart(), useFormField(), useSidebar(), useIsMobile()
 
 ### Community 43 - "HANDOFF — cryohealth — 2026-08-09 01:25 PKT"
 Cohesion: 0.17
 Nodes (11): Done this session, Failed approaches (do not retry), Files touched, HANDOFF — cryohealth — 2026-08-09 01:25 PKT, Loops run, Next action, Not done / deferred, Open questions for a human (+3 more)
 
-### Community 44 - "StatCard.tsx"
-Cohesion: 0.15
-Nodes (10): EDGES, getNode(), NodeDef, NodeId, NODES, PipelineDiagram(), StatPair(), STATUS_CLASSES (+2 more)
+### Community 44 - "index.tsx"
+Cohesion: 0.18
+Nodes (8): EDGES, getNode(), NodeDef, NodeId, NODES, PipelineDiagram(), StatPair(), Route
 
 ### Community 63 - "HANDOFF — cryohealth — 2026-08-01 21:45 PKT"
 Cohesion: 0.15
@@ -409,9 +411,9 @@ Nodes (5): Final verdict, Fix-loop: 1 of 3 iterations used, Session report — /
 Cohesion: 0.40
 Nodes (3): Endpoint, ENDPOINTS, Route
 
-### Community 102 - "glaciers.$glacierId.tsx"
-Cohesion: 0.19
-Nodes (14): glacierLakeAssocScore(), glacierStatusWeight, haversineKm(), BreakdownDetails(), CaseRow, DriverBadge(), DriverLegend(), driverMeta (+6 more)
+### Community 102 - "select.tsx"
+Cohesion: 0.25
+Nodes (7): SelectContent, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger
 
 ### Community 106 - "Task #7 findings — read-only admin views: Lakes, Lake risk scores, Hazard scores"
 Cohesion: 0.08
@@ -454,8 +456,8 @@ Cohesion: 0.17
 Nodes (10): Assumptions & blast radius, GATE decision 1: what goes in `audit.reason`, GATE decision 2: require `source` on hand-created glaciers, Headline: four net-new capabilities in one task, Loop budget, PLAN, Rollback, Settled, not GATE items (named so they don't get re-litigated mid-build) (+2 more)
 
 ### Community 127 - "chart.tsx"
-Cohesion: 0.12
-Nodes (13): react, react, useCarousel(), ChartConfig, ChartContainer, ChartContext, ChartContextProps, ChartLegendContent (+5 more)
+Cohesion: 0.20
+Nodes (7): ChartConfig, ChartContainer, ChartContext, ChartContextProps, ChartLegendContent, ChartTooltipContent, THEMES
 
 ### Community 128 - "Session report — /uexel:verify for task #6"
 Cohesion: 0.25
@@ -485,10 +487,6 @@ Nodes (8): SheetContent, SheetContentProps, SheetDescription, SheetFooter(), She
 Cohesion: 0.25
 Nodes (7): A note on process, Build phase (no fix loop needed), Final verdict, Fix-loop: 1 of 3 iterations used, Session report — /uexel:verify for task #7, What was built and verified, Why the loop stopped
 
-### Community 136 - "cryohealth-api.ts"
-Cohesion: 0.27
-Nodes (8): API_TIER, apiBaseUrl(), ApiGeomPoint, ApiLake, fetchLakesFromApi(), Lake, toLake(), Route
-
 ### Community 137 - "Plan steps"
 Cohesion: 0.25
 Nodes (8): Plan steps, Step 0 — pre-flight (no commit), Step 1 — fill `districtSchema` + `glacierSchema` in `src/lib/admin-schemas.ts`, Step 2 — `writeAudit(sql, {...})` helper + the three district write functions, Step 3 — `api/admin/districts.ts` (POST) + `api/admin/districts.$districtId.ts` (PUT/DELETE), Step 4 — `admin.districts.tsx`: Actions column, create/edit Dialog+Form, delete AlertDialog, Step 8 — cleanup, Steps 5-7 — the same three steps for glaciers
@@ -496,6 +494,14 @@ Nodes (8): Plan steps, Step 0 — pre-flight (no commit), Step 1 — fill `distr
 ### Community 138 - "badge.tsx"
 Cohesion: 0.67
 Nodes (3): Badge(), BadgeProps, badgeVariants
+
+### Community 139 - "router.tsx"
+Cohesion: 0.40
+Nodes (4): getRouter(), Register, routeTree, startInstance
+
+### Community 140 - "accordion.tsx"
+Cohesion: 0.50
+Nodes (3): AccordionContent, AccordionItem, AccordionTrigger
 
 ### Community 141 - "10. Draft plan steps (one atomic commit each)"
 Cohesion: 0.25
@@ -509,9 +515,9 @@ Nodes (8): 9. Deviations / decisions to name at GATE, D1 (GATE) — what goes in
 Cohesion: 0.25
 Nodes (7): Exceptions, Final verdict, Mini-handoff, Session report — /uexel:verify + close for task #9, Since the last report, Verify: pass 1, Why the loop stopped at 1/3 iterations
 
-### Community 144 - "alert.tsx"
-Cohesion: 0.40
-Nodes (4): Alert, AlertDescription, AlertTitle, alertVariants
+### Community 144 - "avatar.tsx"
+Cohesion: 0.50
+Nodes (3): Avatar, AvatarFallback, AvatarImage
 
 ### Community 146 - "3. The `audit` table — exact live schema"
 Cohesion: 0.50
@@ -528,22 +534,22 @@ Nodes (3): 1. Exact current state of the four route files, Trap T1 — `tsc` wil
 ## Knowledge Gaps
 - **824 isolated node(s):** `check-gstack.sh script`, `$schema`, `style`, `rsc`, `tsx` (+819 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **65 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **66 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dependencies` to `devDependencies`, `cmdk`, `bcryptjs`, `input-otp`, `@cloudflare/vite-plugin`, `clsx`, `date-fns`, `embla-carousel-react`, `leaflet`, `lucide-react`, `@radix-ui/react-accordion`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-navigation-menu`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `react-day-picker`, `react-hook-form`, `react-leaflet`, `react-resizable-panels`, `recharts`, `sonner`, `@tailwindcss/vite`, `@tanstack/react-start`, `@tanstack/router-plugin`, `@types/leaflet`, `vaul`, `vite-tsconfig-paths`, `zod`, `jose`, `postgres`, `react-dom`, `tailwindcss`, `@tanstack/react-query`, `@tanstack/react-router`, `@hookform/resolvers`, `chart.tsx`?**
-  _High betweenness centrality (0.133) - this node is a cross-community bridge._
-- **Why does `react` connect `chart.tsx` to `cn`, `dependencies`, `sidebar.tsx`?**
-  _High betweenness centrality (0.120) - this node is a cross-community bridge._
-- **Why does `cn()` connect `cn` to `sidebar.tsx`, `utils.ts`, `sheet.tsx`, `command.tsx`, `menubar.tsx`, `badge.tsx`, `drawer.tsx`, `alert.tsx`, `form.tsx`, `context-menu.tsx`, `dropdown-menu.tsx`, `admin.districts.tsx`, `breadcrumb.tsx`, `navigation-menu.tsx`, `admin.glaciers.index.tsx`, `card.tsx`, `toggle-group.tsx`, `admin.lakes.$lakeId.tsx`, `input-otp.tsx`, `carousel.tsx`, `chart.tsx`?**
+- **Why does `dependencies` connect `dependencies` to `devDependencies`, `cmdk`, `input-otp`, `@cloudflare/vite-plugin`, `tailwind-merge`, `clsx`, `react`, `date-fns`, `embla-carousel-react`, `leaflet`, `lucide-react`, `@radix-ui/react-accordion`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-navigation-menu`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `react-day-picker`, `react-hook-form`, `react-leaflet`, `react-resizable-panels`, `recharts`, `sonner`, `@tailwindcss/vite`, `@tanstack/react-start`, `@tanstack/router-plugin`, `@types/leaflet`, `vaul`, `vite-tsconfig-paths`, `zod`, `jose`, `postgres`, `react-dom`, `tailwindcss`, `@tanstack/react-query`, `@tanstack/react-router`, `@hookform/resolvers`?**
+  _High betweenness centrality (0.134) - this node is a cross-community bridge._
+- **Why does `react` connect `react` to `cn`, `dependencies`?**
+  _High betweenness centrality (0.121) - this node is a cross-community bridge._
+- **Why does `cn()` connect `cn` to `sidebar.tsx`, `utils.ts`, `sheet.tsx`, `command.tsx`, `menubar.tsx`, `badge.tsx`, `accordion.tsx`, `drawer.tsx`, `avatar.tsx`, `form.tsx`, `context-menu.tsx`, `dropdown-menu.tsx`, `admin.districts.tsx`, `breadcrumb.tsx`, `navigation-menu.tsx`, `admin.glaciers.index.tsx`, `card.tsx`, `toggle-group.tsx`, `admin.lakes.$lakeId.tsx`, `select.tsx`, `input-otp.tsx`, `carousel.tsx`, `chart.tsx`?**
   _High betweenness centrality (0.090) - this node is a cross-community bridge._
 - **What connects `check-gstack.sh script`, `$schema`, `style` to the rest of the system?**
   _824 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `glaciers.$glacierId.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.057859703020993344 - nodes in this community are weakly interconnected._
 - **Should `routeTree.gen.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.025490196078431372 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.02702702702702703 - nodes in this community are weakly interconnected._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.0425531914893617 - nodes in this community are weakly interconnected._
-- **Should `compilerOptions` be split into smaller, more focused modules?**
-  _Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected._
