@@ -1,114 +1,122 @@
-# HANDOFF — cryohealth — 2026-08-15 21:27 PKT
+# HANDOFF — cryohealth — 2026-08-15 22:10 PKT
 
-Session: task8-build-verify Model: claude-sonnet-5 Branch: main Goal: #3 Task: #8
+Session: task9-verify-close Model: claude-sonnet-5 Branch: main Goal: #3 Task: #9
 
 ## State
 
-Task #8 (read-only admin views: Alerts, Alert acknowledgements, Protocols) is **done
-and closed**. All 4 plan steps built and committed, `/uexel:verify` returned PASS on
-the first pass — 0 fix-loop iterations needed. Full verdict on issue #8:
-https://github.com/uExel/cryohealth/issues/8#issuecomment-5303151970. Session report:
-`docs/ai/sessions/2026-08-15-task8-verify-report.md`.
+Task #9 (read-only admin views: Facilities, CHW profiles, Cases) is **done and closed**.
+This session picked up mid-flight: the prior session had fully built #9 (7 commits,
+`710c88e`..`8d8c93f`) but left `docs/ai/HANDOFF.md` stale (still describing task #8) and
+never ran `/uexel:verify`, so issue #9 sat open despite a "close out task #9 build"
+commit message. This session ran verify, applied one fix-loop iteration, and closed it
+out properly. Full verdict: https://github.com/uExel/cryohealth/issues/9#issuecomment-5303359854.
+Session report: `docs/ai/sessions/2026-08-15-task9-verify-close.md`.
 
-**Notable this task**: the cheapest of the three admin-view tasks done so far (#6, #7,
-#8) — no new query functions beyond two additive columns, no new endpoints, no route-
-triple deviation, no `TierBadge` narrowing guard (`alerts.tier` is a real Postgres
-enum, unlike #7's `lake_risk_scores.tier`). Two small GATE decisions resolved before
-build: `status`/`cleared_at` land in the existing shared `listAllAlerts()` query rather
-than a new admin-only endpoint, and acknowledgements display as a plain count only, not
-names (avoids a new `users` join and a privacy escalation via a currently ungated,
-undocumented endpoint).
-
-Verify pass 1 found 4 low-severity issues, **none blocking** — first task in this
-sequence where nothing needed a fix-loop iteration. 3 filed as follow-ups: #30 (the
-plan's own promised issue for two latent bugs found during exploration — cleared
-HIGH/CRITICAL alerts would render as active to a CHW, and cleared alerts look current
-on two public pages), #31 (the shared alerts query's `LIMIT 200` has no truncation
-signal, now load-bearing since this is the admin audit surface), #32 (the Acks column
-shows `0` during query loading/error, indistinguishable from a real zero — inherited
-from an existing precedent this task was told to copy). A 4th finding (status pills
-distinguished by text only, no shape/color difference) was left on the human
-verification checklist rather than filed — it's a judgment call about visual
-distinctness that code-reading can't settle.
-
-**Live browser QA was not attempted this task** — same accepted gap as #6 and #7
-(gstack `/browse`'s Playwright install is known-broken in this sandbox; not retried a
-third/fourth time). The verify pass substituted something stronger at the
-data-correctness layer (enum labels read from live `pg_enum`, ack attribution
-cross-matched at UUID level, GATE compliance confirmed at commit granularity). What's
-genuinely still unverified is visual-only — dark mode, the status-pill distinctness
-question, the protocol body expander's rendered behavior — tracked in
-`docs/ai/PLAN.md`'s human verification checklist.
-
-Local commits from this session (`bacf65a` through `3972979`, 5 commits) are **not
-pushed to `origin/main`** — no push requested. Dev stack (`bun dev` :8080,
-CryoHealth-api :3000, Postgres :5433) was up and used throughout this session.
+This closes out the **entire read-only-admin-views sub-sequence** (#6, #7, #8, #9) under
+goal #3. The remaining open work under goal #3's milestone is CRUD tasks (#10-#16) and
+platform-monitoring tasks (#17-#19).
 
 ## Done this session
 
-- `/uexel:plan 8`: delegated exploration to uexel-planner, wrote
-  `docs/ai/planning/task-8-findings.md` (759 lines), posted as issue #8 comment
-- `/uexel:gate`: presented, approved as-is, both named decisions resolved (status/
-  cleared_at into the shared query; acks as count-only), recorded on issue #8
-- `/uexel:build`, all 4 steps, zero fix-loop iterations during the build itself:
-  - `70d9b95` Step 1: `listAllAlerts()` + `status`/`cleared_at`, `data.tsx` example
-    payload updated in the same commit
-  - `188b104` Step 2: `admin.alerts.tsx` real table (search + tier + status filters)
-  - `1476767` Step 3: `admin.protocols.tsx` real table (body truncate/expand)
-  - `3972979` Step 4: graphify update + `bun run build` clean
-- `/uexel:verify`: 1 pass, PASS WITH FINDINGS (0 blocking)
-  - Filed issues #30 (plan's promised B1/B2 follow-up), #31 (pagination), #32
-    (ack-loading ambiguity)
-- Posted final verdict on issue #8, closed it
+- `/uexel:verify` on task #9's diff via `uexel-verifier`: **PASS WITH FINDINGS**, 0
+  blocking. Verification command (`bunx tsc --noEmit && bun run lint`) clean, 0 errors,
+  same 10 pre-existing warnings as baseline.
+- Fix-loop iteration 1/3 (commit `9c8dbdf`):
+  - `src/routes/api/public/chw-profiles.ts`: added a comment recording that "ungated" is
+    a deliberate GATE decision conditional on `chw_profiles` having 0 rows today, not an
+    oversight — flags it for re-review when #14 (CHW profiles CRUD) adds a writer.
+  - `src/routes/admin.cases.tsx`: wired the already-fetched-but-unrendered `chw_lhw_id`
+    as a fallback in the CHW column (`chw_name ?? chw_lhw_id ?? "—"`).
+  - Re-ran tsc/lint clean after the fix; did not re-run a full second verifier pass (the
+    fixes were small, low-risk additions — see Verification status below for what
+    substituted).
+  - Filed #33 (unbounded/no-truncation-signal on the three new list queries — same class
+    as already-open #27/#31) rather than fixing inline; not reproducible at current seed
+    volume (4 cases, 1 facility, 0 CHW profiles).
+  - Investigated and dismissed the verifier's path-prefix finding (`/api/public/chw-profiles`,
+    `/api/public/facilities-admin`): `git log --follow` on `lakes-admin.ts` showed the
+    same pattern predates this whole task sequence (pre-Postgres/Lovable-Cloud era) — the
+    new files match established repo precedent, not a new inconsistency. Already tracked
+    by #29 (prefix-convention audit). Not filed as a new issue.
+- Live spot-checked the fix after committing: logged in as `admin-001`/`1234` (dev seed
+  creds from `CryoHealth-api/scripts/seed-users.ts`), hit `GET /api/admin/cases` with a
+  real token — 200, all 4 seeded cases returned with `chw_lhw_id` present in the payload
+  matching `CaseRow`'s type. (All 4 seeded cases have a matched `chw_name`, so the
+  fallback branch itself wasn't visually exercised — only the shape/type was confirmed
+  end-to-end. See Open questions.)
+- Updated `docs/ai/TODO.md` to check off `/uexel:verify` with the fix-loop summary.
+- Wrote session report, posted verdict comment, closed issue #9.
+- Archived the stale task-#8 HANDOFF to `docs/ai/sessions/2026-08-15-task8-stale-handoff.md`.
 
 ## Not done / deferred
 
-- Not pushed to `origin/main` — say the word if you want it synced
-- Live browser QA — see "Notable this task" above; deferred to a human, tracked in
-  `PLAN.md`'s checklist, not a GitHub issue
-- Issues #30/#31/#32 remain open (correctly — real, if minor, deferred follow-ups)
+- Not pushed to `origin/main` — local commits since `60d8a7c` (the full #9 build sequence
+  plus this session's `9c8dbdf`) are unpushed. No push requested this session either.
+- Live browser QA — not attempted, same disclosed/accepted gap as #6/#7/#8 (gstack
+  `/browse`'s Playwright install known-broken in this sandbox). curl + tsc/lint
+  substituted, consistent with precedent.
+- The `chw_lhw_id` fallback's actual "no matched name" rendering path is type-checked but
+  not visually exercised (current seed data always has a matched `chw_name`) — low risk,
+  not blocking.
+- Issue #33 (pagination/truncation on facilities/CHW-profiles/cases admin lists) remains
+  open — correctly, it's a real but not-yet-reproducible follow-up.
 
 ## Next action
 
-Decide whether to push the accumulated local commits. Then pick the next task under
-goal #3 (`gh issue list --repo uExel/cryohealth` — #9 onward are the remaining
-read-only-view/CRUD/platform-monitoring tasks) and `/uexel:plan <issue-number>`.
+Decide whether to push the accumulated local commits (task #9's full build + this
+session's fix). Then pick the next task under goal #3 — the read-only-views
+sub-sequence is done; remaining work is CRUD tasks. `#10` (CRUD: Districts + Glaciers,
+p1, no blockers) is the natural next pick by issue number and priority, but `#16` (Users
+& Roles, p1) and `#11`/`#12` are also unblocked p1 CRUD tasks — no plan has decided the
+CRUD sequencing order yet. Run `/uexel:plan <issue-number>` once a choice is made. `#15`
+(CRUD: Cases) is `stage:blocked` — do not pick it without first reading why on the issue.
 
 ## Open questions for a human
 
 - Push now, or hold? Not blocking.
-- Want to spot-check task #8's live browser behavior (status-pill distinctness, dark
-  mode, the protocol body expander) before moving on? Not blocking — verify's
-  substitute was judged sufficient, but this is the one open visual question a browser
-  pass would actually settle.
+- Pick the CRUD task order (#10 vs #11 vs #12 vs #16) — no technical blocker favors one
+  over another; this is a product-priority call. Not blocking, but needed before the next
+  `/uexel:plan`.
+- Want to spot-check task #9's live browser behavior before moving on (same open visual
+  question carried from #6/#7/#8: dark mode, badge contrast, and now also the
+  `chw_lhw_id` fallback's actual appearance when a case has no matched CHW)? Not
+  blocking.
 
 ## Failed approaches (do not retry)
 
-- (Carried forward from #6/#7, still true, not retried this session): gstack `/browse`'s
-  Playwright install is known-broken in this sandbox. See prior handoffs for the exact
-  failure signature if a retry is ever attempted.
+- (Carried forward from #6/#7/#8, still true): gstack `/browse`'s Playwright install is
+  known-broken in this sandbox. See prior handoffs for the exact failure signature if a
+  retry is ever attempted.
+- Considered renaming `chw-profiles.ts`/`facilities-admin.ts` from `/api/public/*` to
+  `/api/admin/*` to resolve the verifier's path-prefix finding — reverted before
+  committing once `git log --follow` showed `lakes-admin.ts` already sets this exact
+  precedent repo-wide, predating this task sequence. Renaming only the two new files
+  would have made the repo _less_ consistent, not more. Don't redo this rename without
+  also addressing `lakes-admin.ts` and closing #29 in the same pass.
 
 ## Loops run
 
-- Task #8 fix loop: 0/3 iterations (verify passed clean on the first attempt) — see
-  `docs/ai/sessions/2026-08-15-task8-verify-report.md` for full detail
+- Task #9 fix loop: 1/3 iterations (verify found 4 non-blocking findings on pass 1; 2
+  fixed inline, 1 filed as #33, 1 dismissed with recorded reasoning) — see
+  `docs/ai/sessions/2026-08-15-task9-verify-close.md` for full detail.
 
 ## Files touched
 
-Task #8 build: `src/lib/queries.ts` (`listAllAlerts()` +2 columns), `src/routes/data.tsx`
-(example payload), `src/routes/admin.alerts.tsx`, `src/routes/admin.protocols.tsx`.
-Docs: `docs/ai/PLAN.md`, `docs/ai/planning/task-8-findings.md`, `docs/ai/TODO.md`,
-`docs/ai/HANDOFF.md`, 2 session report/handoff files under `docs/ai/sessions/`. Graph:
-`graphify-out/` (graph.json, manifest.json, cache/stat-index.json). All committed.
+This session: `src/routes/api/public/chw-profiles.ts` (comment only),
+`src/routes/admin.cases.tsx` (`chw_lhw_id` fallback), `docs/ai/TODO.md`,
+`graphify-out/**` (regenerated), `docs/ai/sessions/2026-08-15-task9-verify-close.md`
+(new), `docs/ai/HANDOFF.md` (this file). Task #9's build itself (prior session) touched
+`src/lib/queries.ts`, `src/routes/api/public/facilities-admin.ts` (new),
+`src/routes/api/public/chw-profiles.ts` (new), `src/routes/api/admin/cases.ts` (new),
+`src/routes/admin.facilities.tsx`, `src/routes/admin.chw-profiles.tsx`,
+`src/routes/admin.cases.tsx`.
 
 ## Verification status
 
-tests: n/a (no test framework) review: PASS (1 verifier pass, 4 findings — 0 fixed
-inline, 3 deferred to filed issues #30/#31/#32, 1 left on the human checklist)
-qa: partial — data-correctness layer fully verified live (enum casts, ack attribution,
-null-safety, public-page non-regression); live browser check not run this session
-(disclosed, judged non-blocking)
+tests: n/a (no test script in this repo) review: PASS WITH FINDINGS (0 blocking, 2
+fixed, 1 filed as #33, 1 dismissed with reasoning) qa: browser QA skipped (Playwright
+broken in sandbox); curl-level auth-matrix + shape checks pass live
 
 ## Resume with
 
-/uexel:orient (then: push if wanted, `/uexel:plan` the next task under goal #3)
+/uexel:orient (then: decide CRUD task order, `/uexel:plan <issue-number>`)
