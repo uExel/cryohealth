@@ -50,6 +50,7 @@ import { Route as ApiPublicCasesRouteImport } from './routes/api/public/cases'
 import { Route as ApiPublicAlertsRouteImport } from './routes/api/public/alerts'
 import { Route as ApiPublicAlertAcksRouteImport } from './routes/api/public/alert-acks'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
+import { Route as ApiAdminCasesRouteImport } from './routes/api/admin/cases'
 import { Route as AdminLakesLakeIdRouteImport } from './routes/admin.lakes.$lakeId'
 import { Route as AdminGlaciersGlacierIdRouteImport } from './routes/admin.glaciers.$glacierId'
 import { Route as ApiPublicLakesLakeIdRouteImport } from './routes/api/public/lakes.$lakeId'
@@ -262,6 +263,11 @@ const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
   path: '/api/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminCasesRoute = ApiAdminCasesRouteImport.update({
+  id: '/api/admin/cases',
+  path: '/api/admin/cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLakesLakeIdRoute = AdminLakesLakeIdRouteImport.update({
   id: '/$lakeId',
   path: '/$lakeId',
@@ -317,6 +323,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
+  '/api/admin/cases': typeof ApiAdminCasesRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
@@ -362,6 +369,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
+  '/api/admin/cases': typeof ApiAdminCasesRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
@@ -411,6 +419,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
+  '/api/admin/cases': typeof ApiAdminCasesRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
@@ -461,6 +470,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
+    | '/api/admin/cases'
     | '/api/auth/login'
     | '/api/public/alert-acks'
     | '/api/public/alerts'
@@ -506,6 +516,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
+    | '/api/admin/cases'
     | '/api/auth/login'
     | '/api/public/alert-acks'
     | '/api/public/alerts'
@@ -554,6 +565,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
+    | '/api/admin/cases'
     | '/api/auth/login'
     | '/api/public/alert-acks'
     | '/api/public/alerts'
@@ -588,6 +600,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   GlaciersGlacierIdRoute: typeof GlaciersGlacierIdRoute
+  ApiAdminCasesRoute: typeof ApiAdminCasesRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiPublicAlertAcksRoute: typeof ApiPublicAlertAcksRoute
   ApiPublicAlertsRoute: typeof ApiPublicAlertsRoute
@@ -895,6 +908,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/cases': {
+      id: '/api/admin/cases'
+      path: '/api/admin/cases'
+      fullPath: '/api/admin/cases'
+      preLoaderRoute: typeof ApiAdminCasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/lakes/$lakeId': {
       id: '/admin/lakes/$lakeId'
       path: '/$lakeId'
@@ -1038,6 +1058,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   GlaciersGlacierIdRoute: GlaciersGlacierIdRoute,
+  ApiAdminCasesRoute: ApiAdminCasesRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiPublicAlertAcksRoute: ApiPublicAlertAcksRoute,
   ApiPublicAlertsRoute: ApiPublicAlertsRoute,
