@@ -50,12 +50,16 @@ import { Route as ApiPublicCasesRouteImport } from './routes/api/public/cases'
 import { Route as ApiPublicAlertsRouteImport } from './routes/api/public/alerts'
 import { Route as ApiPublicAlertAcksRouteImport } from './routes/api/public/alert-acks'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
+import { Route as ApiAdminGlaciersRouteImport } from './routes/api/admin/glaciers'
+import { Route as ApiAdminDistrictsRouteImport } from './routes/api/admin/districts'
 import { Route as ApiAdminCasesRouteImport } from './routes/api/admin/cases'
 import { Route as AdminLakesLakeIdRouteImport } from './routes/admin.lakes.$lakeId'
 import { Route as AdminGlaciersGlacierIdRouteImport } from './routes/admin.glaciers.$glacierId'
 import { Route as ApiPublicLakesLakeIdRouteImport } from './routes/api/public/lakes.$lakeId'
 import { Route as ApiPublicHazardScoresLakeIdRouteImport } from './routes/api/public/hazard-scores.$lakeId'
 import { Route as ApiPublicGlaciersGlacierIdRouteImport } from './routes/api/public/glaciers.$glacierId'
+import { Route as ApiAdminGlaciersGlacierIdRouteImport } from './routes/api/admin/glaciers.$glacierId'
+import { Route as ApiAdminDistrictsDistrictIdRouteImport } from './routes/api/admin/districts.$districtId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -263,6 +267,16 @@ const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
   path: '/api/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminGlaciersRoute = ApiAdminGlaciersRouteImport.update({
+  id: '/api/admin/glaciers',
+  path: '/api/admin/glaciers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminDistrictsRoute = ApiAdminDistrictsRouteImport.update({
+  id: '/api/admin/districts',
+  path: '/api/admin/districts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminCasesRoute = ApiAdminCasesRouteImport.update({
   id: '/api/admin/cases',
   path: '/api/admin/cases',
@@ -295,6 +309,18 @@ const ApiPublicGlaciersGlacierIdRoute =
     path: '/$glacierId',
     getParentRoute: () => ApiPublicGlaciersRoute,
   } as any)
+const ApiAdminGlaciersGlacierIdRoute =
+  ApiAdminGlaciersGlacierIdRouteImport.update({
+    id: '/$glacierId',
+    path: '/$glacierId',
+    getParentRoute: () => ApiAdminGlaciersRoute,
+  } as any)
+const ApiAdminDistrictsDistrictIdRoute =
+  ApiAdminDistrictsDistrictIdRouteImport.update({
+    id: '/$districtId',
+    path: '/$districtId',
+    getParentRoute: () => ApiAdminDistrictsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -324,6 +350,8 @@ export interface FileRoutesByFullPath {
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
   '/api/admin/cases': typeof ApiAdminCasesRoute
+  '/api/admin/districts': typeof ApiAdminDistrictsRouteWithChildren
+  '/api/admin/glaciers': typeof ApiAdminGlaciersRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
@@ -341,6 +369,8 @@ export interface FileRoutesByFullPath {
   '/api/public/protocols': typeof ApiPublicProtocolsRoute
   '/admin/glaciers/': typeof AdminGlaciersIndexRoute
   '/admin/lakes/': typeof AdminLakesIndexRoute
+  '/api/admin/districts/$districtId': typeof ApiAdminDistrictsDistrictIdRoute
+  '/api/admin/glaciers/$glacierId': typeof ApiAdminGlaciersGlacierIdRoute
   '/api/public/glaciers/$glacierId': typeof ApiPublicGlaciersGlacierIdRoute
   '/api/public/hazard-scores/$lakeId': typeof ApiPublicHazardScoresLakeIdRoute
   '/api/public/lakes/$lakeId': typeof ApiPublicLakesLakeIdRoute
@@ -370,6 +400,8 @@ export interface FileRoutesByTo {
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
   '/api/admin/cases': typeof ApiAdminCasesRoute
+  '/api/admin/districts': typeof ApiAdminDistrictsRouteWithChildren
+  '/api/admin/glaciers': typeof ApiAdminGlaciersRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
@@ -387,6 +419,8 @@ export interface FileRoutesByTo {
   '/api/public/protocols': typeof ApiPublicProtocolsRoute
   '/admin/glaciers': typeof AdminGlaciersIndexRoute
   '/admin/lakes': typeof AdminLakesIndexRoute
+  '/api/admin/districts/$districtId': typeof ApiAdminDistrictsDistrictIdRoute
+  '/api/admin/glaciers/$glacierId': typeof ApiAdminGlaciersGlacierIdRoute
   '/api/public/glaciers/$glacierId': typeof ApiPublicGlaciersGlacierIdRoute
   '/api/public/hazard-scores/$lakeId': typeof ApiPublicHazardScoresLakeIdRoute
   '/api/public/lakes/$lakeId': typeof ApiPublicLakesLakeIdRoute
@@ -420,6 +454,8 @@ export interface FileRoutesById {
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
   '/api/admin/cases': typeof ApiAdminCasesRoute
+  '/api/admin/districts': typeof ApiAdminDistrictsRouteWithChildren
+  '/api/admin/glaciers': typeof ApiAdminGlaciersRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
   '/api/public/alerts': typeof ApiPublicAlertsRoute
@@ -437,6 +473,8 @@ export interface FileRoutesById {
   '/api/public/protocols': typeof ApiPublicProtocolsRoute
   '/admin/glaciers/': typeof AdminGlaciersIndexRoute
   '/admin/lakes/': typeof AdminLakesIndexRoute
+  '/api/admin/districts/$districtId': typeof ApiAdminDistrictsDistrictIdRoute
+  '/api/admin/glaciers/$glacierId': typeof ApiAdminGlaciersGlacierIdRoute
   '/api/public/glaciers/$glacierId': typeof ApiPublicGlaciersGlacierIdRoute
   '/api/public/hazard-scores/$lakeId': typeof ApiPublicHazardScoresLakeIdRoute
   '/api/public/lakes/$lakeId': typeof ApiPublicLakesLakeIdRoute
@@ -471,6 +509,8 @@ export interface FileRouteTypes {
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
     | '/api/admin/cases'
+    | '/api/admin/districts'
+    | '/api/admin/glaciers'
     | '/api/auth/login'
     | '/api/public/alert-acks'
     | '/api/public/alerts'
@@ -488,6 +528,8 @@ export interface FileRouteTypes {
     | '/api/public/protocols'
     | '/admin/glaciers/'
     | '/admin/lakes/'
+    | '/api/admin/districts/$districtId'
+    | '/api/admin/glaciers/$glacierId'
     | '/api/public/glaciers/$glacierId'
     | '/api/public/hazard-scores/$lakeId'
     | '/api/public/lakes/$lakeId'
@@ -517,6 +559,8 @@ export interface FileRouteTypes {
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
     | '/api/admin/cases'
+    | '/api/admin/districts'
+    | '/api/admin/glaciers'
     | '/api/auth/login'
     | '/api/public/alert-acks'
     | '/api/public/alerts'
@@ -534,6 +578,8 @@ export interface FileRouteTypes {
     | '/api/public/protocols'
     | '/admin/glaciers'
     | '/admin/lakes'
+    | '/api/admin/districts/$districtId'
+    | '/api/admin/glaciers/$glacierId'
     | '/api/public/glaciers/$glacierId'
     | '/api/public/hazard-scores/$lakeId'
     | '/api/public/lakes/$lakeId'
@@ -566,6 +612,8 @@ export interface FileRouteTypes {
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
     | '/api/admin/cases'
+    | '/api/admin/districts'
+    | '/api/admin/glaciers'
     | '/api/auth/login'
     | '/api/public/alert-acks'
     | '/api/public/alerts'
@@ -583,6 +631,8 @@ export interface FileRouteTypes {
     | '/api/public/protocols'
     | '/admin/glaciers/'
     | '/admin/lakes/'
+    | '/api/admin/districts/$districtId'
+    | '/api/admin/glaciers/$glacierId'
     | '/api/public/glaciers/$glacierId'
     | '/api/public/hazard-scores/$lakeId'
     | '/api/public/lakes/$lakeId'
@@ -601,6 +651,8 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   GlaciersGlacierIdRoute: typeof GlaciersGlacierIdRoute
   ApiAdminCasesRoute: typeof ApiAdminCasesRoute
+  ApiAdminDistrictsRoute: typeof ApiAdminDistrictsRouteWithChildren
+  ApiAdminGlaciersRoute: typeof ApiAdminGlaciersRouteWithChildren
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiPublicAlertAcksRoute: typeof ApiPublicAlertAcksRoute
   ApiPublicAlertsRoute: typeof ApiPublicAlertsRoute
@@ -908,6 +960,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/glaciers': {
+      id: '/api/admin/glaciers'
+      path: '/api/admin/glaciers'
+      fullPath: '/api/admin/glaciers'
+      preLoaderRoute: typeof ApiAdminGlaciersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/districts': {
+      id: '/api/admin/districts'
+      path: '/api/admin/districts'
+      fullPath: '/api/admin/districts'
+      preLoaderRoute: typeof ApiAdminDistrictsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/cases': {
       id: '/api/admin/cases'
       path: '/api/admin/cases'
@@ -949,6 +1015,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/glaciers/$glacierId'
       preLoaderRoute: typeof ApiPublicGlaciersGlacierIdRouteImport
       parentRoute: typeof ApiPublicGlaciersRoute
+    }
+    '/api/admin/glaciers/$glacierId': {
+      id: '/api/admin/glaciers/$glacierId'
+      path: '/$glacierId'
+      fullPath: '/api/admin/glaciers/$glacierId'
+      preLoaderRoute: typeof ApiAdminGlaciersGlacierIdRouteImport
+      parentRoute: typeof ApiAdminGlaciersRoute
+    }
+    '/api/admin/districts/$districtId': {
+      id: '/api/admin/districts/$districtId'
+      path: '/$districtId'
+      fullPath: '/api/admin/districts/$districtId'
+      preLoaderRoute: typeof ApiAdminDistrictsDistrictIdRouteImport
+      parentRoute: typeof ApiAdminDistrictsRoute
     }
   }
 }
@@ -1023,6 +1103,28 @@ const LakesRouteChildren: LakesRouteChildren = {
 
 const LakesRouteWithChildren = LakesRoute._addFileChildren(LakesRouteChildren)
 
+interface ApiAdminDistrictsRouteChildren {
+  ApiAdminDistrictsDistrictIdRoute: typeof ApiAdminDistrictsDistrictIdRoute
+}
+
+const ApiAdminDistrictsRouteChildren: ApiAdminDistrictsRouteChildren = {
+  ApiAdminDistrictsDistrictIdRoute: ApiAdminDistrictsDistrictIdRoute,
+}
+
+const ApiAdminDistrictsRouteWithChildren =
+  ApiAdminDistrictsRoute._addFileChildren(ApiAdminDistrictsRouteChildren)
+
+interface ApiAdminGlaciersRouteChildren {
+  ApiAdminGlaciersGlacierIdRoute: typeof ApiAdminGlaciersGlacierIdRoute
+}
+
+const ApiAdminGlaciersRouteChildren: ApiAdminGlaciersRouteChildren = {
+  ApiAdminGlaciersGlacierIdRoute: ApiAdminGlaciersGlacierIdRoute,
+}
+
+const ApiAdminGlaciersRouteWithChildren =
+  ApiAdminGlaciersRoute._addFileChildren(ApiAdminGlaciersRouteChildren)
+
 interface ApiPublicGlaciersRouteChildren {
   ApiPublicGlaciersGlacierIdRoute: typeof ApiPublicGlaciersGlacierIdRoute
 }
@@ -1059,6 +1161,8 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   GlaciersGlacierIdRoute: GlaciersGlacierIdRoute,
   ApiAdminCasesRoute: ApiAdminCasesRoute,
+  ApiAdminDistrictsRoute: ApiAdminDistrictsRouteWithChildren,
+  ApiAdminGlaciersRoute: ApiAdminGlaciersRouteWithChildren,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiPublicAlertAcksRoute: ApiPublicAlertAcksRoute,
   ApiPublicAlertsRoute: ApiPublicAlertsRoute,

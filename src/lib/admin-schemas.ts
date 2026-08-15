@@ -51,6 +51,13 @@ export type GlacierCreate = z.infer<typeof glacierCreateSchema>;
 export const glacierUpdateSchema = glacierCreateSchema.partial();
 export type GlacierUpdate = z.infer<typeof glacierUpdateSchema>;
 
+/** Shared by every DELETE handler in api/admin/* — per GATE decision 1, destroying
+ *  reference data other tables point at always requires a human-supplied reason. */
+export const deleteReasonSchema = z
+  .object({ reason: z.string().min(1, "Reason is required") })
+  .strict();
+export type DeleteReason = z.infer<typeof deleteReasonSchema>;
+
 /** currentTier and current_risk_score must never appear here — that's tier-policy
  *  output owned by CryoHealth-api's alert service, not an admin-editable field. */
 export const lakeSchema = z.object({}).strict();
