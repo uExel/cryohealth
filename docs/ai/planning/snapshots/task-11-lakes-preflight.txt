@@ -1,0 +1,146 @@
+Expanded display is on.
+-[ RECORD 1 ]---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+id                    | 420f0980-b1a3-4a6e-be24-62d9676dd9eb
+name                  | Badswat glacial lake
+nameUr                | 
+valley                | Immit, Ishkoman, Ghizer
+district              | Ghizer
+district_id           | 86bcc041-a421-4962-afe9-16d64470e225
+damType               | moraine
+glacierContact        | t
+icimodId              | 
+elevationM            | 
+historicalGlof        | t
+currentTier           | watch
+stale                 | f
+slug                  | badswat
+source                | Midpoint of the G1/G2 glacier IDs (G074052E36491N, G074103E36480N) cited in "Determining the Events in a Glacial Disaster Chain at Badswat Glacier in the Karakoram Range Using Remote Sensing". Approximate — derived from cited glacier IDs, not a surveyed lake centroid.
+sourceUrl             | https://www.researchgate.net/publication/350183638_Determining_the_Events_in_a_Glacial_Disaster_Chain_at_Badswat_Glacier_in_the_Karakoram_Range_Using_Remote_Sensing
+current_risk_score    | 0
+downstream_population | 0
+area_km2              | 
+lat                   | 36.4855
+lng                   | 74.0775
+createdAt             | 2026-08-08 16:28:53.424798+00
+updatedAt             | 2026-08-08 16:41:48.447069+00
+-[ RECORD 2 ]---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+id                    | 87f69264-42e3-4925-9c3f-103efbbe1290
+name                  | Batura glacier snout ponds
+nameUr                | 
+valley                | Gojal, Hunza
+district              | Hunza
+district_id           | 358c510f-7244-40f3-8b45-307e6eeddb1e
+damType               | unknown
+glacierContact        | t
+icimodId              | 
+elevationM            | 
+historicalGlof        | f
+currentTier           | normal
+stale                 | f
+slug                  | batura
+source                | Wikipedia: Batura Glacier (geographic coordinate only; no specific GLOF event documented for this pond in the sources checked for this seed)
+sourceUrl             | https://en.wikipedia.org/wiki/Batura_Glacier
+current_risk_score    | 0
+downstream_population | 0
+area_km2              | 
+lat                   | 36.53
+lng                   | 74.65
+createdAt             | 2026-08-08 16:28:53.426741+00
+updatedAt             | 2026-08-08 16:28:53.426741+00
+-[ RECORD 3 ]---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+id                    | ad4232aa-9efb-44de-81bf-3fb8c6cb2207
+name                  | Ghulkin glacial pond
+nameUr                | 
+valley                | Gojal, Hunza
+district              | Hunza
+district_id           | 358c510f-7244-40f3-8b45-307e6eeddb1e
+damType               | unknown
+glacierContact        | t
+icimodId              | 
+elevationM            | 
+historicalGlof        | f
+currentTier           | normal
+stale                 | f
+slug                  | ghulkin
+source                | AikQaum geographic profile of Ghulkin Glacier (non-academic source; coordinate only, no specific GLOF event verified for this seed)
+sourceUrl             | https://aikqaum.com/ghulkin-glacier-a-natural-wonder-in-the-karakoram-range-of-pakistan/
+current_risk_score    | 0
+downstream_population | 0
+area_km2              | 
+lat                   | 36.4653
+lng                   | 74.856
+createdAt             | 2026-08-08 16:28:53.426078+00
+updatedAt             | 2026-08-08 16:28:53.426078+00
+-[ RECORD 4 ]---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+id                    | c8d78242-1c4d-486f-a5a6-233637e62ffd
+name                  | Khurdopin glacial lake
+nameUr                | 
+valley                | Shimshal, Hunza
+district              | Hunza
+district_id           | 358c510f-7244-40f3-8b45-307e6eeddb1e
+damType               | ice
+glacierContact        | t
+icimodId              | 
+elevationM            | 
+historicalGlof        | t
+currentTier           | normal
+stale                 | f
+slug                  | khurdopin
+source                | "Brief communication: The Khurdopin glacier surge revisited – extreme flow velocities and formation of a dammed lake in 2017", The Cryosphere (Copernicus), 2018
+sourceUrl             | https://tc.copernicus.org/articles/12/95/2018/
+current_risk_score    | 0
+downstream_population | 0
+area_km2              | 
+lat                   | 36.3383
+lng                   | 75.5083
+createdAt             | 2026-08-08 16:28:53.423588+00
+updatedAt             | 2026-08-08 16:28:53.423588+00
+-[ RECORD 5 ]---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+id                    | fdc1ffbd-9680-43ab-b71d-04da11f28dd3
+name                  | Passu glacial pond
+nameUr                | 
+valley                | Gojal, Hunza
+district              | Hunza
+district_id           | 358c510f-7244-40f3-8b45-307e6eeddb1e
+damType               | unknown
+glacierContact        | t
+icimodId              | 
+elevationM            | 
+historicalGlof        | f
+currentTier           | normal
+stale                 | f
+slug                  | passu
+source                | Wikipedia: Passu Glacier (geographic coordinate only; no specific GLOF event documented for this pond in the sources checked for this seed)
+sourceUrl             | https://en.wikipedia.org/wiki/Passu_Glacier
+current_risk_score    | 0
+downstream_population | 0
+area_km2              | 
+lat                   | 36.47
+lng                   | 74.77
+createdAt             | 2026-08-08 16:28:53.42546+00
+updatedAt             | 2026-08-08 16:28:53.42546+00
+-[ RECORD 6 ]---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+id                    | ba268f51-2b8d-4d5b-99c1-a281d9bb66c2
+name                  | Shishper (Hassanabad) glacial lake
+nameUr                | 
+valley                | Hassanabad, Hunza
+district              | Hunza
+district_id           | 358c510f-7244-40f3-8b45-307e6eeddb1e
+damType               | ice
+glacierContact        | t
+icimodId              | 
+elevationM            | 
+historicalGlof        | t
+currentTier           | normal
+stale                 | f
+slug                  | shishper
+source                | Ali et al., "Formation of a hazardous ice-dammed glacier lake: a case study of anomalous behavior of Hassanabad glacier system in the Karakoram", Discover Applied Sciences (Springer Nature), 2020
+sourceUrl             | https://link.springer.com/article/10.1007/s42452-020-2989-4
+current_risk_score    | 0
+downstream_population | 0
+area_km2              | 
+lat                   | 36.4
+lng                   | 74.61
+createdAt             | 2026-08-08 16:28:53.372695+00
+updatedAt             | 2026-08-08 16:28:53.372695+00
+

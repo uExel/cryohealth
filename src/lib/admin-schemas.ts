@@ -74,10 +74,56 @@ export const deleteReasonSchema = z
   .strict();
 export type DeleteReason = z.infer<typeof deleteReasonSchema>;
 
+const DAM_TYPES = ["moraine", "bedrock", "ice", "unknown"] as const;
+
+export const lakeCreateSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    nameUr: z.string().min(1).nullable().optional(),
+    valley: z.string().min(1, "Valley is required"),
+    // Required (task #11 GATE decision 2), though the DB column is nullable: the
+    // legacy `district` text column is derived from this FK inside the same
+    // transaction and is never its own form field, so an admin can't desync the
+    // admin table from the public hazard map (which reads `district` over HTTP).
+    district_id: z.string().uuid("A district must be selected"),
+    damType: z.enum(DAM_TYPES).optional(),
+    glacierContact: z.boolean().optional(),
+    icimodId: z.string().min(1).nullable().optional(),
+    elevationM: z.number().int().nullable().optional(),
+    historicalGlof: z.boolean().optional(),
+    // Required despite the DB column allowing no rows without it (NOT NULL, no
+    // default) — same no-fabricated-hazard-data rationale as glacierCreateSchema.source.
+    source: z.string().min(1, "Source is required — cite where this lake's data comes from"),
+    sourceUrl: z.string().min(1).nullable().optional(),
+    downstream_population: z.number().int().nonnegative().optional(),
+    // .coerce ONLY here: area_km2 is Postgres `numeric`, which postgres.js returns as
+    // a string, and the edit dialog's defaultValues come straight from that GET
+    // payload (see glacierCreateSchema.area_km2's comment — same finding, F1).
+    area_km2: z.coerce.number().positive().nullable().optional(),
+    // Plain z.number(), never .coerce: lakes.geom is NOT NULL with no default, so
+    // lat/lng are required on create. Coercing a required field lets
+    // null/""/[] silently become 0 instead of a 400 (finding N1) — this is the
+    // no-fabricated-coordinates system, so that failure mode is not acceptable here.
+    lat: z.number().min(-90).max(90),
+    lng: z.number().min(-180).max(180),
+    // Curated short handle (e.g. "shishper"), not derived from `name`. UNIQUE, and
+    // create-only — CryoHealth-api's seed scripts upsert/resolve lakes by slug, so a
+    // rename here would desync them. Absent from lakeUpdateSchema entirely, below.
+    slug: z.string().min(1, "Slug is required"),
+  })
+  .strict();
+export type LakeCreate = z.infer<typeof lakeCreateSchema>;
+
 /** currentTier and current_risk_score must never appear here — that's tier-policy
- *  output owned by CryoHealth-api's alert service, not an admin-editable field. */
-export const lakeSchema = z.object({}).strict();
-export type Lake = z.infer<typeof lakeSchema>;
+ *  output owned by CryoHealth-api's alert service (alerts.service.ts:103,141,183 are
+ *  the only writers of currentTier in the system; current_risk_score has no writer
+ *  anywhere yet), not an admin-editable field. `.strict()` gives a 400
+ *  (unrecognized_keys) on either key rather than a silent drop — task #11 GATE
+ *  decision 1. `LAKE_WRITABLE_COLUMNS` in queries.ts is the second, schema-independent
+ *  layer of the same lock, so a `.strict()` removed later can't reopen it alone.
+ *  `slug` is also absent here — create-only, see lakeCreateSchema.slug's comment. */
+export const lakeUpdateSchema = lakeCreateSchema.omit({ slug: true }).partial();
+export type LakeUpdate = z.infer<typeof lakeUpdateSchema>;
 
 /** Issue #12 requires a mandatory `reason` field on clear/delete (human-auditable
  *  reason per the workspace's alert-policy rule) — enforce it here once this is
