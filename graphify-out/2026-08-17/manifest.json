@@ -310,8 +310,8 @@
     "semantic_hash": "d9837f38cc05303254571985e3164050"
   },
   "src/routeTree.gen.ts": {
-    "mtime": 1786952924.9348316,
-    "ast_hash": "51cc3044edec7cbee70bcb686876dc96",
+    "mtime": 1786817027.7511349,
+    "ast_hash": "8577e323c4a20f8d6ab3c8a951c5dd9a",
     "semantic_hash": ""
   },
   "src/router.tsx": {
@@ -450,8 +450,8 @@
     "semantic_hash": ""
   },
   "src/lib/queries.ts": {
-    "mtime": 1786952792.9641256,
-    "ast_hash": "c290b5e19fbab5cd7b40ce7c46771ff5",
+    "mtime": 1786817355.0543034,
+    "ast_hash": "9b13ebe998fe30b52882e4dd646c2d81",
     "semantic_hash": ""
   },
   "src/routes/api/auth/login.ts": {
@@ -600,8 +600,8 @@
     "semantic_hash": ""
   },
   "docs/ai/HANDOFF.md": {
-    "mtime": 1786863800.8805268,
-    "ast_hash": "68d8d9c2a2b4db1a1f18ad03889c4134",
+    "mtime": 1786815874.1580718,
+    "ast_hash": "dbfcfeef11d52c1fc80e3dc405429fd2",
     "semantic_hash": ""
   },
   "docs/ai/LEARNINGS.md": {
@@ -610,13 +610,13 @@
     "semantic_hash": ""
   },
   "docs/ai/PLAN.md": {
-    "mtime": 1786863740.5001752,
-    "ast_hash": "4a1451c44b1d08ed19cf970d51f43aa8",
+    "mtime": 1786815780.4354815,
+    "ast_hash": "b0ef155c3a69085fb449babcb37fb3c1",
     "semantic_hash": ""
   },
   "docs/ai/TODO.md": {
-    "mtime": 1786819974.292232,
-    "ast_hash": "21587ee9c6977ace62bca14b8afd7271",
+    "mtime": 1786817672.907231,
+    "ast_hash": "216e4a4443bb726932fed8d09757540c",
     "semantic_hash": ""
   },
   "docs/ai/sessions/2026-08-01-import-site-history-handoff.md": {
@@ -670,8 +670,8 @@
     "semantic_hash": ""
   },
   "src/lib/admin-schemas.ts": {
-    "mtime": 1786952575.0269797,
-    "ast_hash": "ee81d40b253ccf112f4d5338c06287ac",
+    "mtime": 1786819804.715049,
+    "ast_hash": "76ad2d66c89b48c39995213ae74a2ca3",
     "semantic_hash": ""
   },
   "src/lib/theme.tsx": {
@@ -735,13 +735,13 @@
     "semantic_hash": ""
   },
   "src/routes/admin.lakes.$lakeId.tsx": {
-    "mtime": 1786953305.4542239,
-    "ast_hash": "34b9dda6753268309a2b43b44c282614",
+    "mtime": 1786464047.8108974,
+    "ast_hash": "0052d0f6ddeb4f3b85536de1739c9a00",
     "semantic_hash": ""
   },
   "src/routes/admin.lakes.index.tsx": {
-    "mtime": 1786953820.2750607,
-    "ast_hash": "61f30f242ea0996cea0e69c2309309ab",
+    "mtime": 1786464667.2475429,
+    "ast_hash": "b63354c9456388687eba864396268b89",
     "semantic_hash": ""
   },
   "src/routes/admin.lakes.tsx": {
@@ -967,46 +967,6 @@
   "src/lib/api-errors.ts": {
     "mtime": 1786818685.2550812,
     "ast_hash": "f4a8d7d5d543fb97d031fc317039c17e",
-    "semantic_hash": ""
-  },
-  "src/components/cryohealth/LakeFormDialog.tsx": {
-    "mtime": 1786953586.0099967,
-    "ast_hash": "7002c914de703d9d9e10b324ae0c275f",
-    "semantic_hash": ""
-  },
-  "src/routes/api/admin/lakes.$lakeId.ts": {
-    "mtime": 1786952923.738485,
-    "ast_hash": "ab13977ae5c82692945298714d778d1e",
-    "semantic_hash": ""
-  },
-  "src/routes/api/admin/lakes.ts": {
-    "mtime": 1786952912.6246548,
-    "ast_hash": "d99e028669bb1937d8f6f534b6efa8a3",
-    "semantic_hash": ""
-  },
-  "docs/ai/planning/snapshots/task-11-lakes-preflight.txt": {
-    "mtime": 1786952488.1841438,
-    "ast_hash": "2aece049bde50e302e5cfd600a5abda2",
-    "semantic_hash": ""
-  },
-  "docs/ai/planning/task-11-findings.md": {
-    "mtime": 1786863580.830333,
-    "ast_hash": "d89f864fcf2b9d4e117c989cb0a5546e",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-15-task10-build-verify-handoff.md": {
-    "mtime": 1786820154.2970579,
-    "ast_hash": "bca2e80ede50e89f458299352fe96542",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-15-task10-build-verify.md": {
-    "mtime": 1786820072.6480603,
-    "ast_hash": "86e8251631f3c5f307a6fbca3ff51b2a",
-    "semantic_hash": ""
-  },
-  "docs/ai/sessions/2026-08-15-task10-plan-stale-handoff.md": {
-    "mtime": 1786815874.1580718,
-    "ast_hash": "dbfcfeef11d52c1fc80e3dc405429fd2",
     "semantic_hash": ""
   }
 }
