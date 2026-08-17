@@ -1,9 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
 import { AdminPlaceholder } from "@/components/cryohealth/AdminPlaceholder";
 import { StatCard } from "@/components/cryohealth/StatCard";
+import { LakeFormDialog } from "@/components/cryohealth/LakeFormDialog";
 import { TierBadge, type Tier } from "@/lib/tier";
 import { authFetch } from "@/lib/auth-client";
+import type { LakeCreate } from "@/lib/admin-schemas";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Table,
@@ -26,10 +31,14 @@ function isTier(t: string): t is Tier {
   return (TIERS as readonly string[]).includes(t);
 }
 
+type DistrictRow = { id: string; name: string };
+
 type LakeRow = {
   id: string;
   name: string;
-  valley: string | null;
+  nameUr: string | null;
+  valley: string;
+  district_id: string | null;
   damType: string | null;
   glacierContact: boolean | null;
   icimodId: string | null;
@@ -41,7 +50,10 @@ type LakeRow = {
   current_risk_score: string | number | null;
   downstream_population: number | null;
   area_km2: string | number | null;
+  elevationM: number | null;
   elevation_m: number | null;
+  lat: number;
+  lng: number;
   updatedAt: string;
 };
 
@@ -62,6 +74,8 @@ type HazardScoreRow = {
 
 function LakeDetailAdmin() {
   const { lakeId } = Route.useParams();
+  const qc = useQueryClient();
+  const [editing, setEditing] = useState(false);
 
   const {
     data: bundle,
@@ -77,6 +91,15 @@ function LakeDetailAdmin() {
     },
   });
 
+  const { data: districts } = useQuery({
+    queryKey: ["admin-districts"],
+    queryFn: async (): Promise<DistrictRow[]> => {
+      const res = await fetch("/api/public/districts");
+      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
+      return (await res.json()).districts ?? [];
+    },
+  });
+
   const {
     data: hazardScores,
     isLoading: hazardLoading,
@@ -88,6 +111,26 @@ function LakeDetailAdmin() {
       if (!res.ok) throw new Error(`hazard-scores fetch failed: ${res.status}`);
       return (await res.json()).hazardScores ?? [];
     },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (values: LakeCreate) => {
+      const res = await authFetch(`/api/admin/lakes/${lakeId}`, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error ?? "Failed to update lake");
+      return body.lake;
+    },
+    onSuccess: () => {
+      toast.success("Lake updated");
+      qc.invalidateQueries({ queryKey: ["admin-lake", lakeId] });
+      qc.invalidateQueries({ queryKey: ["admin-lakes"] });
+      setEditing(false);
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const lake = bundle?.lake;
@@ -117,7 +160,12 @@ function LakeDetailAdmin() {
             {lake.district_name ?? "—"} · {lake.valley ?? "—"}
           </p>
         </div>
-        <TierBadge tier={lake.current_tier} solid={lake.current_tier === "CRITICAL"} />
+        <div className="flex items-center gap-3">
+          <TierBadge tier={lake.current_tier} solid={lake.current_tier === "CRITICAL"} />
+          <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
+            Edit lake
+          </Button>
+        </div>
       </header>
 
       <Tabs defaultValue="overview" className="mt-6">
@@ -294,6 +342,16 @@ function LakeDetailAdmin() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {editing && (
+        <LakeFormDialog
+          initial={lake}
+          districts={districts ?? []}
+          onOpenChange={setEditing}
+          onSubmit={(values) => updateMutation.mutate(values)}
+          isPending={updateMutation.isPending}
+        />
+      )}
     </main>
   );
 }
