@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import type { LakeCreate, LakeUpdate } from "@/lib/admin-schemas";
 import type postgres from "postgres";
 
 /** Server-only data-access helpers. Import only inside `server.handlers` route
@@ -529,6 +530,175 @@ export async function deleteGlacier(id: string, reason: string, actorId: string)
       actorId,
       action: "glacier.delete",
       entityType: "Glacier",
+      entityId: id,
+      reason,
+    });
+    return rows[0].id;
+  });
+}
+
+/** Thrown when `district_id` doesn't reference an existing district. A plain FK
+ *  violation (23503) would otherwise surface as a NOT NULL violation on the derived
+ *  `district` text column instead (Postgres checks NOT NULL before the FK constraint
+ *  trigger fires), which `mapDbError` doesn't recognize and would 500 -- so this is
+ *  checked explicitly, before the INSERT/UPDATE, rather than left to the DB. */
+export class InvalidDistrictError extends Error {
+  constructor() {
+    super("district_id does not reference an existing district");
+  }
+}
+
+async function deriveDistrictName(sql: postgres.ISql, districtId: string): Promise<string> {
+  const rows = await sql`SELECT name FROM districts WHERE id = ${districtId}`;
+  if (!rows[0]) throw new InvalidDistrictError();
+  return rows[0].name as string;
+}
+
+/** The ONLY columns an admin write may touch on `lakes`, independent of whatever the
+ *  zod schema currently allows -- task #11 GATE decision 1's second layer.
+ *  `currentTier`/`current_risk_score` are absent by design: they are tier-policy
+ *  output owned by CryoHealth-api's alert service (alerts.service.ts:103,141,183 are
+ *  the only writers of currentTier in the system; current_risk_score has no writer
+ *  anywhere yet). `district` (the legacy text column) is also absent -- it is derived
+ *  server-side from `district_id` by deriveDistrictName(), never taken directly from a
+ *  client payload. `slug` is absent -- create-only, set once in createLake(). */
+const LAKE_WRITABLE_COLUMNS = [
+  "name",
+  "nameUr",
+  "valley",
+  "district_id",
+  "damType",
+  "glacierContact",
+  "icimodId",
+  "elevationM",
+  "historicalGlof",
+  "source",
+  "sourceUrl",
+  "downstream_population",
+  "area_km2",
+] as const;
+
+export async function createLake(
+  input: LakeCreate & {
+    actorId: string;
+  },
+) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const districtName = await deriveDistrictName(sql, input.district_id);
+    const rows = await sql`
+      INSERT INTO lakes (
+        name, "nameUr", valley, district, district_id, "damType", "glacierContact",
+        "icimodId", "elevationM", "historicalGlof", source, "sourceUrl",
+        downstream_population, area_km2, slug, geom
+      )
+      VALUES (
+        ${input.name}, ${input.nameUr ?? null}, ${input.valley}, ${districtName}, ${input.district_id},
+        ${input.damType ?? "unknown"}, ${input.glacierContact ?? false}, ${input.icimodId ?? null},
+        ${input.elevationM ?? null}, ${input.historicalGlof ?? false}, ${input.source},
+        ${input.sourceUrl ?? null}, ${input.downstream_population ?? 0}, ${input.area_km2 ?? null},
+        ${input.slug}, ST_SetSRID(ST_MakePoint(${input.lng}, ${input.lat}), 4326)
+      )
+      RETURNING id
+    `;
+    const lake = rows[0];
+    await writeAudit(sql, {
+      actorId: input.actorId,
+      action: "lake.create",
+      entityType: "Lake",
+      entityId: lake.id,
+      meta: { created: { name: input.name, slug: input.slug, source: input.source } },
+    });
+    return lake;
+  });
+}
+
+const LAKE_ROW_COLUMNS = `
+  name, "nameUr", valley, district_id, "damType", "glacierContact", "icimodId",
+  "elevationM", "historicalGlof", source, "sourceUrl", downstream_population, area_km2,
+  ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng
+`;
+
+export async function updateLake(id: string, patch: LakeUpdate, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const before = (
+      await sql`SELECT ${sql.unsafe(LAKE_ROW_COLUMNS)} FROM lakes WHERE id = ${id}`
+    )[0];
+    if (!before) return null;
+
+    // lat/lng aren't real columns (geom is) -- pulled out before the allowlist filter,
+    // which only ever sees genuine column names.
+    const { lat, lng, ...rest } = patch;
+    const writable: Record<string, unknown> = {};
+    for (const key of LAKE_WRITABLE_COLUMNS) {
+      if (key in rest) writable[key] = (rest as Record<string, unknown>)[key];
+    }
+    if (typeof writable.district_id === "string") {
+      writable.district = await deriveDistrictName(sql, writable.district_id);
+    }
+
+    // updatedAt is injected unconditionally so `sql(scalar)` is never called with an
+    // empty object -- an empty SET list is a syntax error, and this is the only case
+    // reachable if a patch contains only lat/lng (findings task-11, probed live).
+    const scalar = { ...writable, updatedAt: new Date() };
+    const geomFrag =
+      lat !== undefined || lng !== undefined
+        ? sql`, geom = ST_SetSRID(ST_MakePoint(${lng ?? before.lng}, ${lat ?? before.lat}), 4326)`
+        : sql``;
+
+    const rows = await sql`
+      UPDATE lakes SET ${sql(scalar)}${geomFrag}
+      WHERE id = ${id}
+      RETURNING ${sql.unsafe(LAKE_ROW_COLUMNS)}
+    `;
+    const after = rows[0];
+
+    // Diffed over the original `patch` keys, not `scalar` -- `scalar` always contains
+    // `updatedAt`, which would otherwise make every audit row report a bogus change.
+    const changed: Record<string, { from: postgres.JSONValue; to: postgres.JSONValue }> = {};
+    for (const key of Object.keys(patch)) {
+      if (before[key] !== after[key]) changed[key] = { from: before[key], to: after[key] };
+    }
+    await writeAudit(sql, {
+      actorId,
+      action: "lake.update",
+      entityType: "Lake",
+      entityId: id,
+      meta: Object.keys(changed).length ? { changed } : null,
+    });
+    return after;
+  });
+}
+
+export async function deleteLake(id: string, reason: string, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const [[observations], [hazardScores], [lakeRiskScores], [alerts], [facilities]] =
+      await Promise.all([
+        sql`SELECT count(*)::int AS n FROM observations WHERE "lakeId" = ${id}`,
+        sql`SELECT count(*)::int AS n FROM hazard_scores WHERE "lakeId" = ${id}`,
+        sql`SELECT count(*)::int AS n FROM lake_risk_scores WHERE lake_id = ${id}`,
+        sql`SELECT count(*)::int AS n FROM alerts WHERE "lakeId" = ${id}`,
+        sql`SELECT count(*)::int AS n FROM facilities WHERE "lakeId" = ${id}`,
+      ]);
+    const dependents = {
+      observations: observations.n,
+      hazard_scores: hazardScores.n,
+      lake_risk_scores: lakeRiskScores.n,
+      alerts: alerts.n,
+      facilities: facilities.n,
+    };
+    if (Object.values(dependents).some((n) => n > 0)) {
+      throw new HasDependentsError(dependents);
+    }
+
+    const rows = await sql`DELETE FROM lakes WHERE id = ${id} RETURNING id`;
+    if (!rows[0]) return null;
+    await writeAudit(sql, {
+      actorId,
+      action: "lake.delete",
+      entityType: "Lake",
       entityId: id,
       reason,
     });
