@@ -62,6 +62,7 @@ import { Route as ApiPublicGlaciersGlacierIdRouteImport } from './routes/api/pub
 import { Route as ApiAdminLakesLakeIdRouteImport } from './routes/api/admin/lakes.$lakeId'
 import { Route as ApiAdminGlaciersGlacierIdRouteImport } from './routes/api/admin/glaciers.$glacierId'
 import { Route as ApiAdminDistrictsDistrictIdRouteImport } from './routes/api/admin/districts.$districtId'
+import { Route as ApiAdminAlertsAlertIdRouteImport } from './routes/api/admin/alerts.$alertId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -333,6 +334,11 @@ const ApiAdminDistrictsDistrictIdRoute =
     path: '/$districtId',
     getParentRoute: () => ApiAdminDistrictsRoute,
   } as any)
+const ApiAdminAlertsAlertIdRoute = ApiAdminAlertsAlertIdRouteImport.update({
+  id: '/api/admin/alerts/$alertId',
+  path: '/api/admin/alerts/$alertId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -382,6 +388,7 @@ export interface FileRoutesByFullPath {
   '/api/public/protocols': typeof ApiPublicProtocolsRoute
   '/admin/glaciers/': typeof AdminGlaciersIndexRoute
   '/admin/lakes/': typeof AdminLakesIndexRoute
+  '/api/admin/alerts/$alertId': typeof ApiAdminAlertsAlertIdRoute
   '/api/admin/districts/$districtId': typeof ApiAdminDistrictsDistrictIdRoute
   '/api/admin/glaciers/$glacierId': typeof ApiAdminGlaciersGlacierIdRoute
   '/api/admin/lakes/$lakeId': typeof ApiAdminLakesLakeIdRoute
@@ -434,6 +441,7 @@ export interface FileRoutesByTo {
   '/api/public/protocols': typeof ApiPublicProtocolsRoute
   '/admin/glaciers': typeof AdminGlaciersIndexRoute
   '/admin/lakes': typeof AdminLakesIndexRoute
+  '/api/admin/alerts/$alertId': typeof ApiAdminAlertsAlertIdRoute
   '/api/admin/districts/$districtId': typeof ApiAdminDistrictsDistrictIdRoute
   '/api/admin/glaciers/$glacierId': typeof ApiAdminGlaciersGlacierIdRoute
   '/api/admin/lakes/$lakeId': typeof ApiAdminLakesLakeIdRoute
@@ -490,6 +498,7 @@ export interface FileRoutesById {
   '/api/public/protocols': typeof ApiPublicProtocolsRoute
   '/admin/glaciers/': typeof AdminGlaciersIndexRoute
   '/admin/lakes/': typeof AdminLakesIndexRoute
+  '/api/admin/alerts/$alertId': typeof ApiAdminAlertsAlertIdRoute
   '/api/admin/districts/$districtId': typeof ApiAdminDistrictsDistrictIdRoute
   '/api/admin/glaciers/$glacierId': typeof ApiAdminGlaciersGlacierIdRoute
   '/api/admin/lakes/$lakeId': typeof ApiAdminLakesLakeIdRoute
@@ -547,6 +556,7 @@ export interface FileRouteTypes {
     | '/api/public/protocols'
     | '/admin/glaciers/'
     | '/admin/lakes/'
+    | '/api/admin/alerts/$alertId'
     | '/api/admin/districts/$districtId'
     | '/api/admin/glaciers/$glacierId'
     | '/api/admin/lakes/$lakeId'
@@ -599,6 +609,7 @@ export interface FileRouteTypes {
     | '/api/public/protocols'
     | '/admin/glaciers'
     | '/admin/lakes'
+    | '/api/admin/alerts/$alertId'
     | '/api/admin/districts/$districtId'
     | '/api/admin/glaciers/$glacierId'
     | '/api/admin/lakes/$lakeId'
@@ -654,6 +665,7 @@ export interface FileRouteTypes {
     | '/api/public/protocols'
     | '/admin/glaciers/'
     | '/admin/lakes/'
+    | '/api/admin/alerts/$alertId'
     | '/api/admin/districts/$districtId'
     | '/api/admin/glaciers/$glacierId'
     | '/api/admin/lakes/$lakeId'
@@ -693,6 +705,7 @@ export interface RootRouteChildren {
   ApiPublicLakesAdminRoute: typeof ApiPublicLakesAdminRoute
   ApiPublicOpenAlertsRoute: typeof ApiPublicOpenAlertsRoute
   ApiPublicProtocolsRoute: typeof ApiPublicProtocolsRoute
+  ApiAdminAlertsAlertIdRoute: typeof ApiAdminAlertsAlertIdRoute
   ApiPublicHazardScoresLakeIdRoute: typeof ApiPublicHazardScoresLakeIdRoute
 }
 
@@ -1069,6 +1082,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminDistrictsDistrictIdRouteImport
       parentRoute: typeof ApiAdminDistrictsRoute
     }
+    '/api/admin/alerts/$alertId': {
+      id: '/api/admin/alerts/$alertId'
+      path: '/api/admin/alerts/$alertId'
+      fullPath: '/api/admin/alerts/$alertId'
+      preLoaderRoute: typeof ApiAdminAlertsAlertIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1230,6 +1250,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicLakesAdminRoute: ApiPublicLakesAdminRoute,
   ApiPublicOpenAlertsRoute: ApiPublicOpenAlertsRoute,
   ApiPublicProtocolsRoute: ApiPublicProtocolsRoute,
+  ApiAdminAlertsAlertIdRoute: ApiAdminAlertsAlertIdRoute,
   ApiPublicHazardScoresLakeIdRoute: ApiPublicHazardScoresLakeIdRoute,
 }
 export const routeTree = rootRouteImport
