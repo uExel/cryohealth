@@ -1,5 +1,11 @@
 import { getDb } from "@/lib/db";
-import type { LakeCreate, LakeUpdate, AlertUpdate } from "@/lib/admin-schemas";
+import type {
+  LakeCreate,
+  LakeUpdate,
+  AlertUpdate,
+  ProtocolCreate,
+  ProtocolUpdate,
+} from "@/lib/admin-schemas";
 import type postgres from "postgres";
 
 /** Server-only data-access helpers. Import only inside `server.handlers` route
@@ -129,7 +135,7 @@ export async function listAlertsForLake(lakeId: string) {
 export async function listAllAlerts(limit = 200) {
   const sql = await getDb();
   return sql`
-    SELECT a.id, a."lakeId" AS lake_id, a.district_id, upper(a.tier::text) AS tier, a.title,a.body, a.body_en, a.body_ur,
+    SELECT a.id, a."lakeId" AS lake_id, a.district_id, upper(a.tier::text) AS tier, a.title, a.body, a.body_en, a.body_ur,
            a.estimated_window, a.affected_population, a."createdAt" AS created_at,
            a.status::text AS status, a."clearedAt" AS cleared_at,
            l.name AS lake_name, d.name AS district_name
@@ -169,6 +175,12 @@ export async function insertAlert(input: {
     VALUES (${input.title}, ${input.bodyEn}, ${input.bodyEn}, ${input.bodyUr}, ${input.tier.toLowerCase()}, ${input.lakeId}, ${input.districtId}, ${input.estimatedWindow}, ${input.affectedPopulation}, ${input.issuedById})
   `;
 }
+
+/** The ONLY columns an admin PUT may touch on `alerts` -- per issue #12, edit is
+ *  scoped to body/tier/window only. title/lakeId/districtId/affected_population are
+ *  create-only; status/clearedAt are the clear action's job, not a field edit
+ *  (see clearAlert below). Independent of whatever alertUpdateSchema currently
+ *  allows, same second-layer-lock rationale as LAKE_WRITABLE_COLUMNS. */
 const ALERT_WRITABLE_COLUMNS = ["body", "body_en", "tier", "estimated_window"] as const;
 
 const ALERT_ROW_COLUMNS = `
@@ -189,6 +201,8 @@ export async function updateAlert(id: string, patch: AlertUpdate, actorId: strin
     for (const key of ALERT_WRITABLE_COLUMNS) {
       if (key in patch) writable[key] = (patch as Record<string, unknown>)[key];
     }
+    // body_en mirrors body, same as insertAlert -- keep them in lockstep on edit.
+    // body_ur is untouched: this issue's PUT doesn't expose it.
     if (typeof (patch as Record<string, unknown>).body === "string") {
       writable.body_en = (patch as Record<string, unknown>).body;
     }
@@ -218,6 +232,13 @@ export async function updateAlert(id: string, patch: AlertUpdate, actorId: strin
   });
 }
 
+/** Sets status='cleared' and stamps clearedAt -- distinct from delete: the row
+ *  stays, it just stops occupying the (lakeId, tier) active slot, so a new active
+ *  alert can be raised for that lake/tier again. Only affects rows currently
+ *  'active' (WHERE clause), so clearing an already-cleared or missing alert both
+ *  come back as null -- the route treats that as 404 rather than guessing which,
+ *  to avoid leaking state via error text. reason is mandatory (CLAUDE.md
+ *  alert-policy rule). */
 export async function clearAlert(id: string, reason: string, actorId: string) {
   const db = await getDb();
   return db.begin(async (sql) => {
@@ -315,6 +336,98 @@ export async function listChwProfiles() {
 export async function listProtocols() {
   const sql = await getDb();
   return sql`SELECT * FROM protocols ORDER BY is_disaster DESC`;
+}
+
+const PROTOCOL_ROW_COLUMNS = `
+  id, slug, title, category, body, source, is_disaster, created_at
+`;
+
+export async function createProtocol(input: ProtocolCreate & { actorId: string }) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`
+      INSERT INTO protocols (slug, title, category, body, source, is_disaster)
+      VALUES (
+        ${input.slug}, ${input.title}, ${input.category}, ${input.body}, ${input.source},
+        ${input.is_disaster ?? false}
+      )
+      RETURNING ${sql.unsafe(PROTOCOL_ROW_COLUMNS)}
+    `;
+    const protocol = rows[0];
+    await writeAudit(sql, {
+      actorId: input.actorId,
+      action: "protocol.create",
+      entityType: "Protocol",
+      entityId: protocol.id,
+      meta: { created: { slug: input.slug, title: input.title, source: input.source } },
+    });
+    return protocol;
+  });
+}
+
+/** The ONLY columns an admin write may touch on `protocols`, independent of
+ *  whatever the zod schema currently allows -- same second-layer-lock rationale as
+ *  LAKE_WRITABLE_COLUMNS. `slug` is absent -- create-only, set once in
+ *  createProtocol(). There is deliberately no "generate"/"improve wording" field or
+ *  code path anywhere in this file: dosing/diagnosis text must be transcribed from
+ *  a cited source, never produced by a model (CLAUDE.md's protocol rule, issue #13). */
+const PROTOCOL_WRITABLE_COLUMNS = ["title", "category", "body", "source", "is_disaster"] as const;
+
+export async function updateProtocol(id: string, patch: ProtocolUpdate, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const before = (
+      await sql`SELECT ${sql.unsafe(PROTOCOL_ROW_COLUMNS)} FROM protocols WHERE id = ${id}`
+    )[0];
+    if (!before) return null;
+
+    const writable: Record<string, unknown> = {};
+    for (const key of PROTOCOL_WRITABLE_COLUMNS) {
+      if (key in patch) writable[key] = (patch as Record<string, unknown>)[key];
+    }
+
+    const rows = await sql`
+      UPDATE protocols SET ${sql(writable)}
+      WHERE id = ${id}
+      RETURNING ${sql.unsafe(PROTOCOL_ROW_COLUMNS)}
+    `;
+    const after = rows[0];
+
+    const changed: Record<string, { from: postgres.JSONValue; to: postgres.JSONValue }> = {};
+    for (const key of Object.keys(writable)) {
+      if (before[key] !== after[key]) changed[key] = { from: before[key], to: after[key] };
+    }
+    await writeAudit(sql, {
+      actorId,
+      action: "protocol.update",
+      entityType: "Protocol",
+      entityId: id,
+      meta: Object.keys(changed).length ? { changed } : null,
+    });
+    return after;
+  });
+}
+
+/** No known dependent tables reference `protocol_id` anywhere in this codebase (the
+ *  CHW app reads protocols by lookup, not by FK) -- so unlike deleteLake/
+ *  deleteGlacier there's no explicit pre-check here. If CryoHealth-api's schema
+ *  does have an FK pointing at protocols that this repo doesn't know about, a
+ *  DELETE that violates it surfaces as a plain 23503 and mapDbError already turns
+ *  that into a clean 400 rather than a raw 500. */
+export async function deleteProtocol(id: string, reason: string, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`DELETE FROM protocols WHERE id = ${id} RETURNING id`;
+    if (!rows[0]) return null;
+    await writeAudit(sql, {
+      actorId,
+      action: "protocol.delete",
+      entityType: "Protocol",
+      entityId: id,
+      reason,
+    });
+    return rows[0].id;
+  });
 }
 
 export async function listAlertAcks() {

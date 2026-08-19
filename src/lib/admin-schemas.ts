@@ -125,11 +125,18 @@ export type LakeCreate = z.infer<typeof lakeCreateSchema>;
 export const lakeUpdateSchema = lakeCreateSchema.omit({ slug: true }).partial();
 export type LakeUpdate = z.infer<typeof lakeUpdateSchema>;
 
+/** Mirrors tier.tsx's Tier union, lowercased -- that's the DB representation
+ *  (insertAlert lowercases `tier` on write; listAllAlerts/listOpenAlerts read it
+ *  back with `upper(tier::text)` for display). Not imported from tier.tsx directly
+ *  since that file is UI-only (exports a component) and this schema must stay
+ *  importable from server route handlers. */
 const ALERT_TIERS = ["normal", "watch", "high", "critical"] as const;
 
 /** Issue #12: PUT only edits body/tier/window -- title, lakeId, districtId,
- *  affected_population, status, and clearedAt are absent by design. status/
- *  clearedAt are the clear-action's job, not a field an edit form should set. */
+ *  affected_population, status, and clearedAt are all absent by design. status/
+ *  clearedAt are the clear-action's job (see updateAlert/clearAlert in queries.ts),
+ *  not a field an edit form should be able to set directly; `.strict()` 400s
+ *  instead of silently dropping them if a client ever sends them. */
 export const alertUpdateSchema = z
   .object({
     body: z.string().trim().min(1, "Body is required").optional(),
@@ -139,12 +146,35 @@ export const alertUpdateSchema = z
   .strict();
 export type AlertUpdate = z.infer<typeof alertUpdateSchema>;
 
-/** Mandatory `reason` on clear/delete (CLAUDE.md alert-policy rule) is enforced
-+  *  via the shared `deleteReasonSchema` above -- both actions take exactly
-+  *  `{ reason: string }`. */
+/** Mandatory `reason` on clear/delete (human-auditable reason per CLAUDE.md's
+ *  alert-policy rule) is enforced via the shared `deleteReasonSchema` above --
+ *  both actions take exactly `{ reason: string }`, so a second schema would just
+ *  duplicate it. */
 
-export const protocolSchema = z.object({}).strict();
-export type Protocol = z.infer<typeof protocolSchema>;
+/** Issue #13: dosing/diagnosis text is transcribed from a cited source, never
+ *  generated (CLAUDE.md's protocol rule) -- `source` is required here even though
+ *  it's already NOT NULL in the DB, so a missing citation 400s with a clear message
+ *  instead of a raw NOT NULL violation. `slug` is create-only, same rationale as
+ *  lakeCreateSchema.slug -- the public CHW app almost certainly looks protocols up
+ *  by slug, so renaming it here would desync that lookup. */
+export const protocolCreateSchema = z
+  .object({
+    slug: z.string().min(1, "Slug is required"),
+    title: z.string().min(1, "Title is required"),
+    category: z.string().min(1, "Category is required"),
+    body: z.string().trim().min(1, "Body is required"),
+    source: z
+      .string()
+      .trim()
+      .min(1, "Source is required — cite where this protocol's text comes from"),
+    is_disaster: z.boolean().optional(),
+  })
+  .strict();
+export type ProtocolCreate = z.infer<typeof protocolCreateSchema>;
+
+/** slug is absent here — create-only, see protocolCreateSchema.slug's comment. */
+export const protocolUpdateSchema = protocolCreateSchema.omit({ slug: true }).partial();
+export type ProtocolUpdate = z.infer<typeof protocolUpdateSchema>;
 
 export const facilitySchema = z.object({}).strict();
 export type Facility = z.infer<typeof facilitySchema>;
