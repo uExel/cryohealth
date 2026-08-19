@@ -1,99 +1,114 @@
-# HANDOFF — cryohealth — 2026-08-18 PKT
+# HANDOFF — cryohealth — 2026-08-19 PKT
 
-Session: task12-build Model: claude-sonnet-5 Branch: <Shoaib> Goal: alert
-lifecycle management Task: #12
+Session: task13-build Model: claude-sonnet-5 Branch: <your-branch-name> Goal: protocol
+lookup-table CRUD, no-AI-assist hard constraint Task: #13
 
 ## State
 
-Task #12 (CRUD: Alerts — edit/clear/delete, alert-policy reason field) is **built and
-manually verified by the user**, not run through `/uexel:verify`. All three route
-handlers plus their query-layer functions and the admin UI actions landed in one pass
-(no agent build loop — done via chat, not `/uexel:build`). `tsc --noEmit`, `eslint`,
-and `vite build` (client bundle) all pass. The user manually tested edit/clear/delete
-against a seeded alert in their own dev environment and confirmed it working; no
-independent verifier agent has reviewed this yet.
+Task #13 (CRUD: Protocols — no AI-assist, hard warning banner) is **built and
+verified against tsc/eslint/vite build**, not run through `/uexel:verify`. Unlike
+task #12, this started from zero — there was no admin write path for protocols at
+all before this session (only a public read-only GET). `tsc --noEmit` and `eslint`
+are clean; `vite build`'s client bundle transforms cleanly and both new routes are
+present in `routeTree.gen.ts`. The manual create/edit/delete pass against a seeded
+protocol, and the visual "no AI/generate button exists" inspection the DoD calls
+for, have **not** been confirmed done yet as of this handoff — that's this session's
+open item.
 
 ## Done this session
 
-- `src/lib/admin-schemas.ts`: added `alertUpdateSchema` (body/tier/estimated_window,
-  `.strict()`), replacing the empty placeholder stub. Reused the existing
-  `deleteReasonSchema` for both clear and delete — same `{ reason: string }` shape,
-  so a second schema would've just duplicated it.
-- `src/lib/queries.ts`: added `updateAlert()`, `clearAlert()`, `deleteAlert()` next to
-  the existing `insertAlert()`. `ALERT_WRITABLE_COLUMNS` locks PUT to
-  body/body_en/tier/estimated_window only (title/lakeId/districtId/
-  affected_population are create-only; status/clearedAt are the clear action's job,
-  not a field edit). `clearAlert()`'s UPDATE is scoped to `WHERE status = 'active'`,
-  so clearing a missing or already-cleared alert both come back `null` → 404, rather
-  than distinguishing the two (avoids leaking state via error text). Every write goes
-  through the existing `writeAudit()` inside the same transaction. Also added `a.body`
-  to `listAllAlerts`'s SELECT so the edit dialog has something to seed from.
-- `src/routes/api/admin/alerts.$alertId.ts` (new): PUT (edit), PATCH (clear — a
-  distinct status transition from PUT, not a field edit), DELETE. Mirrors
-  `lakes.$lakeId.ts`'s structure exactly — same auth guard
-  (`cryohealth_admin`/`facility_admin`), `.strict()` schema validation, `mapDbError`
-  usage. 23505 on PUT (the partial unique index on `(lakeId, tier) WHERE status =
-active`) maps to a 409 rather than a raw 500 — no pre-check, the DB is the source
-  of truth here, same pattern as the lakes route's slug/icimodId 23505 handling.
-- `src/routes/admin.alerts.tsx`: added Edit/Clear/Delete action buttons per row. Edit
-  opens a form dialog (`AlertEditDialog`) seeded from the row, PUT on submit. Clear
-  and Delete share a `AlertReasonDialog` component requiring a non-empty reason before
-  the confirm button enables — mirrors `DeleteLakeDialog` in `admin.lakes.index.tsx`.
-- Fixed a `listAllAlerts` regression during testing: a stray `e.` alias reference
-  (not matching any table in the query's FROM/JOIN — only `a`/`l`/`d` exist) caused a
-  live `42P01`/"missing FROM-clause entry" error. Replaced with the corrected
-  all-`a.`-prefixed version.
-- Fixed a router-scaffold overwrite: the new route file briefly reverted to
-  TanStack Router's auto-generated placeholder component (`<div>Hello "..."!</div>`)
-  instead of the real `server.handlers` code — happened once during setup, re-pasted
-  the real content and it stuck.
+- `src/lib/admin-schemas.ts`: replaced the empty `protocolSchema` placeholder with
+  `protocolCreateSchema` (slug/title/category/body/source all required, `is_disaster`
+  optional bool, `.strict()`) and `protocolUpdateSchema` (same minus slug — create-only,
+  same rationale as `lakeCreateSchema.slug`). `source` is required in the schema even
+  though the DB column is already `NOT NULL`, so a missing citation 400s with a clear
+  message instead of a raw constraint violation.
+- `src/lib/queries.ts`: added `createProtocol()`, `updateProtocol()`, `deleteProtocol()`
+  next to the existing `listProtocols()`. `PROTOCOL_WRITABLE_COLUMNS` locks PUT to
+  title/category/body/source/is_disaster (slug is create-only). Every write goes
+  through the existing `writeAudit()` inside the same transaction.
+  `deleteProtocol()` has **no dependents pre-check** — grepped the repo, nothing
+  references `protocol_id`/`protocolId` as a FK anywhere in this codebase (unlike
+  `deleteLake`/`deleteGlacier`, which check `observations`/`hazard_scores`/etc. first).
+  If CryoHealth-api's schema has a FK this repo doesn't know about, a real violation
+  still surfaces as a clean 400 via the existing `mapDbError` (23503 case), not a raw
+  500 — so this is a reasoned omission, not an oversight, but worth confirming against
+  the actual schema if anyone's unsure.
+- `src/routes/api/admin/protocols.ts` (new): `POST` only, mirrors `lakes.ts`'s
+  collection-route structure — same auth (`cryohealth_admin`/`facility_admin`),
+  `.strict()` schema validation, 23505 → 409 on duplicate slug.
+- `src/routes/api/admin/protocols.$protocolId.ts` (new): `PUT`/`DELETE`, mirrors
+  `lakes.$lakeId.ts`. DELETE requires a `reason` via the shared `deleteReasonSchema`
+  — **the issue's DoD doesn't explicitly call this out for protocols** (only alerts'
+  issue mentioned it explicitly), but it's the repo-wide convention on every other
+  DELETE handler in `api/admin/*` ("destroying reference data other tables point at
+  always requires a human-supplied reason," per `deleteReasonSchema`'s own comment in
+  admin-schemas.ts), so it was applied here too for consistency. Flag if this wasn't
+  actually wanted for protocols specifically.
+- `src/routes/admin.protocols.tsx`: rewritten from **read-only** (a bare table, no
+  actions at all) to full CRUD — New/Edit/Delete buttons, a create+edit form dialog
+  (`ProtocolFormDialog`), delete confirmation requiring a reason
+  (`DeleteReasonField`).
+- **The hard constraint**: a static, non-dismissible `NoAiAssistBanner` component
+  renders inside the form dialog on every create/edit — no close button, no
+  `localStorage`, no dismissal state of any kind. The form itself has zero AI/generate/
+  "improve wording" affordances — just plain text/textarea/switch inputs bound
+  directly to the zod schema. This is the part of the issue with zero tolerance for
+  drift; do not add such an affordance later even as a "just a stub" placeholder.
+- Hit and fixed the exact type-inference pitfall `LakeFormDialog` already documents in
+  its own comments: switching `useForm`'s zod resolver between two _different_ schemas
+  (create schema vs. `.omit({slug})`) via a ternary doesn't reconcile into one stable
+  react-hook-form generic — threw 3 `tsc` errors cascading through every `FormField`.
+  Fixed the same way lakes did: one stable schema
+  (`protocolCreateSchema.partial({ slug: true })`) used in both modes, slug field just
+  hidden in the UI for edit mode, cast only at the `handleSubmit` boundary.
 
 ## Not done / deferred
 
-- **`/uexel:verify` has not run** — this was built and reviewed conversationally, not
-  through the agent build/verify loop. Treat as unverified by an independent agent.
-- **No live psql/curl verification was done by me directly** — I don't have DB or
-  network access to this project's Postgres instance. `tsc`/`eslint`/`vite build`
-  were run against the actual repo zip; the manual edit/clear/delete pass, audit-row
-  confirmation, and unique-constraint-holds check were the user's own responsibility
-  per the testing checklist provided — confirm these were actually completed, not
-  just "it loaded without erroring."
-- Constraint name for the `(lakeId, tier) WHERE status = active` unique index was
-  never confirmed against the actual schema/migration (owned by CryoHealth-api, not
-  this repo) — the 409 handler on PUT uses a generic message rather than branching on
-  `constraint_name` the way the lakes route does for its two named constraints. Fine
-  functionally, just less specific than it could be.
-- Browser/Playwright QA not attempted (consistent with task #11's disclosed gap).
-- Not committed/pushed by me — the user is committing manually. Actual commit
-  hash(es) for this work: **TBD, fill in below once committed.**
+- **`/uexel:verify` has not run** — built and reviewed conversationally.
+- **Manual create/edit/delete pass against a seeded protocol**: not confirmed done.
+  This is the next action, see below.
+- **DoD's explicit visual check** — "confirm no AI/generate button exists anywhere
+  in the form by inspection" — not confirmed done. This has no automated signal;
+  someone needs to actually open the rendered dialog and look.
+- **Audit row confirmation**: not confirmed against the live `audit` table (no DB
+  access from this session).
+- Not committed/pushed — commit hash(es): **TBD, fill in below once committed.**
 
 ## Next action
 
-Confirm the commit is pushed and CI (`bunx tsc --noEmit && bun run lint && bun run
-build` + the HANDOFF.md branch-protection check) is green on the PR. If a
-`/uexel:verify` pass is required before merge per this repo's normal process, run it
-against `git diff origin/main...HEAD -- src/` with issue #12's DoD.
+1. Run `bun dev`, confirm `src/routeTree.gen.ts` regenerated (check for
+   `/api/admin/protocols` and `/api/admin/protocols/$protocolId` entries — this repo
+   hit stale-route-tree `tsc` errors on both new files before the first `bun dev`
+   after creation, resolved by that rebuild alone).
+2. Do the manual create/edit/delete pass end-to-end (see testing steps below).
+3. Actually look at the rendered form dialog and confirm no AI/generate affordance
+   exists — the DoD requires this be checked by eye, not assumed from the diff.
+4. Confirm audit rows land in the `audit` table for each write.
+5. Commit, push, update `docs/ai/HANDOFF.md`, check CI.
 
 ## Open questions for a human
 
-- Should the generic 409 message on PUT (tier collision) be split out with the real
-  constraint name once it's confirmed, matching the lakes route's pattern? Not
-  blocking, just a follow-up polish item.
+- Was the `reason`-required-on-delete convention actually wanted for protocols, or
+  should protocol deletes be reason-free (unlike alerts, whose issue explicitly
+  named the reason requirement)? Applied here for consistency with the rest of
+  `api/admin/*`, but the issue text for #13 didn't say so explicitly — worth a
+  sanity check against product intent.
 
 ## Failed approaches (do not retry)
 
-- Referencing `e.<column>` (or any alias not declared in a query's own FROM/JOIN) in
-  `listAllAlerts` — caused `42P01 missing FROM-clause entry for table "e"` at
-  runtime, not at parse time in the editor, so it wasn't caught until the dev server
-  actually ran the query. Only `a` (alerts), `l` (lakes), `d` (districts) are valid
-  aliases in that function.
-- Leaving a freshly-created route file (`alerts.$alertId.ts`) unsaved/half-pasted —
-  TanStack Router's dev-mode file watcher scaffolds a placeholder `component:` export
-  into new route files under `src/routes/`, which silently overwrote or coexisted
-  with the intended `server.handlers` content until the real code was pasted in and
-  saved cleanly. Always verify the file's actual on-disk content (not just what was
-  intended) if odd `esbuild`/parse errors show up referencing that file after
-  creating it.
+- Ternary between `protocolCreateSchema` and `protocolCreateSchema.omit({slug:
+true})` as the `useForm` resolver, switched on `mode` — throws `tsc` errors on
+  every `FormField`'s `name`/`value` typing (`"slug" is not assignable to type
+"title" | "source" | ...`, plus a `value: string | boolean` union collapsing
+  incorrectly onto `Input`). Use one stable schema
+  (`protocolCreateSchema.partial({ slug: true })`) instead, same as
+  `LakeFormDialog`'s own documented fix for the identical issue.
+- Referencing a new API route file before running `bun dev`/`bun run build` at
+  least once — `src/routeTree.gen.ts` is auto-generated and file-creation alone
+  doesn't trigger it; the editor's TS server will show `2345`/`2339` errors on
+  `createFileRoute(...)` and `params.<newParam>` until a dev/build run picks the
+  new file up. Not a code bug — same pattern as task #12's alerts route.
 
 ## Loops run
 
@@ -102,21 +117,22 @@ against `git diff origin/main...HEAD -- src/` with issue #12's DoD.
 ## Files touched
 
 `src/lib/admin-schemas.ts`, `src/lib/queries.ts`,
-`src/routes/api/admin/alerts.$alertId.ts` (new), `src/routes/admin.alerts.tsx`,
-`src/routeTree.gen.ts` (auto-generated). This file.
+`src/routes/api/admin/protocols.ts` (new),
+`src/routes/api/admin/protocols.$protocolId.ts` (new), `src/routes/admin.protocols.tsx`
+(rewritten from read-only), `src/routeTree.gen.ts` (auto-generated). This file.
 
 ## Verification status
 
 tests: n/a (no test script in this repo) review: **not yet run** — no
-`/uexel:verify` pass; built and checked conversationally instead qa: `tsc --noEmit`,
-`eslint`, `vite build` (client bundle) all pass against the repo. Manual
-edit/clear/delete pass against a seeded alert confirmed working by the user in their
-own dev environment (see this session's testing checklist for what "confirmed" should
-have covered — audit rows, unique-constraint check, 404/edge cases — verify these
-were actually run, not assumed).
+`/uexel:verify` pass qa: `tsc --noEmit` clean, `eslint` clean (project-wide, aside
+from 2 pre-existing errors in `lakes.$lakeId.tsx`/`glaciers.$glacierId.tsx`
+untouched by this task), `vite build` client bundle transforms and both new routes
+appear in the regenerated route tree (SSR `cloudflare:workers` failure is a
+pre-existing environment issue, reproduces identically on an unmodified checkout).
+Manual create/edit/delete pass: **not yet confirmed**. Visual no-AI-assist
+inspection: **not yet confirmed**.
 
 ## Resume with
 
-Confirm commit hash(es) above, push, and check CI. If this repo requires an
-independent `/uexel:verify` pass before merge, run it against issue #12's DoD before
-considering this closed.
+Run the manual test pass below, confirm the banner/no-AI-assist check by eye,
+confirm audit rows, fill in commit hash(es) and branch name above, push, check CI.
