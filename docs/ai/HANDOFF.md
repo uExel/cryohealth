@@ -1,142 +1,122 @@
-# HANDOFF — cryohealth — 2026-08-17 PKT
+# HANDOFF — cryohealth — 2026-08-18 PKT
 
-Session: task11-build Model: claude-sonnet-5 Branch: main Goal: #3 Task: #11
+Session: task12-build Model: claude-sonnet-5 Branch: <Shoaib> Goal: alert
+lifecycle management Task: #12
 
 ## State
 
-Task #11 (CRUD: Lakes, tier/risk-score columns locked) is **built, not yet verified**.
-All 6 plan steps + cleanup landed, each with tsc/lint(/build) green and live
-curl/psql verification against the running dev stack (port 8081 this session, not
-#10's 8080/3000). `docs/ai/TODO.md` has the full per-step narrative.
-`/uexel:verify` was launched (uexel-verifier agent, full prompt already composed
-covering the DoD, both GATE decisions, and 12 specific spot-checks including the
-geom argument-order risk and the LakeFormDialog type-safety trade-off) but the
-launch was interrupted by the user before the agent ran — **no verifier output
-exists yet**. This is the very next action.
+Task #12 (CRUD: Alerts — edit/clear/delete, alert-policy reason field) is **built and
+manually verified by the user**, not run through `/uexel:verify`. All three route
+handlers plus their query-layer functions and the admin UI actions landed in one pass
+(no agent build loop — done via chat, not `/uexel:build`). `tsc --noEmit`, `eslint`,
+and `vite build` (client bundle) all pass. The user manually tested edit/clear/delete
+against a seeded alert in their own dev environment and confirmed it working; no
+independent verifier agent has reviewed this yet.
 
 ## Done this session
 
-- `/uexel:build`: 6 steps, commits `0bfac9e`→`0e68841`, cleanup `666ac2a`.
-  - Step 1 (`0bfac9e`): `lakeCreateSchema`/`lakeUpdateSchema` in `admin-schemas.ts`.
-    `.strict()`, `.coerce` scoped to `area_km2` only, `district_id`/`slug`/`source`
-    required on create. Scratch-script verified the field lock (400
-    `unrecognized_keys` on `currentTier`/`current_risk_score`/`slug`) and the
-    edit-form submission shape parses.
-  - Step 2 (`34bc579`): `createLake`/`updateLake`/`deleteLake` +
-    `LAKE_WRITABLE_COLUMNS` in `queries.ts`. New `InvalidDistrictError` (400 instead
-    of an unhandled NOT NULL violation on the derived `district` column when
-    `district_id` is bad). `geom` built via a conditional
-    `ST_SetSRID(ST_MakePoint(lng,lat),4326)` fragment — Parse- _and_
-    execute-verified live in rolled-back transactions against badswat (5 shapes).
-  - Step 3 (`0d2dbcc`): `api/admin/lakes.ts` (POST) + `lakes.$lakeId.ts`
-    (PUT/DELETE), net-new (the DoD's named "sibling file",
-    `api/public/lakes-admin.ts`, stays untouched — it's the deliberately-ungated
-    namespace). 23505 branches on `err.constraint_name` (lakes has two unique
-    constraints: `slug`, `icimodId`). Full live matrix run: field-lock 400s
-    (name-left-unapplied + audit-unchanged rollback proof), full role/error matrix,
-    200 update as facility_admin, 400 on bad `district_id`, 409 delete on shishper
-    (2 alerts, read-only check), 200 delete against a psql-inserted throwaway row.
-  - Step 4 (`b6a8904`): edit Dialog on `admin.lakes.$lakeId.tsx`. New shared
-    `src/components/cryohealth/LakeFormDialog.tsx`. Locked fields render as plain
-    JSX off the fetched lake, never through `useForm` (GATE 1 layer 0 — the exact
-    failure shape as #10's finding F1, from a different cause). Notable deviation:
-    `useForm` resolves against `lakeCreateSchema.partial({slug:true})` in **both**
-    modes rather than branching the resolver on `initial` — a ternary between two
-    structurally different zod schemas didn't reconcile into one stable
-    react-hook-form generic; documented inline, and `onSubmit` casts to
-    `LakeCreate` at the one call site. Browser QA gap: Playwright has no browser
-    binaries installed in this sandbox (confirmed, same as #6-#10's disclosed gap).
-    Substituted an SSR-200 check plus a live PUT of the dialog's exact 14-key
-    submission shape.
-  - Step 5 (`0e68841`): Actions column, create Dialog, delete AlertDialog on
-    `admin.lakes.index.tsx`, reusing `LakeFormDialog` in create mode. Live-verified
-    full create→delete round trip (all 5 NOT-NULL-no-default columns, `district`
-    text correctly derived from `district_id`), re-confirmed shishper's 409 guard.
-  - Cleanup (`666ac2a`): `graphify update .`, `docs/ai/TODO.md` full narrative, DoD
-    command clean, all 6 seeded lake rows diffed byte-identical against the Step 0
-    snapshot (only `updatedAt` differs, from legitimate test writes to shishper).
-- `/uexel:handoff` (this file): archived the prior planning-session handoff to
-  `docs/ai/sessions/2026-08-16-task11-plan-handoff.md`.
+- `src/lib/admin-schemas.ts`: added `alertUpdateSchema` (body/tier/estimated_window,
+  `.strict()`), replacing the empty placeholder stub. Reused the existing
+  `deleteReasonSchema` for both clear and delete — same `{ reason: string }` shape,
+  so a second schema would've just duplicated it.
+- `src/lib/queries.ts`: added `updateAlert()`, `clearAlert()`, `deleteAlert()` next to
+  the existing `insertAlert()`. `ALERT_WRITABLE_COLUMNS` locks PUT to
+  body/body_en/tier/estimated_window only (title/lakeId/districtId/
+  affected_population are create-only; status/clearedAt are the clear action's job,
+  not a field edit). `clearAlert()`'s UPDATE is scoped to `WHERE status = 'active'`,
+  so clearing a missing or already-cleared alert both come back `null` → 404, rather
+  than distinguishing the two (avoids leaking state via error text). Every write goes
+  through the existing `writeAudit()` inside the same transaction. Also added `a.body`
+  to `listAllAlerts`'s SELECT so the edit dialog has something to seed from.
+- `src/routes/api/admin/alerts.$alertId.ts` (new): PUT (edit), PATCH (clear — a
+  distinct status transition from PUT, not a field edit), DELETE. Mirrors
+  `lakes.$lakeId.ts`'s structure exactly — same auth guard
+  (`cryohealth_admin`/`facility_admin`), `.strict()` schema validation, `mapDbError`
+  usage. 23505 on PUT (the partial unique index on `(lakeId, tier) WHERE status =
+active`) maps to a 409 rather than a raw 500 — no pre-check, the DB is the source
+  of truth here, same pattern as the lakes route's slug/icimodId 23505 handling.
+- `src/routes/admin.alerts.tsx`: added Edit/Clear/Delete action buttons per row. Edit
+  opens a form dialog (`AlertEditDialog`) seeded from the row, PUT on submit. Clear
+  and Delete share a `AlertReasonDialog` component requiring a non-empty reason before
+  the confirm button enables — mirrors `DeleteLakeDialog` in `admin.lakes.index.tsx`.
+- Fixed a `listAllAlerts` regression during testing: a stray `e.` alias reference
+  (not matching any table in the query's FROM/JOIN — only `a`/`l`/`d` exist) caused a
+  live `42P01`/"missing FROM-clause entry" error. Replaced with the corrected
+  all-`a.`-prefixed version.
+- Fixed a router-scaffold overwrite: the new route file briefly reverted to
+  TanStack Router's auto-generated placeholder component (`<div>Hello "..."!</div>`)
+  instead of the real `server.handlers` code — happened once during setup, re-pasted
+  the real content and it stuck.
 
 ## Not done / deferred
 
-- **`/uexel:verify` has not run.** Launched once, interrupted before the agent
-  executed — treat as not-started, not as a failed/incomplete run.
-- Not pushed to `origin/main` this session — last push was the planning commits
-  (`eb9df80`), confirmed via `git push origin main` earlier in the session; the 6
-  build commits since then are local-only. No push requested for the build commits.
-- Browser QA — not attempted beyond an SSR fetch, same disclosed/accepted gap as
-  #6-#10 (Playwright has no browser binaries installed in this sandbox).
+- **`/uexel:verify` has not run** — this was built and reviewed conversationally, not
+  through the agent build/verify loop. Treat as unverified by an independent agent.
+- **No live psql/curl verification was done by me directly** — I don't have DB or
+  network access to this project's Postgres instance. `tsc`/`eslint`/`vite build`
+  were run against the actual repo zip; the manual edit/clear/delete pass, audit-row
+  confirmation, and unique-constraint-holds check were the user's own responsibility
+  per the testing checklist provided — confirm these were actually completed, not
+  just "it loaded without erroring."
+- Constraint name for the `(lakeId, tier) WHERE status = active` unique index was
+  never confirmed against the actual schema/migration (owned by CryoHealth-api, not
+  this repo) — the 409 handler on PUT uses a generic message rather than branching on
+  `constraint_name` the way the lakes route does for its two named constraints. Fine
+  functionally, just less specific than it could be.
+- Browser/Playwright QA not attempted (consistent with task #11's disclosed gap).
+- Not committed/pushed by me — the user is committing manually. Actual commit
+  hash(es) for this work: **TBD, fill in below once committed.**
 
 ## Next action
 
-`/uexel:verify` — relaunch the uexel-verifier agent against `git diff eb9df80..HEAD
--- src/`, issue #11's DoD and verification command, `code-review.md` +
-`api-design.md` rubrics. See the interrupted launch's prompt in this session's
-transcript for the full spot-check list (field-lock rejection with psql
-before/after, LakeFormDialog's `defaultValues` never leaking locked keys,
-`LAKE_WRITABLE_COLUMNS` actually being applied, geom argument order
-`ST_MakePoint(lng,lat)`, all 5 delete-guard tables with correct column names,
-`InvalidDistrictError` on bad FK, both unique-constraint 23505 branches, full role
-matrix, audit trail including no-audit-row-on-rejection, and the LakeFormDialog
-type-cast trade-off) — reconstruct it if the transcript isn't available; it's not
-saved to a file anywhere else.
+Confirm the commit is pushed and CI (`bunx tsc --noEmit && bun run lint && bun run
+build` + the HANDOFF.md branch-protection check) is green on the PR. If a
+`/uexel:verify` pass is required before merge per this repo's normal process, run it
+against `git diff origin/main...HEAD -- src/` with issue #12's DoD.
 
 ## Open questions for a human
 
-- Push the build commits (`0bfac9e`..`666ac2a`) to `origin/main` now, or hold until
-  verify passes? Not blocking `/uexel:verify` itself.
+- Should the generic 409 message on PUT (tier collision) be split out with the real
+  constraint name once it's confirmed, matching the lakes route's pattern? Not
+  blocking, just a follow-up polish item.
 
 ## Failed approaches (do not retry)
 
-- **`useForm<LakeCreate>({ resolver: zodResolver(initial ? schemaA : schemaB) })`
-  does not type-check**, even with `as Resolver<LakeCreate>` or
-  `as unknown as Resolver<LakeCreate, unknown, LakeCreate>` casts on the resolver
-  value alone — react-hook-form 7.73.1's `Control`/`FormField` generics propagate
-  the _ternary's_ inferred type all the way through, not just the annotated
-  `resolver` field, so the cast doesn't stop errors on every downstream
-  `<FormField control={form.control}>`. Fix that worked: use ONE stable schema for
-  both modes (`lakeCreateSchema.partial({slug:true})`), leave `useForm()`
-  ungenericized so it infers cleanly, and cast only at the `handleSubmit` callback
-  boundary (`(values) => onSubmit(values as LakeCreate)`). See
-  `src/components/cryohealth/LakeFormDialog.tsx`'s comments.
-- `admin-001`/`facility-001`/`chw-001` login response field is `accessToken`, not
-  `token` — a first attempt at scripting token retrieval silently got empty tokens
-  from `.token` before this was caught.
-- Connecting to the dev Postgres via `import { getDb } from "@/lib/db"` inside a
-  plain `tsx` scratch script crashes the whole Node process
-  (`ERR_UNSUPPORTED_ESM_URL_SCHEME` on `cloudflare:workers`, uncatchable by a
-  try/catch around the dynamic import) — `db.ts`'s Hyperdrive-vs-local-env fallback
-  only works correctly under Vite's loader (`bun dev`), not under `tsx` directly.
-  Fix: connect with a raw `postgres()` client constructed with the same
-  `DB_HOST`/`DB_PORT`/etc. values, bypassing `db.ts`, for any scratch-script DB
-  probing.
-- Carried forward from #10: gstack `/browse`'s Playwright has no browser binaries
-  installed in this sandbox; `pkill -f "vite dev"` as a cleanup step kills any
-  matching dev server, not just one you started — just restart with `bun dev`.
+- Referencing `e.<column>` (or any alias not declared in a query's own FROM/JOIN) in
+  `listAllAlerts` — caused `42P01 missing FROM-clause entry for table "e"` at
+  runtime, not at parse time in the editor, so it wasn't caught until the dev server
+  actually ran the query. Only `a` (alerts), `l` (lakes), `d` (districts) are valid
+  aliases in that function.
+- Leaving a freshly-created route file (`alerts.$alertId.ts`) unsaved/half-pasted —
+  TanStack Router's dev-mode file watcher scaffolds a placeholder `component:` export
+  into new route files under `src/routes/`, which silently overwrote or coexisted
+  with the intended `server.handlers` content until the real code was pasted in and
+  saved cleanly. Always verify the file's actual on-disk content (not just what was
+  intended) if odd `esbuild`/parse errors show up referencing that file after
+  creating it.
 
 ## Loops run
 
-- None yet — no verify pass has completed for task #11.
+- None — no `/uexel:build`/`/uexel:verify` loop was used for this task.
 
 ## Files touched
 
 `src/lib/admin-schemas.ts`, `src/lib/queries.ts`,
-`src/routes/api/admin/lakes.ts` (new), `src/routes/api/admin/lakes.$lakeId.ts` (new),
-`src/components/cryohealth/LakeFormDialog.tsx` (new),
-`src/routes/admin.lakes.$lakeId.tsx`, `src/routes/admin.lakes.index.tsx`,
-`src/routeTree.gen.ts` (auto-generated). Docs: `docs/ai/PLAN.md`,
-`docs/ai/TODO.md`, `docs/ai/planning/task-11-findings.md`,
-`docs/ai/planning/snapshots/task-11-lakes-preflight.txt`, this file.
+`src/routes/api/admin/alerts.$alertId.ts` (new), `src/routes/admin.alerts.tsx`,
+`src/routeTree.gen.ts` (auto-generated). This file.
 
 ## Verification status
 
-tests: n/a (no test script in this repo) review: **not yet run** — `/uexel:verify`
-is the next action qa: browser QA skipped (Playwright has no browser binaries in
-this sandbox); curl-level auth/CRUD/transaction/delete-guard checks pass live for
-every build step, done by the building session itself (not yet independently
-re-checked by a verifier)
+tests: n/a (no test script in this repo) review: **not yet run** — no
+`/uexel:verify` pass; built and checked conversationally instead qa: `tsc --noEmit`,
+`eslint`, `vite build` (client bundle) all pass against the repo. Manual
+edit/clear/delete pass against a seeded alert confirmed working by the user in their
+own dev environment (see this session's testing checklist for what "confirmed" should
+have covered — audit rows, unique-constraint check, 404/edge cases — verify these
+were actually run, not assumed).
 
 ## Resume with
 
-/uexel:orient (then: `/uexel:verify` against `git diff eb9df80..HEAD -- src/`)
+Confirm commit hash(es) above, push, and check CI. If this repo requires an
+independent `/uexel:verify` pass before merge, run it against issue #12's DoD before
+considering this closed.

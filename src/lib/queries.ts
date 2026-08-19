@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import type { LakeCreate, LakeUpdate } from "@/lib/admin-schemas";
+import type { LakeCreate, LakeUpdate, AlertUpdate } from "@/lib/admin-schemas";
 import type postgres from "postgres";
 
 /** Server-only data-access helpers. Import only inside `server.handlers` route
@@ -129,7 +129,7 @@ export async function listAlertsForLake(lakeId: string) {
 export async function listAllAlerts(limit = 200) {
   const sql = await getDb();
   return sql`
-    SELECT a.id, a."lakeId" AS lake_id, a.district_id, upper(a.tier::text) AS tier, a.title, a.body_en, a.body_ur,
+    SELECT a.id, a."lakeId" AS lake_id, a.district_id, upper(a.tier::text) AS tier, a.title,a.body, a.body_en, a.body_ur,
            a.estimated_window, a.affected_population, a."createdAt" AS created_at,
            a.status::text AS status, a."clearedAt" AS cleared_at,
            l.name AS lake_name, d.name AS district_name
@@ -168,6 +168,99 @@ export async function insertAlert(input: {
     INSERT INTO alerts (title, body, body_en, body_ur, tier, "lakeId", district_id, estimated_window, affected_population, "issuedById")
     VALUES (${input.title}, ${input.bodyEn}, ${input.bodyEn}, ${input.bodyUr}, ${input.tier.toLowerCase()}, ${input.lakeId}, ${input.districtId}, ${input.estimatedWindow}, ${input.affectedPopulation}, ${input.issuedById})
   `;
+}
+const ALERT_WRITABLE_COLUMNS = ["body", "body_en", "tier", "estimated_window"] as const;
+
+const ALERT_ROW_COLUMNS = `
+  id, title, body, body_en, body_ur, upper(tier::text) AS tier, "lakeId" AS lake_id,
+  district_id, estimated_window, affected_population, "createdAt" AS created_at,
+  status::text AS status, "clearedAt" AS cleared_at
+`;
+
+export async function updateAlert(id: string, patch: AlertUpdate, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const before = (
+      await sql`SELECT ${sql.unsafe(ALERT_ROW_COLUMNS)} FROM alerts WHERE id = ${id}`
+    )[0];
+    if (!before) return null;
+
+    const writable: Record<string, unknown> = {};
+    for (const key of ALERT_WRITABLE_COLUMNS) {
+      if (key in patch) writable[key] = (patch as Record<string, unknown>)[key];
+    }
+    if (typeof (patch as Record<string, unknown>).body === "string") {
+      writable.body_en = (patch as Record<string, unknown>).body;
+    }
+    if (typeof writable.tier === "string") {
+      writable.tier = (writable.tier as string).toLowerCase();
+    }
+
+    const rows = await sql`
+      UPDATE alerts SET ${sql(writable)}
+      WHERE id = ${id}
+      RETURNING ${sql.unsafe(ALERT_ROW_COLUMNS)}
+    `;
+    const after = rows[0];
+
+    const changed: Record<string, { from: postgres.JSONValue; to: postgres.JSONValue }> = {};
+    for (const key of Object.keys(writable)) {
+      if (before[key] !== after[key]) changed[key] = { from: before[key], to: after[key] };
+    }
+    await writeAudit(sql, {
+      actorId,
+      action: "alert.update",
+      entityType: "Alert",
+      entityId: id,
+      meta: Object.keys(changed).length ? { changed } : null,
+    });
+    return after;
+  });
+}
+
+export async function clearAlert(id: string, reason: string, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`
+      UPDATE alerts
+      SET status = 'cleared', "clearedAt" = now()
+      WHERE id = ${id} AND status = 'active'
+      RETURNING ${sql.unsafe(ALERT_ROW_COLUMNS)}
+    `;
+    if (!rows[0]) return null;
+    await writeAudit(sql, {
+      actorId,
+      action: "alert.clear",
+      entityType: "Alert",
+      entityId: id,
+      reason,
+    });
+    return rows[0];
+  });
+}
+
+export async function deleteAlert(id: string, reason: string, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const [[acks]] = await Promise.all([
+      sql`SELECT count(*)::int AS n FROM alert_acknowledgements WHERE alert_id = ${id}`,
+    ]);
+    const dependents = { alert_acknowledgements: acks.n };
+    if (Object.values(dependents).some((n) => n > 0)) {
+      throw new HasDependentsError(dependents);
+    }
+
+    const rows = await sql`DELETE FROM alerts WHERE id = ${id} RETURNING id`;
+    if (!rows[0]) return null;
+    await writeAudit(sql, {
+      actorId,
+      action: "alert.delete",
+      entityType: "Alert",
+      entityId: id,
+      reason,
+    });
+    return rows[0].id;
+  });
 }
 
 export async function listFacilities() {

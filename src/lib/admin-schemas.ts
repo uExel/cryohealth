@@ -125,11 +125,23 @@ export type LakeCreate = z.infer<typeof lakeCreateSchema>;
 export const lakeUpdateSchema = lakeCreateSchema.omit({ slug: true }).partial();
 export type LakeUpdate = z.infer<typeof lakeUpdateSchema>;
 
-/** Issue #12 requires a mandatory `reason` field on clear/delete (human-auditable
- *  reason per the workspace's alert-policy rule) — enforce it here once this is
- *  filled in, not just at the call site. */
-export const alertSchema = z.object({}).strict();
-export type Alert = z.infer<typeof alertSchema>;
+const ALERT_TIERS = ["normal", "watch", "high", "critical"] as const;
+
+/** Issue #12: PUT only edits body/tier/window -- title, lakeId, districtId,
+ *  affected_population, status, and clearedAt are absent by design. status/
+ *  clearedAt are the clear-action's job, not a field an edit form should set. */
+export const alertUpdateSchema = z
+  .object({
+    body: z.string().trim().min(1, "Body is required").optional(),
+    tier: z.enum(ALERT_TIERS).optional(),
+    estimated_window: z.string().trim().min(1).nullable().optional(),
+  })
+  .strict();
+export type AlertUpdate = z.infer<typeof alertUpdateSchema>;
+
+/** Mandatory `reason` on clear/delete (CLAUDE.md alert-policy rule) is enforced
++  *  via the shared `deleteReasonSchema` above -- both actions take exactly
++  *  `{ reason: string }`. */
 
 export const protocolSchema = z.object({}).strict();
 export type Protocol = z.infer<typeof protocolSchema>;
