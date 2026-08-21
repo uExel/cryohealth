@@ -5,6 +5,10 @@ import type {
   AlertUpdate,
   ProtocolCreate,
   ProtocolUpdate,
+  FacilityCreate,
+  FacilityUpdate,
+  ChwProfileCreate,
+  ChwProfileUpdate,
 } from "@/lib/admin-schemas";
 import type postgres from "postgres";
 
@@ -305,6 +309,123 @@ export async function listFacilitiesAdmin() {
   `;
 }
 
+const FACILITY_ROW_COLUMNS = `
+  id, name, type, district, vulnerability, contact,
+  ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng,
+  "lakeId" AS lake_id, "createdAt" AS created_at
+`;
+
+export async function createFacility(input: FacilityCreate & { actorId: string }) {
+  const db = await getDb();
+  const { lat, lng } = input;
+  return db.begin(async (sql) => {
+    const rows = await sql`
+      INSERT INTO facilities (name, type, district, vulnerability, contact, "lakeId", geom)
+      VALUES (
+        ${input.name}, ${input.type}, ${input.district}, ${input.vulnerability},
+        ${input.contact ?? null}, ${input.lakeId ?? null},
+        ${lat !== undefined && lng !== undefined ? sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)` : null}
+      )
+      RETURNING ${sql.unsafe(FACILITY_ROW_COLUMNS)}
+    `;
+    const facility = rows[0];
+    await writeAudit(sql, {
+      actorId: input.actorId,
+      action: "facility.create",
+      entityType: "Facility",
+      entityId: facility.id,
+      meta: { created: { name: input.name, type: input.type, district: input.district } },
+    });
+    return facility;
+  });
+}
+
+/** The ONLY columns an admin PUT may touch on `facilities`, independent of whatever
+ *  the zod schema currently allows -- same second-layer-lock rationale as
+ *  LAKE_WRITABLE_COLUMNS. `lat`/`lng` aren't real columns (geom is) -- handled
+ *  separately below, same shape as updateLake's geomFrag. */
+const FACILITY_WRITABLE_COLUMNS = [
+  "name",
+  "type",
+  "district",
+  "vulnerability",
+  "contact",
+  "lakeId",
+] as const;
+
+export async function updateFacility(id: string, patch: FacilityUpdate, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const before = (
+      await sql`SELECT ${sql.unsafe(FACILITY_ROW_COLUMNS)} FROM facilities WHERE id = ${id}`
+    )[0];
+    if (!before) return null;
+
+    const { lat, lng, ...rest } = patch;
+    const writable: Record<string, unknown> = {};
+    for (const key of FACILITY_WRITABLE_COLUMNS) {
+      if (key in rest) writable[key] = (rest as Record<string, unknown>)[key];
+    }
+
+    // Unlike lakes.geom (NOT NULL), facilities.geom is nullable -- a patch touching
+    // lat/lng always sets both together from the patch (falling back to the existing
+    // value for whichever one wasn't sent), same shape as updateLake's geomFrag.
+    // Explicitly clearing a mapped location back to "no location" isn't exposed by
+    // this patch shape -- a deliberate scope cut, not an oversight (see Not done in
+    // this task's handoff).
+    const geomFrag =
+      lat !== undefined || lng !== undefined
+        ? sql`, geom = ST_SetSRID(ST_MakePoint(${lng ?? before.lng}, ${lat ?? before.lat}), 4326)`
+        : sql``;
+
+    const rows =
+      Object.keys(writable).length > 0
+        ? await sql`
+            UPDATE facilities SET ${sql(writable)}${geomFrag}
+            WHERE id = ${id}
+            RETURNING ${sql.unsafe(FACILITY_ROW_COLUMNS)}
+          `
+        : await sql`
+            UPDATE facilities SET id = id${geomFrag}
+            WHERE id = ${id}
+            RETURNING ${sql.unsafe(FACILITY_ROW_COLUMNS)}
+          `;
+    const after = rows[0];
+
+    const changed: Record<string, { from: postgres.JSONValue; to: postgres.JSONValue }> = {};
+    for (const key of Object.keys(patch)) {
+      if (before[key] !== after[key]) changed[key] = { from: before[key], to: after[key] };
+    }
+    await writeAudit(sql, {
+      actorId,
+      action: "facility.update",
+      entityType: "Facility",
+      entityId: id,
+      meta: Object.keys(changed).length ? { changed } : null,
+    });
+    return after;
+  });
+}
+
+/** No known dependent tables reference `facility_id` anywhere in this codebase --
+ *  same reasoning as deleteProtocol. A real FK violation this repo doesn't know
+ *  about still surfaces as a clean 400 via mapDbError's 23503 case, not a raw 500. */
+export async function deleteFacility(id: string, reason: string, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`DELETE FROM facilities WHERE id = ${id} RETURNING id`;
+    if (!rows[0]) return null;
+    await writeAudit(sql, {
+      actorId,
+      action: "facility.delete",
+      entityType: "Facility",
+      entityId: id,
+      reason,
+    });
+    return rows[0].id;
+  });
+}
+
 export async function listCasesAdmin(limit = 200) {
   const sql = await getDb();
   return sql`
@@ -331,6 +452,93 @@ export async function listChwProfiles() {
     LEFT JOIN users u     ON u.id = p.user_id
     ORDER BY p.full_name
   `;
+}
+
+const CHW_PROFILE_ROW_COLUMNS = `
+  id, user_id, full_name, district_id, phone, language, created_at
+`;
+
+/** `user_id` is never set by this writer -- see chwProfileCreateSchema's comment for
+ *  why linking to a `users` row is out of this task's scope. New profiles are
+ *  created with `user_id` left NULL by omission from the INSERT's column list. */
+export async function createChwProfile(input: ChwProfileCreate & { actorId: string }) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`
+      INSERT INTO chw_profiles (full_name, district_id, phone, language)
+      VALUES (${input.full_name}, ${input.district_id ?? null}, ${input.phone ?? null}, ${input.language})
+      RETURNING ${sql.unsafe(CHW_PROFILE_ROW_COLUMNS)}
+    `;
+    const profile = rows[0];
+    await writeAudit(sql, {
+      actorId: input.actorId,
+      action: "chw_profile.create",
+      entityType: "ChwProfile",
+      entityId: profile.id,
+      meta: { created: { full_name: input.full_name } },
+    });
+    return profile;
+  });
+}
+
+/** The ONLY columns an admin PUT may touch on `chw_profiles` -- `user_id` is absent,
+ *  same rationale as createChwProfile above. */
+const CHW_PROFILE_WRITABLE_COLUMNS = ["full_name", "district_id", "phone", "language"] as const;
+
+export async function updateChwProfile(id: string, patch: ChwProfileUpdate, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const before = (
+      await sql`SELECT ${sql.unsafe(CHW_PROFILE_ROW_COLUMNS)} FROM chw_profiles WHERE id = ${id}`
+    )[0];
+    if (!before) return null;
+
+    const writable: Record<string, unknown> = {};
+    for (const key of CHW_PROFILE_WRITABLE_COLUMNS) {
+      if (key in patch) writable[key] = (patch as Record<string, unknown>)[key];
+    }
+
+    const rows = await sql`
+      UPDATE chw_profiles SET ${sql(writable)}
+      WHERE id = ${id}
+      RETURNING ${sql.unsafe(CHW_PROFILE_ROW_COLUMNS)}
+    `;
+    const after = rows[0];
+
+    const changed: Record<string, { from: postgres.JSONValue; to: postgres.JSONValue }> = {};
+    for (const key of Object.keys(writable)) {
+      if (before[key] !== after[key]) changed[key] = { from: before[key], to: after[key] };
+    }
+    await writeAudit(sql, {
+      actorId,
+      action: "chw_profile.update",
+      entityType: "ChwProfile",
+      entityId: id,
+      meta: Object.keys(changed).length ? { changed } : null,
+    });
+    return after;
+  });
+}
+
+/** No known dependent tables reference `chw_id`/`chw_profile_id` pointing at
+ *  `chw_profiles` specifically (`cases.chw_id` and `alert_acknowledgements.chw_id`
+ *  reference `users`, not this table) -- same reasoning as deleteProtocol/
+ *  deleteFacility. A real FK violation this repo doesn't know about still surfaces
+ *  as a clean 400 via mapDbError, not a raw 500. */
+export async function deleteChwProfile(id: string, reason: string, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`DELETE FROM chw_profiles WHERE id = ${id} RETURNING id`;
+    if (!rows[0]) return null;
+    await writeAudit(sql, {
+      actorId,
+      action: "chw_profile.delete",
+      entityType: "ChwProfile",
+      entityId: id,
+      reason,
+    });
+    return rows[0].id;
+  });
 }
 
 export async function listProtocols() {
