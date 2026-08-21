@@ -225,5 +225,46 @@ export type ChwProfileUpdate = z.infer<typeof chwProfileUpdateSchema>;
 export const caseSchema = z.object({}).strict();
 export type Case = z.infer<typeof caseSchema>;
 
-export const userSchema = z.object({}).strict();
-export type User = z.infer<typeof userSchema>;
+/** Mirrors the `role` Postgres enum and jwt.ts's `Role` union. Not imported from
+ *  jwt.ts — that's a type-only union with no runtime value to build a z.enum from. */
+export const USER_ROLES = ["cryohealth_admin", "facility_admin", "chw", "viewer"] as const;
+
+/** Issue #16. `passwordHash` is never a field here — the API takes a plaintext `pin`
+ *  and hashes it server-side (mirroring CryoHealth-api/scripts/seed-users.ts), so a
+ *  client can never supply a hash of its own choosing. `active` is absent from create:
+ *  the DB default (true) owns it, and deactivation is an explicit later action. */
+export const userCreateSchema = z
+  .object({
+    name: z.string().trim().min(1, "Name is required"),
+    role: z.enum(USER_ROLES),
+    // Both nullable/optional individually, but .refine below requires at least one:
+    // api/auth/login.ts looks users up by `"lhwId" = $1 OR phone = $1`, so a user with
+    // neither is created unable to ever sign in.
+    lhwId: z.string().trim().min(1).nullable().optional(),
+    phone: z.string().trim().min(1).nullable().optional(),
+    facilityId: z.string().uuid().nullable().optional(),
+    // Max 72: bcrypt hashes at most 72 bytes and silently ignores the rest, which would
+    // make a longer PIN's tail meaningless rather than rejected. Min 4 matches the
+    // 4-digit dev PINs in seed-users.ts; not `.regex(/^\d+$/)` — nothing in the login
+    // path requires digits, so a longer passphrase is allowed for admin accounts.
+    pin: z.string().min(4, "PIN must be at least 4 characters").max(72, "PIN is too long"),
+  })
+  .strict()
+  .refine((u) => Boolean(u.lhwId) || Boolean(u.phone), {
+    message: "An LHW ID or a phone number is required — sign-in looks up users by one of these",
+    path: ["lhwId"],
+  });
+export type UserCreate = z.infer<typeof userCreateSchema>;
+
+/** Deliberately just `role` and `active` — issue #16 scopes writes on an existing user
+ *  to "deactivate" and "change role". name/lhwId/phone/facilityId are create-only here,
+ *  and `pin` is absent entirely: there is no PIN-reset action in this task, so allowing
+ *  it would be an unaudited credential-change path nothing in the UI drives. `.strict()`
+ *  400s on any of them instead of dropping them silently. */
+export const userUpdateSchema = z
+  .object({
+    role: z.enum(USER_ROLES).optional(),
+    active: z.boolean().optional(),
+  })
+  .strict();
+export type UserUpdate = z.infer<typeof userUpdateSchema>;
