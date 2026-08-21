@@ -23,6 +23,12 @@ export function mapDbError(err: unknown): Response | null {
       { status: 400 },
     );
   }
+  if (code === "23505") {
+    return Response.json(
+      { error: "Already taken: another record already uses one of these values" },
+      { status: 409 },
+    );
+  }
   if (code === "22P02") {
     return Response.json({ error: "Invalid ID" }, { status: 400 });
   }

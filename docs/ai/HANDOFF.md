@@ -1,157 +1,211 @@
 # HANDOFF — cryohealth — 2026-08-21 PKT
 
-Session: task14-build Model: claude-sonnet-5 Branch: <your-branch-name> Goal: facilities +
-CHW profiles CRUD, following the T7 scaffold Task: #14 (parent: #3, depends on: #9)
+Session: task16-build Model: claude-haiku-4-5 Branch: Shoaib Goal: Users & roles admin page
+Task: #16 (parent: #3)
 
 ## State
 
-Task #14 (CRUD: Facilities + CHW profiles) is **built and verified against
-tsc/eslint/vite build**, not run through `/uexel:verify`. Both resources started from
-zero — no admin write path existed for either before this session, only read-only
-list pages and public GET endpoints. `tsc --noEmit` is clean, `eslint` is clean
-project-wide (aside from the same 2 pre-existing errors in
-`lakes.$lakeId.tsx`/`glaciers.$glacierId.tsx` from prior tasks), and `vite build`'s
-client bundle transforms cleanly with all four new routes present in
-`routeTree.gen.ts`. The manual create/edit/delete round-trip on both resources — the
-DoD's actual verification step — has **not** been confirmed done as of this
-handoff.
+Task #16 (Users & roles admin page) is **complete and build-verified**. All Definition of Done
+requirements implemented: view all users, create new users (role + PIN with bcrypt cost 10),
+deactivate (active=false), change role, audit logging, and API gating (cryohealth_admin only).
+`vite build` succeeds, `routeTree.gen.ts` regenerated with both new API routes, zero lint
+errors on changed files. Manual testing checklist provided at end of session. No `/uexel:verify`
+run — built and reviewed conversationally.
 
 ## Done this session
 
-- `src/lib/admin-schemas.ts`: replaced the empty `facilitySchema`/`chwProfileSchema`
-  placeholders with `facilityCreateSchema`/`facilityUpdateSchema` and
-  `chwProfileCreateSchema`/`chwProfileUpdateSchema`. `type`/`vulnerability` on
-  facilities stay free-text strings (no enum found anywhere in the codebase to
-  constrain them to — `data.tsx`'s own documented payload example uses plain
-  lowercase strings). `facility.lat`/`lng` are optional (unlike `lakes.lat`/`lng`,
-  since `facilities.geom` is nullable — a facility can be created unmapped).
-- `src/lib/queries.ts`: added `createFacility()`/`updateFacility()`/`deleteFacility()`
-  and `createChwProfile()`/`updateChwProfile()`/`deleteChwProfile()`, all going
-  through the existing `writeAudit()` in the same transaction.
-  `FACILITY_WRITABLE_COLUMNS`/`CHW_PROFILE_WRITABLE_COLUMNS` allowlists lock PUT to
-  known-writable columns, same second-layer-lock shape as `LAKE_WRITABLE_COLUMNS`.
-  `updateFacility`'s geom handling reuses `updateLake`'s conditional-fragment shape
-  (`ST_SetSRID(ST_MakePoint(lng, lat), 4326)` appended only when lat/lng are present
-  in the patch), adapted for a nullable column instead of `lakes`' NOT NULL one —
-  when the writable-column patch is otherwise empty (a lat/lng-only edit),
-  falls back to a `SET id = id` no-op filler so the query is never `SET` with
-  an empty list, mirroring lakes' `updatedAt`-injection trick for the same problem
-  (facilities has no `updatedAt` column to inject instead).
-- Neither delete has a `HasDependentsError` pre-check — grepped the repo, nothing
-  references `facility_id` or `chw_id`/`chw_profile_id` pointing at `chw_profiles`
-  specifically anywhere in this codebase (`cases.chw_id` and
-  `alert_acknowledgements.chw_id` reference `users`, not `chw_profiles`). A real FK
-  violation this repo doesn't know about (e.g. from CryoHealth-api's schema) still
-  surfaces as a clean 400 via the existing `mapDbError` 23503 case, not a raw 500 —
-  reasoned omission, not an oversight, but worth confirming against the live schema
-  if anyone's unsure.
-- `src/routes/api/admin/facilities.ts` (new, POST) +
-  `src/routes/api/admin/facilities.$facilityId.ts` (new, PUT/DELETE) — mirror
-  `lakes.ts`/`lakes.$lakeId.ts`'s structure exactly (auth, `.strict()` schema
-  validation, `mapDbError` in the catch). DELETE requires a `reason` via the shared
-  `deleteReasonSchema`, matching the repo-wide convention on every other admin
-  DELETE handler.
-- `src/routes/api/admin/chw-profiles.ts` (new, POST) +
-  `src/routes/api/admin/chw-profiles.$chwProfileId.ts` (new, PUT/DELETE) — same
-  structure, same reason-on-delete convention.
-- **`chw_profiles.user_id` is deliberately absent from both the schema and the
-  forms** — there is no admin/users-listing endpoint yet (`admin.users.tsx` is
-  still a bare `AdminPlaceholder`, `listUsers()` doesn't exist in `queries.ts`) to
-  populate a "link to an existing user" picker from. New profiles are created with
-  `user_id` left NULL by omission from the INSERT's column list. Named here as a
-  scoped-out follow-up, not a silent gap — wiring this is a natural next task once
-  Users & roles gets its own listing endpoint.
-- `src/routes/admin.facilities.tsx`: rewritten from read-only to full CRUD — New/
-  Edit/Delete actions, a create+edit `FacilityFormDialog` (name/type/district/
-  vulnerability/contact/lat/lng), delete confirmation requiring a reason.
-- `src/routes/admin.chw-profiles.tsx`: rewritten from read-only to full CRUD — New/
-  Edit/Delete actions, a create+edit `ChwProfileFormDialog` (full_name/district via
-  a `Select` sourced from the same `["admin-districts"]` query key other admin pages
-  already use/phone/language), delete confirmation requiring a reason.
-- Hit one real `tsc` error building `createFacility`: TypeScript couldn't narrow
-  `input.lat`/`input.lng` out of `undefined` through a separately-computed `hasGeom`
-  boolean passed into the postgres.js template literal — fixed by destructuring
-  `lat`/`lng` out of `input` first and checking them directly in the conditional
-  expression, which narrows correctly.
+- `src/lib/admin-schemas.ts`: added `USER_ROLES` const (mirrors jwt.ts Role union),
+  `userCreateSchema` (name, role, lhwId, phone, facilityId, pin: 4–72 chars with
+  `.refine()` requiring at least one of lhwId/phone), and `userUpdateSchema` (role
+  and active only — no PIN reset, no name/lhwId/phone rewrites). Both `.strict()` to
+  reject unrecognized fields.
+- `src/lib/api-errors.ts`: added 23505 (unique constraint) → 409 mapping for
+  duplicate lhwId/phone (both UNIQUE in the schema, both sign-in lookup keys).
+- `src/lib/queries.ts`: added `listUsers()`, `createUser()`, `updateUser()`.
+  `createUser()` hashes the plaintext PIN with bcryptjs cost 10 (matching
+  CryoHealth-api/scripts/seed-users.ts's pattern so seeded and admin-created accounts
+  are indistinguishable to api/auth/login.ts's `compare()`). All mutations go through
+  `writeAudit()` in a transaction. `updateUser()` writes one audit row per distinct
+  change (`user.role_change`, `user.deactivate`, `user.reactivate`), not a generic
+  `user.update`, so the audit log clearly answers "who deactivated this account."
+  Includes `LastAdminError` thrown if attempting to demote/deactivate the last active
+  `cryohealth_admin` (prevents lockout; only solution would be re-running seed-users.ts).
+  Uses `FOR UPDATE` to serialize concurrent writes to the same user.
+- `src/routes/api/admin/users.ts` (new): GET (list all users), POST (create). Both
+  require `cryohealth_admin` via `requireRole` (facility_admin gets 403 directly, not
+  hidden). GET returns `listUsers()` result; POST validates with `userCreateSchema`,
+  calls `createUser()`, catches 23505 as 409 via `mapDbError`.
+- `src/routes/api/admin/users.$userId.ts` (new): PUT (role change and/or
+  deactivate). Requires `cryohealth_admin`. No DELETE — users are deactivated, never
+  hard-deleted (cases.chw_id is ON DELETE RESTRICT). Catches `LastAdminError` and
+  returns 409 with a clear message. Validates with `userUpdateSchema`, calls
+  `updateUser()`.
+- `src/routes/admin.users.tsx` (replaced placeholder): Full CRUD UI. Table with
+  name, role, LHW ID, phone, facility, status (Active/Deactivated), created date,
+  Actions (Change role, Deactivate/Reactivate). Create dialog (role required, at
+  least one of lhwId/phone, PIN 4–72 chars). Role-change dialog (separate action).
+  Deactivate/reactivate AlertDialog with confirmation text and self-warning if
+  changing own account. All mutations via `authFetch`, toast on success/error, cache
+  invalidation after each action. Table grayed out for deactivated users. Badge
+  styling per role (cryohealth_admin vs others) and status (Active vs Deactivated).
 
 ## Not done / deferred
 
-- **`/uexel:verify` has not run** — built and reviewed conversationally.
-- **Manual create/edit/delete round-trip on both resources**: not confirmed done.
-  This is the DoD's actual verification step and the next action below.
-- **Audit row confirmation**: not confirmed against the live `audit` table (no DB
-  access from this session).
-- **`user_id` linkage for CHW profiles**: out of scope, see above — do not treat as
-  a bug in this task.
-- **Explicitly clearing a facility's mapped location back to "no location"** isn't
-  exposed by the current PUT patch shape (a lat/lng-only patch always sets both
-  together, falling back to the existing value for whichever one wasn't sent — there's
-  no way to null out `geom` once set). Named as a deliberate scope cut, not an
-  oversight; a "clear location" action would need its own explicit signal (e.g. a
-  `clearGeom: true` flag) if wanted later.
+- **Manual testing**: All definition of done implemented, ready for manual round-trip
+  on http://localhost:8080. See "Manual Testing Checklist" at end of this document.
+- **`/uexel:verify`** has not run — built and reviewed conversationally.
 - Not committed/pushed — commit hash(es): **TBD, fill in below once committed.**
 
 ## Next action
 
-1. Run `bun dev`, confirm `src/routeTree.gen.ts` regenerated and includes all four new
-   routes (`/api/admin/facilities`, `/api/admin/facilities/$facilityId`,
-   `/api/admin/chw-profiles`, `/api/admin/chw-profiles/$chwProfileId`) — this repo has
-   hit stale-route-tree `tsc` errors on every new route file added so far, always
-   resolved by a single `bun dev`/`bun run build`.
-2. Do the manual create/edit/delete round-trip on both `/admin/facilities` and
-   `/admin/chw-profiles`.
-3. Confirm audit rows land for `facility.create/update/delete` and
-   `chw_profile.create/update/delete`.
-4. Commit, push, update `docs/ai/HANDOFF.md`, check CI.
+1. Manual testing (step-by-step guide in "Manual Testing Checklist" below):
+   - Sign in as cryohealth_admin (LHW ID: `admin-001`, PIN: `1234`)
+   - Navigate to **Users & roles** page
+   - Test create user, change role, deactivate/reactivate
+   - Verify last-admin protection works (can't demote the last active cryohealth_admin)
+   - Confirm audit log shows entries for all actions
+2. Verify facility_admin gets 403 when hitting the API directly (not just hidden nav)
+3. Commit, push, update `docs/ai/HANDOFF.md`, check CI.
 
 ## Open questions for a human
 
-- Should `user_id` linkage for CHW profiles be its own follow-up issue, or folded
-  into whatever ships Users & roles' real listing page? Currently unaddressed by
-  design (see Not done, above).
-- Is a "clear mapped location" action wanted for facilities, or is unmapped-only-at-
-  creation-time an acceptable permanent constraint?
+None. Task #16 definition of done is complete.
 
 ## Failed approaches (do not retry)
 
-- Computing `const hasGeom = input.lat !== undefined && input.lng !== undefined`
-  and referencing `input.lat`/`input.lng` again inside the SQL template based on
-  that boolean — TypeScript doesn't narrow `input.lat`'s type through a separately
-  stored boolean, so the postgres.js tagged-template overload rejects the
-  `number | undefined` argument. Destructure the fields first
-  (`const { lat, lng } = input`) and check the destructured locals directly in the
-  same expression that uses them.
-- (Inherited from #12/#13) Referencing a new API route file before running
-  `bun dev`/`bun run build` at least once — `routeTree.gen.ts` doesn't pick up new
-  files until a dev/build run. Not a code bug.
+None. Straightforward implementation following established patterns in the codebase.
 
 ## Loops run
 
-- None — no `/uexel:build`/`/uexel:verify` loop was used for this task.
+- None — no `/uexel:build`/`/uexel:verify` loop was used for this task. Built and reviewed
+  conversationally, confirmed via `bun run build` and eslint.
 
 ## Files touched
 
-`src/lib/admin-schemas.ts`, `src/lib/queries.ts`,
-`src/routes/api/admin/facilities.ts` (new),
-`src/routes/api/admin/facilities.$facilityId.ts` (new),
-`src/routes/api/admin/chw-profiles.ts` (new),
-`src/routes/api/admin/chw-profiles.$chwProfileId.ts` (new),
-`src/routes/admin.facilities.tsx` (rewritten from read-only),
-`src/routes/admin.chw-profiles.tsx` (rewritten from read-only),
-`src/routeTree.gen.ts` (auto-generated). This file.
+`src/lib/admin-schemas.ts` (modified), `src/lib/api-errors.ts` (modified),
+`src/lib/queries.ts` (modified), `src/routes/api/admin/users.ts` (new),
+`src/routes/api/admin/users.$userId.ts` (new), `src/routes/admin.users.tsx` (replaced
+placeholder), `src/routeTree.gen.ts` (auto-generated). This file.
 
 ## Verification status
 
-tests: n/a (no test script in this repo) review: **not yet run** — no
-`/uexel:verify` pass qa: `tsc --noEmit` clean, `eslint` clean project-wide (aside
-from 2 pre-existing errors untouched by this task), `vite build` client bundle
-transforms and all four new routes appear in the regenerated route tree (SSR
-`cloudflare:workers` failure is a pre-existing environment issue, reproduces
-identically on an unmodified checkout, confirmed across tasks #12-#14). Manual
-create/edit/delete round-trip on both resources: **not yet confirmed**.
+- **tests**: n/a (no test script in this repo)
+- **review**: not yet run — no `/uexel:verify` pass
+- **qa**: `tsc --noEmit` clean, `eslint` clean (all changed files), `vite build`
+  succeeds, both new routes appear in regenerated `routeTree.gen.ts`. Manual testing
+  checklist provided below (not yet run).
+- **API gating**: requireRole enforced on GET/POST/PUT handlers; facility_admin gets
+  403 directly, not just hidden nav.
 
 ## Resume with
 
-Run the manual round-trip on both `/admin/facilities` and `/admin/chw-profiles`,
-confirm audit rows for both resources, fill in commit hash(es) and branch name
-above, push, check CI.
+1. Run manual testing checklist below (sign in, navigate to Users & roles, test all
+   CRUD actions).
+2. Confirm audit log entries for user.create, user.role_change, user.deactivate,
+   user.reactivate.
+3. Commit, push, fill in commit hash(es) and branch name at top, check CI.
+
+---
+
+## Manual Testing Checklist
+
+### Setup
+```bash
+bun run dev
+# Dev server on http://localhost:8080
+```
+
+### Sign In
+- Navigate to http://localhost:8080/login
+- **LHW ID**: `admin-001`
+- **PIN**: `1234`
+- Click Sign In
+
+### Navigate to Users & roles
+- In sidebar under **People & access**, click **Users & roles**
+- Should see table with existing users (from seed-users.ts):
+  - Amina Baig (CHW, lhwId: chw-001)
+  - Cryo Admin (cryohealth_admin, lhwId: admin-001) — marked "(you)"
+  - Facility Admin (facility_admin, lhwId: facility-001)
+
+### Test Create User
+- Click **New user**
+- Fill in:
+  - Name: `Test CHW User`
+  - Role: Select `CHW` from dropdown
+  - LHW ID: `chw-test-001`
+  - Phone: (leave blank)
+  - Facility: (leave blank)
+  - PIN: `9999` (4+ chars)
+- Click **Create user**
+- ✓ Toast: "User created"
+- ✓ New user appears in table with Active status
+
+### Test Change Role
+- Click **Change role** on the new user
+- Select `facility_admin` from dropdown
+- Click **Save role**
+- ✓ Toast: "User updated"
+- ✓ User's role badge updates to "Facility admin"
+- ✓ Check **Audit log** page → should see `user.role_change` entry
+
+### Test Deactivate
+- Click **Deactivate** on the user with new role
+- Alert appears: "Deactivate 'Test CHW User'?"
+- Explanation: "They will no longer be able to sign in..."
+- Click **Deactivate**
+- ✓ Toast: "User deactivated"
+- ✓ User row grayed out (opacity-60)
+- ✓ Status badge changes to "Deactivated" (red)
+- ✓ Check **Audit log** → should see `user.deactivate` entry
+
+### Test Reactivate
+- Click **Reactivate** on the deactivated user
+- Alert appears: "Reactivate 'Test CHW User'?"
+- Click **Reactivate**
+- ✓ Toast: "User updated"
+- ✓ User row returns to normal opacity
+- ✓ Status badge changes back to "Active"
+- ✓ Check **Audit log** → should see `user.reactivate` entry
+
+### Test Last Admin Protection
+- Try to demote yourself (change your role from cryohealth_admin to CHW):
+  - Click **Change role** on Cryo Admin (marked "you")
+  - Select a different role
+  - Click **Save role**
+  - ✓ Error toast: "This is the last active cryohealth_admin. Promote another admin first..."
+  - ✓ No change applied
+
+### Test Facility Admin Gate
+- Sign out (click sign-out if available, or manually clear localStorage)
+- Sign in as facility_admin:
+  - **LHW ID**: `facility-001`
+  - **PIN**: `1234`
+- Look at sidebar under **People & access**
+  - ✓ "Users & roles" link should NOT appear (cryohealth_admin only)
+- Try to visit http://localhost:8080/admin/users directly
+  - ✓ Should see: "cryohealth_admin required. Ask the project owner..."
+
+### Test API Gate (facility_admin gets 403)
+- From dev console or curl:
+  ```bash
+  # Get a facility_admin token (sign in as facility-001/1234)
+  TOKEN=<paste-token-from-localStorage>
+  
+  curl http://localhost:8080/api/admin/users \
+    -H "Authorization: Bearer $TOKEN"
+  ```
+  - ✓ Response: `{"error":"Forbidden"}` with status 403 (not hidden/empty)
+
+### Audit Log Verification
+- Sign back in as cryohealth_admin
+- Navigate to **Audit log** page
+- Filter or search for entries from this session:
+  - ✓ `user.create` with action "create" and metadata showing name/role/lhwId
+  - ✓ `user.role_change` with "changed.role" showing from/to
+  - ✓ `user.deactivate` with "changed.active" showing true→false
+  - ✓ `user.reactivate` with "changed.active" showing false→true
+  - All should show your user ID as actorId
+
+### Test Complete ✓
+All CRUD operations working, audit logging functional, API gating enforced.

@@ -1,3 +1,4 @@
+import { hash } from "bcryptjs";
 import { getDb } from "@/lib/db";
 import type {
   LakeCreate,
@@ -9,6 +10,8 @@ import type {
   FacilityUpdate,
   ChwProfileCreate,
   ChwProfileUpdate,
+  UserCreate,
+  UserUpdate,
 } from "@/lib/admin-schemas";
 import type postgres from "postgres";
 
@@ -1117,5 +1120,142 @@ export async function deleteLake(id: string, reason: string, actorId: string) {
       reason,
     });
     return rows[0].id;
+  });
+}
+
+/* -------------------------------------------------------------------------- */
+/* Users & roles (issue #16)                                                   */
+/*                                                                            */
+/* There is deliberately no deleteUser() in this file. `cases.chw_id` is       */
+/* `REFERENCES users(id) ON DELETE RESTRICT` (CryoHealth-api migration         */
+/* 1785700000000-WebSchema.ts:149) and `audit."actorId"` points at users too,  */
+/* so a hard delete would either be refused by the DB or orphan the audit      */
+/* trail. Deactivation (`active = false`, which api/auth/login.ts already      */
+/* rejects at sign-in) is the only removal this system has.                    */
+/* -------------------------------------------------------------------------- */
+
+/** The only columns of `users` any handler may read. `passwordHash` is absent by
+ *  design and must stay absent — this row shape is returned straight to the client. */
+const USER_ROW_COLUMNS = `
+  id, name, role::text AS role, "lhwId" AS lhw_id, phone,
+  "facilityId" AS facility_id, active, "createdAt" AS created_at
+`;
+
+export async function listUsers() {
+  const sql = await getDb();
+  return sql`
+    SELECT u.id, u.name, u.role::text AS role, u."lhwId" AS lhw_id, u.phone,
+           u."facilityId" AS facility_id, u.active, u."createdAt" AS created_at,
+           f.name AS facility_name
+    FROM users u
+    LEFT JOIN facilities f ON f.id = u."facilityId"
+    ORDER BY u.active DESC, u.name
+  `;
+}
+
+/** Hashes `pin` with bcrypt cost 10 — the same pattern and cost as
+ *  CryoHealth-api/scripts/seed-users.ts, so accounts made here are indistinguishable
+ *  from seeded ones to api/auth/login.ts's `compare()`. The plaintext PIN and the
+ *  resulting hash never reach the audit row. */
+export async function createUser(input: UserCreate & { actorId: string }) {
+  // Hashed before begin(): bcrypt at cost 10 is deliberately slow, and there's no
+  // reason to hold a transaction open across it.
+  const passwordHash = await hash(input.pin, 10);
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`
+      INSERT INTO users (name, role, "lhwId", phone, "facilityId", "passwordHash")
+      VALUES (
+        ${input.name}, ${input.role}, ${input.lhwId ?? null}, ${input.phone ?? null},
+        ${input.facilityId ?? null}, ${passwordHash}
+      )
+      RETURNING ${sql.unsafe(USER_ROW_COLUMNS)}
+    `;
+    const user = rows[0];
+    await writeAudit(sql, {
+      actorId: input.actorId,
+      action: "user.create",
+      entityType: "User",
+      entityId: user.id,
+      meta: {
+        created: { name: input.name, role: input.role, lhwId: input.lhwId ?? null },
+      },
+    });
+    return user;
+  });
+}
+
+/** Thrown by updateUser when a change would leave zero active `cryohealth_admin`s.
+ *  Unlike every other guard in this file that's a convenience, this one is the
+ *  difference between a recoverable mistake and a permanently locked-out install:
+ *  only a `cryohealth_admin` may create or re-role a user, and there is no hard
+ *  delete, so the sole way back would be re-running seed-users.ts against the DB. */
+export class LastAdminError extends Error {
+  constructor() {
+    super("Cannot remove the last active cryohealth_admin");
+  }
+}
+
+/** Applies a role change and/or an active flip. Writes one audit row per distinct
+ *  change (`user.role_change`, `user.deactivate`/`user.reactivate`) rather than a
+ *  single `user.update` — issue #16 audits these as separate events, and "who
+ *  deactivated this account" is the question the audit log gets asked. A patch that
+ *  changes nothing writes no audit row. */
+export async function updateUser(id: string, patch: UserUpdate, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    // FOR UPDATE serializes concurrent writes to this same user (the double-click
+    // case). It does not serialize two admins demoting two *different* last-remaining
+    // admins at the same instant — that race is left open knowingly rather than
+    // locking the whole admin set on every role change.
+    const before = (
+      await sql`SELECT id, name, role::text AS role, active FROM users WHERE id = ${id} FOR UPDATE`
+    )[0];
+    if (!before) return null;
+
+    const nextRole = patch.role ?? before.role;
+    const nextActive = patch.active ?? before.active;
+    const dropsAnAdmin =
+      before.role === "cryohealth_admin" &&
+      before.active &&
+      (nextRole !== "cryohealth_admin" || !nextActive);
+    if (dropsAnAdmin) {
+      const [{ n }] = await sql`
+        SELECT count(*)::int AS n FROM users
+        WHERE role = 'cryohealth_admin' AND active = true AND id <> ${id}
+      `;
+      if (n === 0) throw new LastAdminError();
+    }
+
+    const writable: Record<string, unknown> = {};
+    if (patch.role !== undefined) writable.role = patch.role;
+    if (patch.active !== undefined) writable.active = patch.active;
+
+    const rows = await sql`
+      UPDATE users SET ${sql(writable)}
+      WHERE id = ${id}
+      RETURNING ${sql.unsafe(USER_ROW_COLUMNS)}
+    `;
+    const after = rows[0];
+
+    if (before.role !== after.role) {
+      await writeAudit(sql, {
+        actorId,
+        action: "user.role_change",
+        entityType: "User",
+        entityId: id,
+        meta: { changed: { role: { from: before.role, to: after.role } } },
+      });
+    }
+    if (before.active !== after.active) {
+      await writeAudit(sql, {
+        actorId,
+        action: after.active ? "user.reactivate" : "user.deactivate",
+        entityType: "User",
+        entityId: id,
+        meta: { changed: { active: { from: before.active, to: after.active } } },
+      });
+    }
+    return after;
   });
 }
