@@ -176,11 +176,51 @@ export type ProtocolCreate = z.infer<typeof protocolCreateSchema>;
 export const protocolUpdateSchema = protocolCreateSchema.omit({ slug: true }).partial();
 export type ProtocolUpdate = z.infer<typeof protocolUpdateSchema>;
 
-export const facilitySchema = z.object({}).strict();
-export type Facility = z.infer<typeof facilitySchema>;
+/** `type`/`vulnerability` are free text, not a DB enum -- data.tsx's own documented
+ *  payload example uses lowercase strings ("hospital", "medium") with no enum
+ *  constraint visible anywhere else in this repo, so this stays a non-empty string
+ *  rather than guessing at a closed list and rejecting a legitimate value. */
+export const facilityCreateSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    type: z.string().min(1, "Type is required"),
+    district: z.string().min(1, "District is required"),
+    vulnerability: z.string().min(1, "Vulnerability is required"),
+    contact: z.string().min(1).nullable().optional(),
+    // Plain z.number(), not .coerce -- same rationale as glacierCreateSchema.lat/lng:
+    // ST_Y/ST_X always return real JS numbers from postgres.js, never strings, so
+    // there's no round-trip case to coerce for, and .coerce would silently turn an
+    // explicit-clear null/""/[] into 0 instead of a 400. Both optional (facilities.geom
+    // is nullable, unlike lakes) -- provide neither to leave the facility unmapped.
+    lat: z.number().min(-90).max(90).optional(),
+    lng: z.number().min(-180).max(180).optional(),
+    lakeId: z.string().uuid().nullable().optional(),
+  })
+  .strict();
+export type FacilityCreate = z.infer<typeof facilityCreateSchema>;
 
-export const chwProfileSchema = z.object({}).strict();
-export type ChwProfile = z.infer<typeof chwProfileSchema>;
+export const facilityUpdateSchema = facilityCreateSchema.partial();
+export type FacilityUpdate = z.infer<typeof facilityUpdateSchema>;
+
+/** Issue #14 scope: `user_id` is deliberately absent from both schemas. There is no
+ *  admin/users listing endpoint yet (Users & roles is still an `AdminPlaceholder`,
+ *  see admin.users.tsx) to populate a "link to an existing user" picker from, and the
+ *  chw_profiles roster has lived independently of `users` since #9 (see the comment on
+ *  GET /api/public/chw-profiles). Wiring `user_id` is a follow-up once a users-listing
+ *  endpoint exists, not a silent scope cut -- named here so it isn't mistaken for an
+ *  oversight. */
+export const chwProfileCreateSchema = z
+  .object({
+    full_name: z.string().min(1, "Name is required"),
+    district_id: z.string().uuid().nullable().optional(),
+    phone: z.string().min(1).nullable().optional(),
+    language: z.string().min(1, "Language is required"),
+  })
+  .strict();
+export type ChwProfileCreate = z.infer<typeof chwProfileCreateSchema>;
+
+export const chwProfileUpdateSchema = chwProfileCreateSchema.partial();
+export type ChwProfileUpdate = z.infer<typeof chwProfileUpdateSchema>;
 
 export const caseSchema = z.object({}).strict();
 export type Case = z.infer<typeof caseSchema>;
