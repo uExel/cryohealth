@@ -1,114 +1,129 @@
-# HANDOFF — cryohealth — 2026-08-19 PKT
+# HANDOFF — cryohealth — 2026-08-21 PKT
 
-Session: task13-build Model: claude-sonnet-5 Branch: <your-branch-name> Goal: protocol
-lookup-table CRUD, no-AI-assist hard constraint Task: #13
+Session: task14-build Model: claude-sonnet-5 Branch: <your-branch-name> Goal: facilities +
+CHW profiles CRUD, following the T7 scaffold Task: #14 (parent: #3, depends on: #9)
 
 ## State
 
-Task #13 (CRUD: Protocols — no AI-assist, hard warning banner) is **built and
-verified against tsc/eslint/vite build**, not run through `/uexel:verify`. Unlike
-task #12, this started from zero — there was no admin write path for protocols at
-all before this session (only a public read-only GET). `tsc --noEmit` and `eslint`
-are clean; `vite build`'s client bundle transforms cleanly and both new routes are
-present in `routeTree.gen.ts`. The manual create/edit/delete pass against a seeded
-protocol, and the visual "no AI/generate button exists" inspection the DoD calls
-for, have **not** been confirmed done yet as of this handoff — that's this session's
-open item.
+Task #14 (CRUD: Facilities + CHW profiles) is **built and verified against
+tsc/eslint/vite build**, not run through `/uexel:verify`. Both resources started from
+zero — no admin write path existed for either before this session, only read-only
+list pages and public GET endpoints. `tsc --noEmit` is clean, `eslint` is clean
+project-wide (aside from the same 2 pre-existing errors in
+`lakes.$lakeId.tsx`/`glaciers.$glacierId.tsx` from prior tasks), and `vite build`'s
+client bundle transforms cleanly with all four new routes present in
+`routeTree.gen.ts`. The manual create/edit/delete round-trip on both resources — the
+DoD's actual verification step — has **not** been confirmed done as of this
+handoff.
 
 ## Done this session
 
-- `src/lib/admin-schemas.ts`: replaced the empty `protocolSchema` placeholder with
-  `protocolCreateSchema` (slug/title/category/body/source all required, `is_disaster`
-  optional bool, `.strict()`) and `protocolUpdateSchema` (same minus slug — create-only,
-  same rationale as `lakeCreateSchema.slug`). `source` is required in the schema even
-  though the DB column is already `NOT NULL`, so a missing citation 400s with a clear
-  message instead of a raw constraint violation.
-- `src/lib/queries.ts`: added `createProtocol()`, `updateProtocol()`, `deleteProtocol()`
-  next to the existing `listProtocols()`. `PROTOCOL_WRITABLE_COLUMNS` locks PUT to
-  title/category/body/source/is_disaster (slug is create-only). Every write goes
-  through the existing `writeAudit()` inside the same transaction.
-  `deleteProtocol()` has **no dependents pre-check** — grepped the repo, nothing
-  references `protocol_id`/`protocolId` as a FK anywhere in this codebase (unlike
-  `deleteLake`/`deleteGlacier`, which check `observations`/`hazard_scores`/etc. first).
-  If CryoHealth-api's schema has a FK this repo doesn't know about, a real violation
-  still surfaces as a clean 400 via the existing `mapDbError` (23503 case), not a raw
-  500 — so this is a reasoned omission, not an oversight, but worth confirming against
-  the actual schema if anyone's unsure.
-- `src/routes/api/admin/protocols.ts` (new): `POST` only, mirrors `lakes.ts`'s
-  collection-route structure — same auth (`cryohealth_admin`/`facility_admin`),
-  `.strict()` schema validation, 23505 → 409 on duplicate slug.
-- `src/routes/api/admin/protocols.$protocolId.ts` (new): `PUT`/`DELETE`, mirrors
-  `lakes.$lakeId.ts`. DELETE requires a `reason` via the shared `deleteReasonSchema`
-  — **the issue's DoD doesn't explicitly call this out for protocols** (only alerts'
-  issue mentioned it explicitly), but it's the repo-wide convention on every other
-  DELETE handler in `api/admin/*` ("destroying reference data other tables point at
-  always requires a human-supplied reason," per `deleteReasonSchema`'s own comment in
-  admin-schemas.ts), so it was applied here too for consistency. Flag if this wasn't
-  actually wanted for protocols specifically.
-- `src/routes/admin.protocols.tsx`: rewritten from **read-only** (a bare table, no
-  actions at all) to full CRUD — New/Edit/Delete buttons, a create+edit form dialog
-  (`ProtocolFormDialog`), delete confirmation requiring a reason
-  (`DeleteReasonField`).
-- **The hard constraint**: a static, non-dismissible `NoAiAssistBanner` component
-  renders inside the form dialog on every create/edit — no close button, no
-  `localStorage`, no dismissal state of any kind. The form itself has zero AI/generate/
-  "improve wording" affordances — just plain text/textarea/switch inputs bound
-  directly to the zod schema. This is the part of the issue with zero tolerance for
-  drift; do not add such an affordance later even as a "just a stub" placeholder.
-- Hit and fixed the exact type-inference pitfall `LakeFormDialog` already documents in
-  its own comments: switching `useForm`'s zod resolver between two _different_ schemas
-  (create schema vs. `.omit({slug})`) via a ternary doesn't reconcile into one stable
-  react-hook-form generic — threw 3 `tsc` errors cascading through every `FormField`.
-  Fixed the same way lakes did: one stable schema
-  (`protocolCreateSchema.partial({ slug: true })`) used in both modes, slug field just
-  hidden in the UI for edit mode, cast only at the `handleSubmit` boundary.
+- `src/lib/admin-schemas.ts`: replaced the empty `facilitySchema`/`chwProfileSchema`
+  placeholders with `facilityCreateSchema`/`facilityUpdateSchema` and
+  `chwProfileCreateSchema`/`chwProfileUpdateSchema`. `type`/`vulnerability` on
+  facilities stay free-text strings (no enum found anywhere in the codebase to
+  constrain them to — `data.tsx`'s own documented payload example uses plain
+  lowercase strings). `facility.lat`/`lng` are optional (unlike `lakes.lat`/`lng`,
+  since `facilities.geom` is nullable — a facility can be created unmapped).
+- `src/lib/queries.ts`: added `createFacility()`/`updateFacility()`/`deleteFacility()`
+  and `createChwProfile()`/`updateChwProfile()`/`deleteChwProfile()`, all going
+  through the existing `writeAudit()` in the same transaction.
+  `FACILITY_WRITABLE_COLUMNS`/`CHW_PROFILE_WRITABLE_COLUMNS` allowlists lock PUT to
+  known-writable columns, same second-layer-lock shape as `LAKE_WRITABLE_COLUMNS`.
+  `updateFacility`'s geom handling reuses `updateLake`'s conditional-fragment shape
+  (`ST_SetSRID(ST_MakePoint(lng, lat), 4326)` appended only when lat/lng are present
+  in the patch), adapted for a nullable column instead of `lakes`' NOT NULL one —
+  when the writable-column patch is otherwise empty (a lat/lng-only edit),
+  falls back to a `SET id = id` no-op filler so the query is never `SET` with
+  an empty list, mirroring lakes' `updatedAt`-injection trick for the same problem
+  (facilities has no `updatedAt` column to inject instead).
+- Neither delete has a `HasDependentsError` pre-check — grepped the repo, nothing
+  references `facility_id` or `chw_id`/`chw_profile_id` pointing at `chw_profiles`
+  specifically anywhere in this codebase (`cases.chw_id` and
+  `alert_acknowledgements.chw_id` reference `users`, not `chw_profiles`). A real FK
+  violation this repo doesn't know about (e.g. from CryoHealth-api's schema) still
+  surfaces as a clean 400 via the existing `mapDbError` 23503 case, not a raw 500 —
+  reasoned omission, not an oversight, but worth confirming against the live schema
+  if anyone's unsure.
+- `src/routes/api/admin/facilities.ts` (new, POST) +
+  `src/routes/api/admin/facilities.$facilityId.ts` (new, PUT/DELETE) — mirror
+  `lakes.ts`/`lakes.$lakeId.ts`'s structure exactly (auth, `.strict()` schema
+  validation, `mapDbError` in the catch). DELETE requires a `reason` via the shared
+  `deleteReasonSchema`, matching the repo-wide convention on every other admin
+  DELETE handler.
+- `src/routes/api/admin/chw-profiles.ts` (new, POST) +
+  `src/routes/api/admin/chw-profiles.$chwProfileId.ts` (new, PUT/DELETE) — same
+  structure, same reason-on-delete convention.
+- **`chw_profiles.user_id` is deliberately absent from both the schema and the
+  forms** — there is no admin/users-listing endpoint yet (`admin.users.tsx` is
+  still a bare `AdminPlaceholder`, `listUsers()` doesn't exist in `queries.ts`) to
+  populate a "link to an existing user" picker from. New profiles are created with
+  `user_id` left NULL by omission from the INSERT's column list. Named here as a
+  scoped-out follow-up, not a silent gap — wiring this is a natural next task once
+  Users & roles gets its own listing endpoint.
+- `src/routes/admin.facilities.tsx`: rewritten from read-only to full CRUD — New/
+  Edit/Delete actions, a create+edit `FacilityFormDialog` (name/type/district/
+  vulnerability/contact/lat/lng), delete confirmation requiring a reason.
+- `src/routes/admin.chw-profiles.tsx`: rewritten from read-only to full CRUD — New/
+  Edit/Delete actions, a create+edit `ChwProfileFormDialog` (full_name/district via
+  a `Select` sourced from the same `["admin-districts"]` query key other admin pages
+  already use/phone/language), delete confirmation requiring a reason.
+- Hit one real `tsc` error building `createFacility`: TypeScript couldn't narrow
+  `input.lat`/`input.lng` out of `undefined` through a separately-computed `hasGeom`
+  boolean passed into the postgres.js template literal — fixed by destructuring
+  `lat`/`lng` out of `input` first and checking them directly in the conditional
+  expression, which narrows correctly.
 
 ## Not done / deferred
 
 - **`/uexel:verify` has not run** — built and reviewed conversationally.
-- **Manual create/edit/delete pass against a seeded protocol**: not confirmed done.
-  This is the next action, see below.
-- **DoD's explicit visual check** — "confirm no AI/generate button exists anywhere
-  in the form by inspection" — not confirmed done. This has no automated signal;
-  someone needs to actually open the rendered dialog and look.
+- **Manual create/edit/delete round-trip on both resources**: not confirmed done.
+  This is the DoD's actual verification step and the next action below.
 - **Audit row confirmation**: not confirmed against the live `audit` table (no DB
   access from this session).
+- **`user_id` linkage for CHW profiles**: out of scope, see above — do not treat as
+  a bug in this task.
+- **Explicitly clearing a facility's mapped location back to "no location"** isn't
+  exposed by the current PUT patch shape (a lat/lng-only patch always sets both
+  together, falling back to the existing value for whichever one wasn't sent — there's
+  no way to null out `geom` once set). Named as a deliberate scope cut, not an
+  oversight; a "clear location" action would need its own explicit signal (e.g. a
+  `clearGeom: true` flag) if wanted later.
 - Not committed/pushed — commit hash(es): **TBD, fill in below once committed.**
 
 ## Next action
 
-1. Run `bun dev`, confirm `src/routeTree.gen.ts` regenerated (check for
-   `/api/admin/protocols` and `/api/admin/protocols/$protocolId` entries — this repo
-   hit stale-route-tree `tsc` errors on both new files before the first `bun dev`
-   after creation, resolved by that rebuild alone).
-2. Do the manual create/edit/delete pass end-to-end (see testing steps below).
-3. Actually look at the rendered form dialog and confirm no AI/generate affordance
-   exists — the DoD requires this be checked by eye, not assumed from the diff.
-4. Confirm audit rows land in the `audit` table for each write.
-5. Commit, push, update `docs/ai/HANDOFF.md`, check CI.
+1. Run `bun dev`, confirm `src/routeTree.gen.ts` regenerated and includes all four new
+   routes (`/api/admin/facilities`, `/api/admin/facilities/$facilityId`,
+   `/api/admin/chw-profiles`, `/api/admin/chw-profiles/$chwProfileId`) — this repo has
+   hit stale-route-tree `tsc` errors on every new route file added so far, always
+   resolved by a single `bun dev`/`bun run build`.
+2. Do the manual create/edit/delete round-trip on both `/admin/facilities` and
+   `/admin/chw-profiles`.
+3. Confirm audit rows land for `facility.create/update/delete` and
+   `chw_profile.create/update/delete`.
+4. Commit, push, update `docs/ai/HANDOFF.md`, check CI.
 
 ## Open questions for a human
 
-- Was the `reason`-required-on-delete convention actually wanted for protocols, or
-  should protocol deletes be reason-free (unlike alerts, whose issue explicitly
-  named the reason requirement)? Applied here for consistency with the rest of
-  `api/admin/*`, but the issue text for #13 didn't say so explicitly — worth a
-  sanity check against product intent.
+- Should `user_id` linkage for CHW profiles be its own follow-up issue, or folded
+  into whatever ships Users & roles' real listing page? Currently unaddressed by
+  design (see Not done, above).
+- Is a "clear mapped location" action wanted for facilities, or is unmapped-only-at-
+  creation-time an acceptable permanent constraint?
 
 ## Failed approaches (do not retry)
 
-- Ternary between `protocolCreateSchema` and `protocolCreateSchema.omit({slug:
-true})` as the `useForm` resolver, switched on `mode` — throws `tsc` errors on
-  every `FormField`'s `name`/`value` typing (`"slug" is not assignable to type
-"title" | "source" | ...`, plus a `value: string | boolean` union collapsing
-  incorrectly onto `Input`). Use one stable schema
-  (`protocolCreateSchema.partial({ slug: true })`) instead, same as
-  `LakeFormDialog`'s own documented fix for the identical issue.
-- Referencing a new API route file before running `bun dev`/`bun run build` at
-  least once — `src/routeTree.gen.ts` is auto-generated and file-creation alone
-  doesn't trigger it; the editor's TS server will show `2345`/`2339` errors on
-  `createFileRoute(...)` and `params.<newParam>` until a dev/build run picks the
-  new file up. Not a code bug — same pattern as task #12's alerts route.
+- Computing `const hasGeom = input.lat !== undefined && input.lng !== undefined`
+  and referencing `input.lat`/`input.lng` again inside the SQL template based on
+  that boolean — TypeScript doesn't narrow `input.lat`'s type through a separately
+  stored boolean, so the postgres.js tagged-template overload rejects the
+  `number | undefined` argument. Destructure the fields first
+  (`const { lat, lng } = input`) and check the destructured locals directly in the
+  same expression that uses them.
+- (Inherited from #12/#13) Referencing a new API route file before running
+  `bun dev`/`bun run build` at least once — `routeTree.gen.ts` doesn't pick up new
+  files until a dev/build run. Not a code bug.
 
 ## Loops run
 
@@ -117,22 +132,26 @@ true})` as the `useForm` resolver, switched on `mode` — throws `tsc` errors on
 ## Files touched
 
 `src/lib/admin-schemas.ts`, `src/lib/queries.ts`,
-`src/routes/api/admin/protocols.ts` (new),
-`src/routes/api/admin/protocols.$protocolId.ts` (new), `src/routes/admin.protocols.tsx`
-(rewritten from read-only), `src/routeTree.gen.ts` (auto-generated). This file.
+`src/routes/api/admin/facilities.ts` (new),
+`src/routes/api/admin/facilities.$facilityId.ts` (new),
+`src/routes/api/admin/chw-profiles.ts` (new),
+`src/routes/api/admin/chw-profiles.$chwProfileId.ts` (new),
+`src/routes/admin.facilities.tsx` (rewritten from read-only),
+`src/routes/admin.chw-profiles.tsx` (rewritten from read-only),
+`src/routeTree.gen.ts` (auto-generated). This file.
 
 ## Verification status
 
 tests: n/a (no test script in this repo) review: **not yet run** — no
-`/uexel:verify` pass qa: `tsc --noEmit` clean, `eslint` clean (project-wide, aside
-from 2 pre-existing errors in `lakes.$lakeId.tsx`/`glaciers.$glacierId.tsx`
-untouched by this task), `vite build` client bundle transforms and both new routes
-appear in the regenerated route tree (SSR `cloudflare:workers` failure is a
-pre-existing environment issue, reproduces identically on an unmodified checkout).
-Manual create/edit/delete pass: **not yet confirmed**. Visual no-AI-assist
-inspection: **not yet confirmed**.
+`/uexel:verify` pass qa: `tsc --noEmit` clean, `eslint` clean project-wide (aside
+from 2 pre-existing errors untouched by this task), `vite build` client bundle
+transforms and all four new routes appear in the regenerated route tree (SSR
+`cloudflare:workers` failure is a pre-existing environment issue, reproduces
+identically on an unmodified checkout, confirmed across tasks #12-#14). Manual
+create/edit/delete round-trip on both resources: **not yet confirmed**.
 
 ## Resume with
 
-Run the manual test pass below, confirm the banner/no-AI-assist check by eye,
-confirm audit rows, fill in commit hash(es) and branch name above, push, check CI.
+Run the manual round-trip on both `/admin/facilities` and `/admin/chw-profiles`,
+confirm audit rows for both resources, fill in commit hash(es) and branch name
+above, push, check CI.
