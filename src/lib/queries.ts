@@ -1328,6 +1328,7 @@ export async function listAuditActors() {
  *  becomes a filter option without a change here. */
 export async function listAuditEntityTypes() {
   const sql = await getDb();
-  const rows = await sql`SELECT DISTINCT "entityType" AS entity_type FROM audit ORDER BY "entityType"`;
+  const rows =
+    await sql`SELECT DISTINCT "entityType" AS entity_type FROM audit ORDER BY "entityType"`;
   return rows.map((r) => r.entity_type as string);
 }

@@ -295,8 +295,14 @@ export const auditQuerySchema = z.object({
   entityType: z.string().min(1).optional(),
   // YYYY-MM-DD only — the client sends native <input type="date"> values. Both bounds are
   // inclusive: the route turns `to` into `< to::date + 1` so the whole day is covered.
-  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD").optional(),
-  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD").optional(),
+  from: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD")
+    .optional(),
+  to: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD")
+    .optional(),
   page: z.coerce.number().int().positive().default(1),
   pageSize: z.coerce
     .number()
