@@ -24,6 +24,7 @@ import { Route as LakesLakeIdRouteImport } from './routes/lakes.$lakeId'
 import { Route as GlaciersGlacierIdRouteImport } from './routes/glaciers.$glacierId'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSystemHealthRouteImport } from './routes/admin.system-health'
+import { Route as AdminSyncRouteImport } from './routes/admin.sync'
 import { Route as AdminProtocolsRouteImport } from './routes/admin.protocols'
 import { Route as AdminLakesRouteImport } from './routes/admin.lakes'
 import { Route as AdminGlaciersRouteImport } from './routes/admin.glaciers'
@@ -52,6 +53,7 @@ import { Route as ApiPublicAlertAcksRouteImport } from './routes/api/public/aler
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiAdminUsersRouteImport } from './routes/api/admin/users'
 import { Route as ApiAdminSystemHealthRouteImport } from './routes/api/admin/system-health'
+import { Route as ApiAdminSyncRouteImport } from './routes/api/admin/sync'
 import { Route as ApiAdminProtocolsRouteImport } from './routes/api/admin/protocols'
 import { Route as ApiAdminLakesRouteImport } from './routes/api/admin/lakes'
 import { Route as ApiAdminGlaciersRouteImport } from './routes/api/admin/glaciers'
@@ -149,6 +151,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
 const AdminSystemHealthRoute = AdminSystemHealthRouteImport.update({
   id: '/system-health',
   path: '/system-health',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSyncRoute = AdminSyncRouteImport.update({
+  id: '/sync',
+  path: '/sync',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminProtocolsRoute = AdminProtocolsRouteImport.update({
@@ -290,6 +297,11 @@ const ApiAdminUsersRoute = ApiAdminUsersRouteImport.update({
 const ApiAdminSystemHealthRoute = ApiAdminSystemHealthRouteImport.update({
   id: '/api/admin/system-health',
   path: '/api/admin/system-health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminSyncRoute = ApiAdminSyncRouteImport.update({
+  id: '/api/admin/sync',
+  path: '/api/admin/sync',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminProtocolsRoute = ApiAdminProtocolsRouteImport.update({
@@ -436,6 +448,7 @@ export interface FileRoutesByFullPath {
   '/admin/glaciers': typeof AdminGlaciersRouteWithChildren
   '/admin/lakes': typeof AdminLakesRouteWithChildren
   '/admin/protocols': typeof AdminProtocolsRoute
+  '/admin/sync': typeof AdminSyncRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRoute
   '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
@@ -451,6 +464,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/glaciers': typeof ApiAdminGlaciersRouteWithChildren
   '/api/admin/lakes': typeof ApiAdminLakesRouteWithChildren
   '/api/admin/protocols': typeof ApiAdminProtocolsRouteWithChildren
+  '/api/admin/sync': typeof ApiAdminSyncRoute
   '/api/admin/system-health': typeof ApiAdminSystemHealthRouteWithChildren
   '/api/admin/users': typeof ApiAdminUsersRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
@@ -501,6 +515,7 @@ export interface FileRoutesByTo {
   '/admin/districts': typeof AdminDistrictsRoute
   '/admin/facilities': typeof AdminFacilitiesRoute
   '/admin/protocols': typeof AdminProtocolsRoute
+  '/admin/sync': typeof AdminSyncRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRoute
   '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
@@ -516,6 +531,7 @@ export interface FileRoutesByTo {
   '/api/admin/glaciers': typeof ApiAdminGlaciersRouteWithChildren
   '/api/admin/lakes': typeof ApiAdminLakesRouteWithChildren
   '/api/admin/protocols': typeof ApiAdminProtocolsRouteWithChildren
+  '/api/admin/sync': typeof ApiAdminSyncRoute
   '/api/admin/system-health': typeof ApiAdminSystemHealthRouteWithChildren
   '/api/admin/users': typeof ApiAdminUsersRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
@@ -570,6 +586,7 @@ export interface FileRoutesById {
   '/admin/glaciers': typeof AdminGlaciersRouteWithChildren
   '/admin/lakes': typeof AdminLakesRouteWithChildren
   '/admin/protocols': typeof AdminProtocolsRoute
+  '/admin/sync': typeof AdminSyncRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRoute
   '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
@@ -585,6 +602,7 @@ export interface FileRoutesById {
   '/api/admin/glaciers': typeof ApiAdminGlaciersRouteWithChildren
   '/api/admin/lakes': typeof ApiAdminLakesRouteWithChildren
   '/api/admin/protocols': typeof ApiAdminProtocolsRouteWithChildren
+  '/api/admin/sync': typeof ApiAdminSyncRoute
   '/api/admin/system-health': typeof ApiAdminSystemHealthRouteWithChildren
   '/api/admin/users': typeof ApiAdminUsersRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
@@ -640,6 +658,7 @@ export interface FileRouteTypes {
     | '/admin/glaciers'
     | '/admin/lakes'
     | '/admin/protocols'
+    | '/admin/sync'
     | '/admin/system-health'
     | '/admin/users'
     | '/glaciers/$glacierId'
@@ -655,6 +674,7 @@ export interface FileRouteTypes {
     | '/api/admin/glaciers'
     | '/api/admin/lakes'
     | '/api/admin/protocols'
+    | '/api/admin/sync'
     | '/api/admin/system-health'
     | '/api/admin/users'
     | '/api/auth/login'
@@ -705,6 +725,7 @@ export interface FileRouteTypes {
     | '/admin/districts'
     | '/admin/facilities'
     | '/admin/protocols'
+    | '/admin/sync'
     | '/admin/system-health'
     | '/admin/users'
     | '/glaciers/$glacierId'
@@ -720,6 +741,7 @@ export interface FileRouteTypes {
     | '/api/admin/glaciers'
     | '/api/admin/lakes'
     | '/api/admin/protocols'
+    | '/api/admin/sync'
     | '/api/admin/system-health'
     | '/api/admin/users'
     | '/api/auth/login'
@@ -773,6 +795,7 @@ export interface FileRouteTypes {
     | '/admin/glaciers'
     | '/admin/lakes'
     | '/admin/protocols'
+    | '/admin/sync'
     | '/admin/system-health'
     | '/admin/users'
     | '/glaciers/$glacierId'
@@ -788,6 +811,7 @@ export interface FileRouteTypes {
     | '/api/admin/glaciers'
     | '/api/admin/lakes'
     | '/api/admin/protocols'
+    | '/api/admin/sync'
     | '/api/admin/system-health'
     | '/api/admin/users'
     | '/api/auth/login'
@@ -842,6 +866,7 @@ export interface RootRouteChildren {
   ApiAdminGlaciersRoute: typeof ApiAdminGlaciersRouteWithChildren
   ApiAdminLakesRoute: typeof ApiAdminLakesRouteWithChildren
   ApiAdminProtocolsRoute: typeof ApiAdminProtocolsRouteWithChildren
+  ApiAdminSyncRoute: typeof ApiAdminSyncRoute
   ApiAdminSystemHealthRoute: typeof ApiAdminSystemHealthRouteWithChildren
   ApiAdminUsersRoute: typeof ApiAdminUsersRouteWithChildren
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
@@ -968,6 +993,13 @@ declare module '@tanstack/react-router' {
       path: '/system-health'
       fullPath: '/admin/system-health'
       preLoaderRoute: typeof AdminSystemHealthRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sync': {
+      id: '/admin/sync'
+      path: '/sync'
+      fullPath: '/admin/sync'
+      preLoaderRoute: typeof AdminSyncRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/protocols': {
@@ -1164,6 +1196,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/system-health'
       fullPath: '/api/admin/system-health'
       preLoaderRoute: typeof ApiAdminSystemHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/sync': {
+      id: '/api/admin/sync'
+      path: '/api/admin/sync'
+      fullPath: '/api/admin/sync'
+      preLoaderRoute: typeof ApiAdminSyncRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/protocols': {
@@ -1368,6 +1407,7 @@ interface AdminRouteChildren {
   AdminGlaciersRoute: typeof AdminGlaciersRouteWithChildren
   AdminLakesRoute: typeof AdminLakesRouteWithChildren
   AdminProtocolsRoute: typeof AdminProtocolsRoute
+  AdminSyncRoute: typeof AdminSyncRoute
   AdminSystemHealthRoute: typeof AdminSystemHealthRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1383,6 +1423,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminGlaciersRoute: AdminGlaciersRouteWithChildren,
   AdminLakesRoute: AdminLakesRouteWithChildren,
   AdminProtocolsRoute: AdminProtocolsRoute,
+  AdminSyncRoute: AdminSyncRoute,
   AdminSystemHealthRoute: AdminSystemHealthRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -1535,6 +1576,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminGlaciersRoute: ApiAdminGlaciersRouteWithChildren,
   ApiAdminLakesRoute: ApiAdminLakesRouteWithChildren,
   ApiAdminProtocolsRoute: ApiAdminProtocolsRouteWithChildren,
+  ApiAdminSyncRoute: ApiAdminSyncRoute,
   ApiAdminSystemHealthRoute: ApiAdminSystemHealthRouteWithChildren,
   ApiAdminUsersRoute: ApiAdminUsersRouteWithChildren,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
