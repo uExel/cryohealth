@@ -109,8 +109,8 @@ function SyncAdmin() {
       <header className="mb-4">
         <h1 className="text-2xl font-semibold text-foreground">Sync activity</h1>
         <p className="max-w-3xl text-sm text-muted-foreground">
-          Offline sync from CryoHealth-app, read from the two tables CryoHealth-api owns. This
-          page reports exactly what is in them — including nothing at all.
+          Offline sync from CryoHealth-app, read from the two tables CryoHealth-api owns. This page
+          reports exactly what is in them — including nothing at all.
         </p>
       </header>
 
@@ -123,8 +123,8 @@ function SyncAdmin() {
             color: "var(--color-on-watch)",
           }}
         >
-          Couldn't load sync activity — this is a request failure, not an empty result. The
-          tables below are unknown until it succeeds.
+          Couldn't load sync activity — this is a request failure, not an empty result. The tables
+          below are unknown until it succeeds.
         </div>
       )}
 
