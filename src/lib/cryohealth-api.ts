@@ -86,3 +86,20 @@ export async function fetchLakes(): Promise<Lake[]> {
   const body: { lakes: Lake[] } = await res.json();
   return body.lakes;
 }
+
+/** CryoHealth-api's `GET /health` shape. `status` is "ok" when the API can reach its database,
+ *  "degraded" otherwise; `database` is "up" or "down". Both are plain strings on the wire and
+ *  kept as `string` (not a union) so any future status value surfaces verbatim to the admin
+ *  rather than being silently coerced. */
+export type ApiHealth = { status: string; database: string };
+
+/**
+ * Server-side only (same reason as fetchLakesFromApi — CryoHealth-api sends no CORS headers).
+ * Probes `GET /health`, which is public on the API side (no token). Throws on a network error
+ * or non-2xx so the system-health route can present the service as unreachable rather than 500.
+ */
+export async function fetchApiHealth(): Promise<ApiHealth> {
+  const res = await fetch(`${apiBaseUrl()}/health`);
+  if (!res.ok) throw new Error(`CryoHealth-api /health returned ${res.status}`);
+  return (await res.json()) as ApiHealth;
+}
