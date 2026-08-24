@@ -1259,3 +1259,76 @@ export async function updateUser(id: string, patch: UserUpdate, actorId: string)
     return after;
   });
 }
+
+/** Filters accepted by the audit-log read path (issue #18). All optional — omit a field
+ *  to leave it unconstrained. `from`/`to` are inclusive YYYY-MM-DD day bounds. */
+export type AuditFilters = { actorId?: string; entityType?: string; from?: string; to?: string };
+
+/** Builds the WHERE clause shared by listAudit's rows + count queries, AND-joining only
+ *  the active filters; returns an empty fragment (a no-op when embedded) when nothing is
+ *  filtered. Built fresh on each call rather than shared between the two queries, so one
+ *  fragment is never aliased across two concurrent executions. `createdAt` (timestamptz)
+ *  is compared to `from`/`to` cast to `date`; the `< to::date + 1` form makes `to` an
+ *  inclusive whole-day bound. Day boundaries resolve in the DB session's timezone. */
+function auditWhere(sql: postgres.ISql, f: AuditFilters) {
+  const parts = [
+    f.actorId ? sql`a."actorId" = ${f.actorId}` : null,
+    f.entityType ? sql`a."entityType" = ${f.entityType}` : null,
+    f.from ? sql`a."createdAt" >= ${f.from}::date` : null,
+    f.to ? sql`a."createdAt" < (${f.to}::date + 1)` : null,
+  ].filter((p) => p !== null);
+  if (parts.length === 0) return sql``;
+  let clause = parts[0];
+  for (let i = 1; i < parts.length; i++) clause = sql`${clause} AND ${parts[i]}`;
+  return sql`WHERE ${clause}`;
+}
+
+/** Read-only, paginated audit-log query for the admin audit page (issue #18). LEFT JOINs
+ *  `users` so a row survives even when `actorId` is null (nothing in this app writes a
+ *  null-actor audit row today, but CryoHealth-api's geo path is auditless and could grow
+ *  one) or points at a since-changed user — the actor columns just come back null and the
+ *  page renders "System". Newest first. Returns the requested page plus the total matching
+ *  count for the pager. Note: this file had no audit *read* before this; writes still go
+ *  exclusively through writeAudit() and are untouched. */
+export async function listAudit(filters: AuditFilters, page: number, pageSize: number) {
+  const sql = await getDb();
+  const offset = (page - 1) * pageSize;
+  const [rows, [{ count }]] = await Promise.all([
+    sql`
+      SELECT a.id, a."actorId" AS actor_id, a.action, a."entityType" AS entity_type,
+             a."entityId" AS entity_id, a.reason, a.meta, a."createdAt" AS created_at,
+             u.name AS actor_name, u."lhwId" AS actor_lhw_id, u.role::text AS actor_role
+      FROM audit a
+      LEFT JOIN users u ON u.id = a."actorId"
+      ${auditWhere(sql, filters)}
+      ORDER BY a."createdAt" DESC
+      LIMIT ${pageSize} OFFSET ${offset}
+    `,
+    sql`SELECT count(*)::int AS count FROM audit a ${auditWhere(sql, filters)}`,
+  ]);
+  return { rows, total: count as number };
+}
+
+/** Distinct actors that appear in the audit log, for the page's actor filter. INNER JOIN
+ *  (not LEFT): an option the dropdown can't resolve to a name is useless, so null/dangling
+ *  actorIds aren't offered as filter choices — those rows still show in the table, just
+ *  under "System". */
+export async function listAuditActors() {
+  const sql = await getDb();
+  return sql`
+    SELECT DISTINCT a."actorId" AS id, u.name, u."lhwId" AS lhw_id
+    FROM audit a
+    JOIN users u ON u.id = a."actorId"
+    ORDER BY u.name
+  `;
+}
+
+/** Distinct entityType values present in the audit log, for the page's entity-type
+ *  filter — derived from the data rather than hardcoded, so a new writer's entityType
+ *  becomes a filter option without a change here. */
+export async function listAuditEntityTypes() {
+  const sql = await getDb();
+  const rows =
+    await sql`SELECT DISTINCT "entityType" AS entity_type FROM audit ORDER BY "entityType"`;
+  return rows.map((r) => r.entity_type as string);
+}

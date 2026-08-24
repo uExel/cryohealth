@@ -268,3 +268,47 @@ export const userUpdateSchema = z
   })
   .strict();
 export type UserUpdate = z.infer<typeof userUpdateSchema>;
+
+/** Default and max page sizes for the audit log (issue #18). The max caps a hand-edited
+ *  `?pageSize=` so a single request can't ask for the whole (unbounded, append-only)
+ *  table at once. */
+export const AUDIT_PAGE_SIZE_DEFAULT = 50;
+export const AUDIT_PAGE_SIZE_MAX = 200;
+
+/** CSV export row cap. The audit table is append-only and grows without bound, so an
+ *  uncapped export would eventually exhaust the Worker's memory; a filtered export
+ *  streams at most this many rows, newest first. */
+export const AUDIT_EXPORT_MAX = 10_000;
+
+/** Issue #18 (audit log page). Unlike every other schema in this file, this one is
+ *  deliberately NOT `.strict()` — it validates URL *query* params, not a JSON body.
+ *  Query strings legitimately carry keys this endpoint doesn't own (the `format=csv`
+ *  switch the route reads separately, a cache-buster, a stray tracking param), and zod
+ *  strips unknown keys by default, so an extra param is ignored rather than a 400.
+ *  `.strict()` is the right failure direction for a write body (reject unknown keys → no
+ *  silent mass-assignment); it's the wrong one for a read filter, where a spurious 400
+ *  would break an otherwise-valid saved/export URL. Every filter is optional (no filter
+ *  = the whole table, newest first). `page`/`pageSize` are `.coerce`d because query
+ *  params always arrive as strings. */
+export const auditQuerySchema = z.object({
+  actorId: z.string().uuid().optional(),
+  entityType: z.string().min(1).optional(),
+  // YYYY-MM-DD only — the client sends native <input type="date"> values. Both bounds are
+  // inclusive: the route turns `to` into `< to::date + 1` so the whole day is covered.
+  from: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD")
+    .optional(),
+  to: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD")
+    .optional(),
+  page: z.coerce.number().int().positive().default(1),
+  pageSize: z.coerce
+    .number()
+    .int()
+    .positive()
+    .max(AUDIT_PAGE_SIZE_MAX)
+    .default(AUDIT_PAGE_SIZE_DEFAULT),
+});
+export type AuditQuery = z.infer<typeof auditQuerySchema>;
