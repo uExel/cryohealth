@@ -10,6 +10,7 @@ import type {
   FacilityUpdate,
   ChwProfileCreate,
   ChwProfileUpdate,
+  CaseUpdate,
   UserCreate,
   UserUpdate,
 } from "@/lib/admin-schemas";
@@ -58,12 +59,15 @@ export async function listGlacierObservations(glacierId: string) {
   `;
 }
 
+/** `deleted_at IS NULL` (issue #15): soft-deleted cases must not reach the public
+ *  district page either -- filtering only the admin list would leave a case an admin
+ *  believes they removed still visible to every CHW reading a district. */
 export async function listDisasterCasesForDistrict(districtId: string) {
   const sql = await getDb();
   return sql`
     SELECT id, symptoms, diagnosis, outcome, is_disaster_related, created_at
     FROM cases
-    WHERE district_id = ${districtId} AND is_disaster_related = true
+    WHERE district_id = ${districtId} AND is_disaster_related = true AND deleted_at IS NULL
     ORDER BY created_at DESC
     LIMIT 10
   `;
@@ -429,6 +433,11 @@ export async function deleteFacility(id: string, reason: string, actorId: string
   });
 }
 
+/** Soft-delete aware (issue #15): `deleted_at IS NULL` is the default for every case
+ *  read. There is deliberately no `includeDeleted` flag -- nothing in the portal can
+ *  view or restore a soft-deleted case yet, and an unused escape hatch on the one
+ *  query the admin table renders is how a "deleted" row quietly comes back. Restore is
+ *  a follow-up that should add its own explicit query, not a boolean here. */
 export async function listCasesAdmin(limit = 200) {
   const sql = await getDb();
   return sql`
@@ -440,6 +449,7 @@ export async function listCasesAdmin(limit = 200) {
     FROM cases c
     LEFT JOIN users u     ON u.id = c.chw_id
     LEFT JOIN districts d ON d.id = c.district_id
+    WHERE c.deleted_at IS NULL
     ORDER BY c.created_at DESC
     LIMIT ${limit}
   `;
@@ -655,6 +665,47 @@ export async function insertAlertAck(alertId: string, chwId: string) {
   `;
 }
 
+/** Every column the admin API returns for a single case. `deleted_at` is included on
+ *  purpose: a write's RETURNING row proves the row it touched is live (null), and the
+ *  update path diffs against it. No joins -- an INSERT/UPDATE ... RETURNING can't reach
+ *  `users`/`districts`, and the client refetches the joined list after a write anyway
+ *  (same shape as FACILITY_ROW_COLUMNS). */
+const CASE_ROW_COLUMNS = `
+  id, chw_id, district_id, patient_age, patient_sex, symptoms, diagnosis,
+  treatment, outcome, is_disaster_related, created_at, deleted_at
+`;
+
+/** The ONLY columns an admin PUT may touch on `cases`, independent of whatever
+ *  caseUpdateSchema currently allows -- same second-layer-lock rationale as
+ *  FACILITY_WRITABLE_COLUMNS. Three deliberate absences: `chw_id` (create-only, it is
+ *  clinical provenance -- see caseUpdateSchema), `created_at`, and `deleted_at`. The
+ *  last one matters most: soft-delete state belongs to softDeleteCase alone, so even if
+ *  someone drops `.strict()` from the schema later, a PUT still cannot resurrect or
+ *  silently re-delete a case. */
+const CASE_WRITABLE_COLUMNS = [
+  "district_id",
+  "patient_age",
+  "patient_sex",
+  "symptoms",
+  "diagnosis",
+  "treatment",
+  "outcome",
+  "is_disaster_related",
+] as const;
+
+/* Audit meta on `cases` records WHICH fields were written and never their values --
+ * unlike updateFacility, which stores a full from/to diff. `audit` is readable and
+ * CSV-exportable by every cryohealth_admin (api/admin/audit.ts), so copying symptoms,
+ * diagnosis, treatment or patient age into it would fork clinical content into a second
+ * table with different retention and a wider audience. Same data-minimisation call as
+ * excluding chw_cases.payload from listChwCases. What the audit trail owes us here is
+ * who touched which case, when, and why -- not a shadow copy of the record.
+ */
+
+/** `actorId` is who performed the write; `chwId` is who the case is attributed to.
+ *  They're the same for POST /api/public/cases (a CHW logging their own case) and
+ *  different for the admin POST (an admin logging on a CHW's behalf) -- which is
+ *  exactly why the audit row can't just reuse chw_id. */
 export async function insertCase(input: {
   chwId: string;
   districtId: string | null;
@@ -665,12 +716,104 @@ export async function insertCase(input: {
   treatment: string | null;
   outcome: string | null;
   isDisasterRelated: boolean;
+  actorId: string;
 }) {
-  const sql = await getDb();
-  await sql`
-    INSERT INTO cases (chw_id, district_id, patient_age, patient_sex, symptoms, diagnosis, treatment, outcome, is_disaster_related)
-    VALUES (${input.chwId}, ${input.districtId}, ${input.patientAge}, ${input.patientSex}, ${input.symptoms}, ${input.diagnosis}, ${input.treatment}, ${input.outcome}, ${input.isDisasterRelated})
-  `;
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`
+      INSERT INTO cases (chw_id, district_id, patient_age, patient_sex, symptoms, diagnosis, treatment, outcome, is_disaster_related)
+      VALUES (${input.chwId}, ${input.districtId}, ${input.patientAge}, ${input.patientSex}, ${input.symptoms}, ${input.diagnosis}, ${input.treatment}, ${input.outcome}, ${input.isDisasterRelated})
+      RETURNING ${sql.unsafe(CASE_ROW_COLUMNS)}
+    `;
+    const created = rows[0];
+    await writeAudit(sql, {
+      actorId: input.actorId,
+      action: "case.create",
+      entityType: "Case",
+      entityId: created.id,
+      // Attribution and geography only. The clinical columns are intentionally absent.
+      meta: {
+        created: {
+          chw_id: input.chwId,
+          district_id: input.districtId,
+          is_disaster_related: input.isDisasterRelated,
+        },
+      },
+    });
+    return created;
+  });
+}
+
+export async function updateCase(id: string, patch: CaseUpdate, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    // `deleted_at IS NULL` here too, not just in the list query: a soft-deleted case is
+    // gone as far as the portal is concerned, so editing one 404s rather than quietly
+    // mutating a row nothing displays.
+    const beforeRows = await sql`
+      SELECT ${sql.unsafe(CASE_ROW_COLUMNS)} FROM cases
+      WHERE id = ${id} AND deleted_at IS NULL
+    `;
+    const before = beforeRows[0];
+    if (!before) return null;
+
+    const writable: Record<string, unknown> = {};
+    for (const key of CASE_WRITABLE_COLUMNS) {
+      if (key in patch) writable[key] = (patch as Record<string, unknown>)[key];
+    }
+    // Unreachable through the API (the route 400s an empty patch, and every key
+    // caseUpdateSchema accepts is writable) -- but if it ever is, no write happened, so
+    // there is nothing to audit and no audit row is written.
+    if (Object.keys(writable).length === 0) return before;
+
+    const rows = await sql`
+      UPDATE cases SET ${sql(writable)}
+      WHERE id = ${id} AND deleted_at IS NULL
+      RETURNING ${sql.unsafe(CASE_ROW_COLUMNS)}
+    `;
+    const after = rows[0];
+
+    const changed = Object.keys(writable).filter((key) => before[key] !== after[key]);
+    await writeAudit(sql, {
+      actorId,
+      action: "case.update",
+      entityType: "Case",
+      entityId: id,
+      meta: changed.length ? { changed_fields: changed.sort() } : null,
+    });
+    return after;
+  });
+}
+
+/** Soft delete (issue #15): `UPDATE ... SET deleted_at = now()`, never
+ *  `DELETE FROM cases`. The hard delete that deleteFacility/deleteProtocol use is wrong
+ *  here for two reasons -- these are patient-adjacent clinical records, and
+ *  `cases.chw_id` is `ON DELETE RESTRICT`, so the case row is also what stops a CHW's
+ *  user account being destroyed out from under an audit trail.
+ *
+ *  `AND deleted_at IS NULL` makes a repeat delete a 404 instead of silently bumping the
+ *  timestamp and writing a second audit row for the same removal. */
+export async function softDeleteCase(id: string, reason: string, actorId: string) {
+  const db = await getDb();
+  return db.begin(async (sql) => {
+    const rows = await sql`
+      UPDATE cases SET deleted_at = now()
+      WHERE id = ${id} AND deleted_at IS NULL
+      RETURNING id
+    `;
+    if (!rows[0]) return null;
+    await writeAudit(sql, {
+      actorId,
+      action: "case.delete",
+      entityType: "Case",
+      entityId: id,
+      reason,
+      // Says plainly that the row is still in Postgres, so a later reader of the audit
+      // log doesn't assume it was destroyed. Nothing in the portal restores it yet.
+      meta: { soft: true },
+    });
+    return rows[0].id;
+  });
 }
 
 export async function getKpis() {
@@ -681,7 +824,7 @@ export async function getKpis() {
     await Promise.all([
       sql`SELECT count(*)::int FROM lakes WHERE "currentTier" IN ('high', 'critical')`,
       sql`SELECT count(*)::int FROM alerts WHERE "createdAt" >= ${since30}`,
-      sql`SELECT count(*)::int FROM cases WHERE created_at >= ${since7}`,
+      sql`SELECT count(*)::int FROM cases WHERE created_at >= ${since7} AND deleted_at IS NULL`,
       sql`SELECT count(*)::int FROM users WHERE role = 'chw' AND active = true`,
     ]);
   return { highLakes, alerts30d, cases7d, chws };
