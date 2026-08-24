@@ -58,6 +58,7 @@ import { Route as ApiAdminFacilitiesRouteImport } from './routes/api/admin/facil
 import { Route as ApiAdminDistrictsRouteImport } from './routes/api/admin/districts'
 import { Route as ApiAdminChwProfilesRouteImport } from './routes/api/admin/chw-profiles'
 import { Route as ApiAdminCasesRouteImport } from './routes/api/admin/cases'
+import { Route as ApiAdminAuditRouteImport } from './routes/api/admin/audit'
 import { Route as AdminLakesLakeIdRouteImport } from './routes/admin.lakes.$lakeId'
 import { Route as AdminGlaciersGlacierIdRouteImport } from './routes/admin.glaciers.$glacierId'
 import { Route as ApiPublicLakesLakeIdRouteImport } from './routes/api/public/lakes.$lakeId'
@@ -318,6 +319,11 @@ const ApiAdminCasesRoute = ApiAdminCasesRouteImport.update({
   path: '/api/admin/cases',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminAuditRoute = ApiAdminAuditRouteImport.update({
+  id: '/api/admin/audit',
+  path: '/api/admin/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLakesLakeIdRoute = AdminLakesLakeIdRouteImport.update({
   id: '/$lakeId',
   path: '/$lakeId',
@@ -418,6 +424,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
+  '/api/admin/audit': typeof ApiAdminAuditRoute
   '/api/admin/cases': typeof ApiAdminCasesRoute
   '/api/admin/chw-profiles': typeof ApiAdminChwProfilesRouteWithChildren
   '/api/admin/districts': typeof ApiAdminDistrictsRouteWithChildren
@@ -479,6 +486,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
+  '/api/admin/audit': typeof ApiAdminAuditRoute
   '/api/admin/cases': typeof ApiAdminCasesRoute
   '/api/admin/chw-profiles': typeof ApiAdminChwProfilesRouteWithChildren
   '/api/admin/districts': typeof ApiAdminDistrictsRouteWithChildren
@@ -544,6 +552,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
+  '/api/admin/audit': typeof ApiAdminAuditRoute
   '/api/admin/cases': typeof ApiAdminCasesRoute
   '/api/admin/chw-profiles': typeof ApiAdminChwProfilesRouteWithChildren
   '/api/admin/districts': typeof ApiAdminDistrictsRouteWithChildren
@@ -610,6 +619,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
+    | '/api/admin/audit'
     | '/api/admin/cases'
     | '/api/admin/chw-profiles'
     | '/api/admin/districts'
@@ -671,6 +681,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
+    | '/api/admin/audit'
     | '/api/admin/cases'
     | '/api/admin/chw-profiles'
     | '/api/admin/districts'
@@ -735,6 +746,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
+    | '/api/admin/audit'
     | '/api/admin/cases'
     | '/api/admin/chw-profiles'
     | '/api/admin/districts'
@@ -785,6 +797,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   GlaciersGlacierIdRoute: typeof GlaciersGlacierIdRoute
+  ApiAdminAuditRoute: typeof ApiAdminAuditRoute
   ApiAdminCasesRoute: typeof ApiAdminCasesRoute
   ApiAdminChwProfilesRoute: typeof ApiAdminChwProfilesRouteWithChildren
   ApiAdminDistrictsRoute: typeof ApiAdminDistrictsRouteWithChildren
@@ -1157,6 +1170,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminCasesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/audit': {
+      id: '/api/admin/audit'
+      path: '/api/admin/audit'
+      fullPath: '/api/admin/audit'
+      preLoaderRoute: typeof ApiAdminAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/lakes/$lakeId': {
       id: '/admin/lakes/$lakeId'
       path: '/$lakeId'
@@ -1435,6 +1455,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   GlaciersGlacierIdRoute: GlaciersGlacierIdRoute,
+  ApiAdminAuditRoute: ApiAdminAuditRoute,
   ApiAdminCasesRoute: ApiAdminCasesRoute,
   ApiAdminChwProfilesRoute: ApiAdminChwProfilesRouteWithChildren,
   ApiAdminDistrictsRoute: ApiAdminDistrictsRouteWithChildren,
