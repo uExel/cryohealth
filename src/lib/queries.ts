@@ -1332,3 +1332,69 @@ export async function listAuditEntityTypes() {
     await sql`SELECT DISTINCT "entityType" AS entity_type FROM audit ORDER BY "entityType"`;
   return rows.map((r) => r.entity_type as string);
 }
+
+/* Sync activity (issue #19) — read-only. Both tables belong to the offline-sync feature and
+ * are written exclusively by CryoHealth-api, so there is deliberately no insert/update/delete
+ * counterpart here.
+ *
+ * The two tables are NOT in the same state, and the page must distinguish them rather than
+ * show one blanket "no data" message:
+ *   - `sync_log`  — no writer exists anywhere in CryoHealth-api. Grepped 2026-08-24: only the
+ *     entity, the InitialSchema migration and all-entities.ts mention it; no controller or
+ *     service ever inserts. It reads empty until a sync endpoint is built there, which is a
+ *     separate CryoHealth-api goal (out of scope for #19).
+ *   - `chw_cases` — DOES have a live writer: `POST /cases` (CasesController, `chw` role)
+ *     upserts a device-captured case, idempotent on `clientCaseId`. Empty here means "no
+ *     device has synced a case yet", NOT "the feature is missing". (The admin PRD §5 table
+ *     lists this table as writer-less; that line is out of date as of 2026-08-24.)
+ *
+ * Both tables use quoted camelCase identifiers, matching CryoHealth-api's TypeORM naming
+ * (like `audit`, and unlike the snake_case `cases`/`districts` tables). Each query returns an
+ * unfiltered count alongside the capped rows so the page can tell "the table is genuinely
+ * empty" apart from "the limit trimmed the list".
+ */
+
+/** Most recent device sync attempts, newest first. LEFT JOIN `users` (not INNER) so a row
+ *  still renders if its `userId` points at a since-removed user — the name columns just come
+ *  back null. */
+export async function listSyncLog(limit = 200) {
+  const sql = await getDb();
+  const [rows, [{ count }]] = await Promise.all([
+    sql`
+      SELECT s.id, s."userId" AS user_id, s."deviceId" AS device_id,
+             s."startedAt" AS started_at, s."finishedAt" AS finished_at,
+             s."itemCount" AS item_count, s.status, s.detail,
+             s."createdAt" AS created_at,
+             u.name AS user_name, u."lhwId" AS user_lhw_id
+      FROM sync_log s
+      LEFT JOIN users u ON u.id = s."userId"
+      ORDER BY s."startedAt" DESC
+      LIMIT ${limit}
+    `,
+    sql`SELECT count(*)::int AS count FROM sync_log`,
+  ]);
+  return { rows, total: count as number };
+}
+
+/** Cases captured on a CHW device and synced up, newest capture first. `payload` (jsonb) is
+ *  deliberately NOT selected: it holds the clinical case content, which this page has no need
+ *  for — sync activity is about when/whether a device delivered, not what was in the record.
+ *  `syncState` is a Postgres enum, cast to text so it serializes as a plain string. */
+export async function listChwCases(limit = 200) {
+  const sql = await getDb();
+  const [rows, [{ count }]] = await Promise.all([
+    sql`
+      SELECT c.id, c."chwId" AS chw_id, c."capturedAt" AS captured_at,
+             c.outcome, c."syncState"::text AS sync_state,
+             c."deviceId" AS device_id, c."clientCaseId" AS client_case_id,
+             c."createdAt" AS created_at,
+             u.name AS chw_name, u."lhwId" AS chw_lhw_id
+      FROM chw_cases c
+      LEFT JOIN users u ON u.id = c."chwId"
+      ORDER BY c."capturedAt" DESC
+      LIMIT ${limit}
+    `,
+    sql`SELECT count(*)::int AS count FROM chw_cases`,
+  ]);
+  return { rows, total: count as number };
+}
