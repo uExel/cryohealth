@@ -1,16 +1,28 @@
-# HANDOFF — cryohealth — 2026-08-24 PKT
+# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT
 
 Session: task-cases-crud Model: claude-opus-5 Branch: Shoaib
 Goal: #15 — CRUD for Cases with a soft delete. Parent: #3 (admin portal). Depends on: #9.
 Also: the `Kpi` → `StatCard` consolidation task (p3 tech-debt deferred from #5) — its own section
-below. Both are code-complete and share one pending verification run.
+below.
 
 ## State
 
-Implemented, **not yet build-verified**. The dev VM/toolchain reported "VM service not running"
-again this session (fourth session in a row with the same signature), so
-`bunx tsc --noEmit && bun run lint && bun run build` was NOT executed and `src/routeTree.gen.ts`
-was NOT regenerated. All Definition-of-Done code is written and passed a static self-review.
+**Toolchain verification passed.** Shoaib ran it on the host on 2026-08-25, after four sessions of
+"VM service not running" blocking it here: `bunx tsc --noEmit && bun run lint && bun run build` all
+green. That build regenerated `src/routeTree.gen.ts`, so the three routes accumulated across
+sessions (`/admin/sync` and `/api/admin/sync` from #19, `/api/admin/cases/$caseId` from #15) are now
+in the tree and typecheck. It also clears the same execution-gated block on #18 (audit log) and
+system-health, whose code compiled as part of the same build.
+
+The **`Kpi` → `StatCard` task is fully verified.** Its DoD's manual visual check of the dashboard
+KPI row was done and reads correctly, so the `size` variant decision below is confirmed rather than
+provisional. Nothing is outstanding on that task.
+
+**#15's functional QA is still owed.** The build proves the code compiles, not that a soft delete
+behaves. The SQL/curl checklist below has NOT been run — specifically the `deleted_at`
+row-retention check, the repeat DELETE → 404, the audit-meta "no clinical values" check, the CHW
+create-path regression (the one pre-existing signature this issue changed), and the facility_admin
+401/403 gating. Those are the checks that would catch a logic error rather than a type error.
 
 **The upstream blocker is cleared.** The DoD was blocked on a `deleted_at` migration landing in
 `CryoHealth-api` first. It has landed:
@@ -19,10 +31,8 @@ was NOT regenerated. All Definition-of-Done code is written and passed a static 
 by running the migration — confirm the column actually exists in your local DB before testing
 (`\d cases`). No migration was added here; this repo does not own migrations.
 
-Route-tree regen is now owed for **three** routes accumulated across sessions: `/admin/sync` and
-`/api/admin/sync` (#19) plus `/api/admin/cases/$caseId` (this session). `tsc` fails on all three
-until one build runs. Prior tasks #18 (audit log) and system-health are likewise code-complete and
-await the same execution-gated verification.
+`src/routeTree.gen.ts` is now regenerated and dirty in the working tree — **include it in the
+commit**. It is generated output, so never hand-edit it; if it looks wrong, rerun the build.
 
 ## Decisions taken this session
 
@@ -124,16 +134,17 @@ passed an icon at all — and this way the next caller cannot get it wrong.
 `size?: "sm" | "lg"`. `sm` is the default and renders byte-identically to before (`p-3`,
 `mt-1 text-xl`), so all 14 existing call sites are untouched in output; `lg` reproduces `Kpi`
 exactly (`p-4`, `mt-2 text-2xl`) and is used by the 4 dashboard cards. Reason for not simply
-accepting the shrink: **the DoD's own manual visual check could not be run this session** (VM down),
+accepting the shrink: **the DoD's own manual visual check could not be run in-session** (VM down),
 and that KPI row is the first data on the public landing page, sitting directly under a `text-5xl`
 hero. Choosing between an unverifiable visual regression and zero visual change, zero wins. The
-variant is also not speculative — it has 4 real callers on day one.
+variant is also not speculative — it has 4 real callers on day one. **Since verified on the host:
+the row renders as it did before, so the variant did its job.**
 
-**One visual change is accepted by construction and does want a human's eye:** the icon moves from
-right-aligned (`Kpi` used `justify-between`) to immediately left of the label (`StatCard`'s
-`gap-1.5` row). That is `StatCard`'s layout and the whole point of converging on it; a position
-variant would leave almost nothing genuinely shared. Check it on the dashboard, per the visual step
-in the checklist below.
+**One visual change is accepted by construction:** the icon moves from right-aligned (`Kpi` used
+`justify-between`) to immediately left of the label (`StatCard`'s `gap-1.5` row). That is
+`StatCard`'s layout and the whole point of converging on it; a position variant would leave almost
+nothing genuinely shared. **Checked on the host and signed off** — it reads correctly at 16px beside
+the label.
 
 Provenance correction: the issue cites `docs/ai/PLAN.md` ("NOT in scope") for the deferral, but
 PLAN.md has since been overwritten by later tasks and contains no such note. The surviving record is
@@ -180,10 +191,10 @@ by design) and that one historical session note. No source reference survives.
 
 ## Loops run
 
-- None. No `/uexel:build` / `/uexel:verify` loop — toolchain unavailable (VM down, same
-  "VM service not running" signature as the previous three sessions). The issue's fix-loop budget
-  of 3 is untouched and available once verification can run. Per the escalation rule this is a
-  purely environmental block, not two identical *code* failure signatures.
+- None needed. `bunx tsc --noEmit && bun run lint && bun run build` passed **first try** on the
+  host, so no fix loop was consumed and the issue's budget of 3 is fully intact. The four sessions
+  of "VM service not running" were a purely environmental block, never two identical *code* failure
+  signatures, which is why the escalation rule never fired.
 
 ## Files touched
 
@@ -218,20 +229,26 @@ normalisation) and `src/routes/dashboard.tsx` (modified — `StatCard` import, 4
   plus `ArrowRight`, `Github`, `Scale`) is still used after `Kpi` went. Prettier widths were
   hand-checked: the `Lakes in HIGH+` card is pre-broken across 6 lines because its one-line form is
   104 columns; the other three measure 96/96/93 and stay one-liners, which is what Prettier emits.
-- **visual**: NOT checked (VM down). The `Kpi` → `StatCard` swap is intended to be pixel-neutral
-  except for the icon moving from right-aligned to left of the label — see the visual step in the
-  checklist.
-- **qa**: `tsc`/`lint`/`build` NOT run (VM down). Regenerate the route tree first.
+  All of that hand-reasoning is now **confirmed correct**: `bun run lint` passed clean on the host,
+  so no `prettier/prettier` error was left behind in either file and `bun run format` was not needed.
+- **visual**: **done.** The dashboard KPI row was checked on the host — unchanged proportions, and
+  the icon reads correctly in its new position left of the label.
+- **qa**: `bunx tsc --noEmit && bun run lint && bun run build` **all passed** on the host on
+  2026-08-25, and the build regenerated `src/routeTree.gen.ts`. #15's functional checklist (SQL,
+  curl, CHW regression, facility_admin gating) is still unrun — see State.
 - **API gating**: `requireRole(["cryohealth_admin", "facility_admin"])` on GET/POST/PUT/DELETE.
   Runtime 401/403 behaviour not yet confirmed by execution — curl checks in the checklist.
 
 ## Resume with
 
-1. `bun run build` (regenerates `routeTree.gen.ts` → adds `/api/admin/cases/$caseId` and the two
-   #19 routes).
-2. `bunx tsc --noEmit && bun run lint && bun run build` (`bun run format` if lint flags only
-   `prettier/prettier` — a formatting diff, not a logic issue).
-3. Manual checklist below, then commit (with the regenerated tree), push, fill in commit hash.
+1. ~~`bun run build`, then `bunx tsc --noEmit && bun run lint && bun run build`~~ — done on the host
+   2026-08-25, all green, route tree regenerated. Nothing to rerun unless you change code.
+2. Work through the **Manual Testing Checklist** below, skipping the Dashboard KPI section (already
+   signed off). The soft-delete SQL checks are the ones that matter — they are what a passing build
+   cannot tell you.
+3. Commit, including the regenerated `src/routeTree.gen.ts`; push; fill in the commit hash here.
+4. The `Kpi` → `StatCard` task needs nothing further and can be closed independently — it does not
+   have to wait on #15's functional QA.
 
 ---
 
@@ -315,7 +332,10 @@ bun run dev
   # with a `viewer` or `chw` token → 403
   ```
 
-### Dashboard KPI row (the `Kpi` → `StatCard` task)
+### Dashboard KPI row (the `Kpi` → `StatCard` task) — ✅ signed off 2026-08-25
+
+Checked on the host and passed. Kept here as the regression checklist for any future `StatCard`
+change, since these are the four things that break quietly.
 
 - http://localhost:8080/dashboard — the 4 cards under the hero.
 - ✓ Padding and number size are **unchanged** from before this task (`p-4`, `text-2xl`). If they
@@ -330,11 +350,11 @@ bun run dev
 - ✓ Spot-check pages that use the **default** `StatCard` size and must be untouched: `/admin`,
   `/lakes/<id>`, `/glaciers/<id>` — dense stat strips, `p-3`/`text-xl`, no icons.
 
-### Test complete ✓
+### Test complete when
 
-Cases can be created, edited and removed by an admin; removal is a confirmed, reason-required soft
-delete that leaves the row in Postgres with `deleted_at` set; every write leaves one audit row in
-the same transaction, carrying field names and never clinical values; and no read path in the
-portal shows a soft-deleted case. Separately, the dashboard renders its KPI row through `StatCard`
-at `size="lg"` with no local `Kpi` component left in `dashboard.tsx`, and every other `StatCard`
-call site looks exactly as it did before.
+All of the `cases` checks above pass — that is: cases can be created, edited and removed by an
+admin; removal is a confirmed, reason-required soft delete that leaves the row in Postgres with
+`deleted_at` set; every write leaves one audit row in the same transaction, carrying field names and
+never clinical values; and no read path in the portal shows a soft-deleted case. **The `Kpi` half is
+already there** — the dashboard renders its KPI row through `StatCard` at `size="lg"` with no local
+`Kpi` left in `dashboard.tsx`, and every other `StatCard` call site looks exactly as it did before.
