@@ -33,6 +33,10 @@ export const Route = createFileRoute("/api/public/cases")({
           treatment: body.treatment ?? null,
           outcome: body.outcome ?? null,
           isDisasterRelated: body.isDisasterRelated ?? false,
+          // Issue #15 made insertCase write an audit row in the same transaction, so it
+          // now needs an actor. Here the CHW is both author and actor; the camelCase wire
+          // format above is CryoHealth-app's contract and is unchanged.
+          actorId: claims.sub,
         });
         return Response.json({ ok: true });
       },
