@@ -2,6 +2,8 @@
 
 Session: task-cases-crud Model: claude-opus-5 Branch: Shoaib
 Goal: #15 — CRUD for Cases with a soft delete. Parent: #3 (admin portal). Depends on: #9.
+Also: the `Kpi` → `StatCard` consolidation task (p3 tech-debt deferred from #5) — its own section
+below. Both are code-complete and share one pending verification run.
 
 ## State
 
@@ -102,6 +104,45 @@ nullable — that would hand back null/unlinked IDs and produce 23503s at insert
 by exposing a minimal `cryohealth_admin`-or-`facility_admin` CHW-roster endpoint (id + name +
 lhwId only, no phone, no role); worth a follow-up issue.
 
+## Also in this session — `Kpi` → `StatCard` consolidation (p3, deferred from #5)
+
+`dashboard.tsx`'s local `Kpi` (the 5th `Stat`-shaped card) is deleted and its 4 call sites now use
+`StatCard` with `icon` passed. #5 added `StatCard`'s optional `icon?: React.ReactNode` precisely so
+this convergence needed no breaking prop change, and it didn't.
+
+**The finding that changed the shape of the fix: no pre-existing call site passed `icon`.** All 14
+`StatCard` usages (`admin.index`, `admin.lakes.$lakeId`, `admin.glaciers.$glacierId`,
+`lakes.$lakeId`, `glaciers.$glacierId`) pass only `label`/`value`/`tone`, so the icon slot had
+**never actually rendered** — and `StatCard` rendered `{icon}` unconstrained while lucide-react
+defaults to 24px. Migrating `Kpi`'s bare `<Mountain />` as-is would have put a 24px glyph beside
+`text-xs` label text. `StatCard` now normalises icons to 16px on the label row
+(`[&_svg]:h-4 [&_svg]:w-4`, carried over from `Kpi`, which constrained its own icon). Done
+centrally rather than per call site because no caller has explicit icon sizing to override — none
+passed an icon at all — and this way the next caller cannot get it wrong.
+
+**Size: variant added, not accepted.** The DoD allowed either. `StatCard` gains
+`size?: "sm" | "lg"`. `sm` is the default and renders byte-identically to before (`p-3`,
+`mt-1 text-xl`), so all 14 existing call sites are untouched in output; `lg` reproduces `Kpi`
+exactly (`p-4`, `mt-2 text-2xl`) and is used by the 4 dashboard cards. Reason for not simply
+accepting the shrink: **the DoD's own manual visual check could not be run this session** (VM down),
+and that KPI row is the first data on the public landing page, sitting directly under a `text-5xl`
+hero. Choosing between an unverifiable visual regression and zero visual change, zero wins. The
+variant is also not speculative — it has 4 real callers on day one.
+
+**One visual change is accepted by construction and does want a human's eye:** the icon moves from
+right-aligned (`Kpi` used `justify-between`) to immediately left of the label (`StatCard`'s
+`gap-1.5` row). That is `StatCard`'s layout and the whole point of converging on it; a position
+variant would leave almost nothing genuinely shared. Check it on the dashboard, per the visual step
+in the checklist below.
+
+Provenance correction: the issue cites `docs/ai/PLAN.md` ("NOT in scope") for the deferral, but
+PLAN.md has since been overwritten by later tasks and contains no such note. The surviving record is
+`docs/ai/sessions/2026-08-10-task5-build-handoff.md:34`. Left as it is — the dated session notes are
+historical records, not live TODOs.
+
+Remaining `Kpi` references repo-wide are in `graphify-out/` (generated call-graph snapshots, stale
+by design) and that one historical session note. No source reference survives.
+
 ## Open questions / actions for a human
 
 - **File the CryoHealth-api sync-endpoint goal** (carried over from #19, still not done — I do not
@@ -132,6 +173,10 @@ lhwId only, no phone, no role); worth a follow-up issue.
 - Do NOT source the CHW picker from `/api/public/chw-profiles` — nullable `user_id` violates the
   FK. See the gap section.
 - Do NOT add an `includeDeleted` flag to `listCasesAdmin` "for future use".
+- Do NOT "simplify" `StatCard` by collapsing `size` back to one set of classes — that silently
+  shrinks the public dashboard's KPI row, which is the regression the variant exists to avoid. And
+  do NOT move the icon sizing out to the call sites; central sizing is only safe *because* no caller
+  passes explicit icon dimensions.
 
 ## Loops run
 
@@ -145,6 +190,9 @@ lhwId only, no phone, no role); worth a follow-up issue.
 `src/lib/admin-schemas.ts` (modified), `src/lib/queries.ts` (modified),
 `src/routes/api/admin/cases.ts` (modified), `src/routes/api/admin/cases.$caseId.ts` (new),
 `src/routes/api/public/cases.ts` (modified, one line), `src/routes/admin.cases.tsx` (rewritten).
+For the `Kpi` task: `src/components/cryohealth/StatCard.tsx` (modified — `size` prop and icon
+normalisation) and `src/routes/dashboard.tsx` (modified — `StatCard` import, 4 call sites, local
+`Kpi` deleted).
 `src/routeTree.gen.ts` will change on the next build (adds `/api/admin/cases/$caseId`, plus
 `/admin/sync` and `/api/admin/sync` still owed from #19) — include it in the commit. This file.
 
@@ -163,6 +211,16 @@ lhwId only, no phone, no role); worth a follow-up issue.
   badge stays on one line because Prettier cannot split a lone string attribute.
   `noUnusedLocals: false` and `@typescript-eslint/no-unused-vars: "off"` were both confirmed
   before relying on `const { chw_id: _chwId, ...patch } = values;`.
+  For the `Kpi` task: all 14 `StatCard` call sites were read to confirm none passes `icon` (so the
+  central 16px normalisation overrides nothing) and none passes `size` (so the `sm` default keeps
+  them byte-identical); `\bKpi\b` was grepped repo-wide to confirm no live reference survives the
+  deletion; and every lucide import in `dashboard.tsx` (`Activity`, `Mountain`, `Bell`, `Users`,
+  plus `ArrowRight`, `Github`, `Scale`) is still used after `Kpi` went. Prettier widths were
+  hand-checked: the `Lakes in HIGH+` card is pre-broken across 6 lines because its one-line form is
+  104 columns; the other three measure 96/96/93 and stay one-liners, which is what Prettier emits.
+- **visual**: NOT checked (VM down). The `Kpi` → `StatCard` swap is intended to be pixel-neutral
+  except for the icon moving from right-aligned to left of the label — see the visual step in the
+  checklist.
 - **qa**: `tsc`/`lint`/`build` NOT run (VM down). Regenerate the route tree first.
 - **API gating**: `requireRole(["cryohealth_admin", "facility_admin"])` on GET/POST/PUT/DELETE.
   Runtime 401/403 behaviour not yet confirmed by execution — curl checks in the checklist.
@@ -257,9 +315,26 @@ bun run dev
   # with a `viewer` or `chw` token → 403
   ```
 
+### Dashboard KPI row (the `Kpi` → `StatCard` task)
+
+- http://localhost:8080/dashboard — the 4 cards under the hero.
+- ✓ Padding and number size are **unchanged** from before this task (`p-4`, `text-2xl`). If they
+  look tighter/smaller, `size="lg"` is missing from a call site.
+- ✓ Each card's icon is ~16px and sits immediately left of its label. **This is the one intended
+  visual change** — the icon used to be right-aligned at the far edge of the card. Confirm it reads
+  well; if not, the fix is `StatCard`'s label row, not a per-call-site override.
+- ✓ Icons are not oversized. A 24px icon towering over the `text-xs` label means the
+  `[&_svg]:h-4 [&_svg]:w-4` normalisation was dropped.
+- ✓ Values still populate from `/api/public/kpis` (HIGH+ lakes, alerts 30d, cases 7d, active CHWs)
+  and show `—` while loading.
+- ✓ Spot-check pages that use the **default** `StatCard` size and must be untouched: `/admin`,
+  `/lakes/<id>`, `/glaciers/<id>` — dense stat strips, `p-3`/`text-xl`, no icons.
+
 ### Test complete ✓
 
 Cases can be created, edited and removed by an admin; removal is a confirmed, reason-required soft
 delete that leaves the row in Postgres with `deleted_at` set; every write leaves one audit row in
 the same transaction, carrying field names and never clinical values; and no read path in the
-portal shows a soft-deleted case.
+portal shows a soft-deleted case. Separately, the dashboard renders its KPI row through `StatCard`
+at `size="lg"` with no local `Kpi` component left in `dashboard.tsx`, and every other `StatCard`
+call site looks exactly as it did before.
