@@ -1,9 +1,10 @@
-# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT
+# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT (pre-#27)
 
 Session: task-cases-crud Model: claude-opus-5 Branch: Shoaib
 Goal: #15 — CRUD for Cases with a soft delete. Parent: #3 (admin portal). Depends on: #9.
-Also: the `Kpi` → `StatCard` consolidation task (p3 tech-debt deferred from #5) — its own section
-below.
+Also in this branch, each with its own section below: the `Kpi` → `StatCard` consolidation
+(p3, deferred from #5 — done and verified) and **#27** (hazard-scores truncation signal — done,
+verification owed).
 
 ## State
 
@@ -13,6 +14,9 @@ green. That build regenerated `src/routeTree.gen.ts`, so the three routes accumu
 sessions (`/admin/sync` and `/api/admin/sync` from #19, `/api/admin/cases/$caseId` from #15) are now
 in the tree and typecheck. It also clears the same execution-gated block on #18 (audit log) and
 system-health, whose code compiled as part of the same build.
+
+**That green predates #27.** Its three files changed after that run, so the toolchain is owed one
+more pass before the commit — see Resume with.
 
 The **`Kpi` → `StatCard` task is fully verified.** Its DoD's manual visual check of the dashboard
 KPI row was done and reads correctly, so the `size` variant decision below is confirmed rather than
@@ -154,8 +158,48 @@ historical records, not live TODOs.
 Remaining `Kpi` references repo-wide are in `graphify-out/` (generated call-graph snapshots, stale
 by design) and that one historical session note. No source reference survives.
 
+## Also in this session — #27 hazard-scores truncation signal (size:s, p3)
+
+`listHazardScores()` capped at `LIMIT 120` and the endpoint returned a bare
+`{ hazardScores: [...] }`, so a lake past 120 pipeline runs would have shown its latest 120 with no
+hint the rest existed — on the one tab whose stated purpose (PRD §5) is auditability. Both
+acceptance criteria are met: the endpoint now reports `total` and `hasMore`, and the tab renders a
+"showing the latest 120 of N" line when truncated. Wire shape is now
+`{ hazardScores, total, hasMore }` — **purely additive**, the `hazardScores` key is unchanged, so
+the one existing consumer would still work even untouched.
+
+- **Counted with a second parallel query, not `count(*) OVER ()`.** Copies `listAudit()`'s
+  `Promise.all([rowsQuery, countQuery])` shape from #18 so this file has one count idiom rather
+  than two. The window-function form reads more cleanly but forces every matching row to be
+  materialised before `LIMIT` can apply — turning a cheap indexed count into a scan that grows with
+  pipeline history, which is the exact growth this issue is about. The `::int` cast also sidesteps
+  postgres.js returning bigint `count` as a string.
+- **No `limit` field on the wire, and the UI reads none.** The note says "the latest
+  `hazardScores.length`" — the number of rows actually rendered — so it cannot drift from what is on
+  screen even if the server-side cap changes. A `limit` field would have had no consumer; same call
+  as refusing an `includeDeleted` flag in #15.
+- **No cursor pagination.** The acceptance criteria ask only for a truncation signal, nothing
+  consumes a cursor, and `hazard_scores` is empty by design so a paging API could not be exercised
+  even once. The envelope is shaped so `cursor`/`nextCursor` can be added later without a break.
+- **The note sits above the table, not in a footer.** A deliberate deviation from
+  `admin.audit.tsx:393`, which puts its "Showing X–Y of N" line below the card. That page has a
+  pager, so its footer is where you look; this one has none, and with 120 rows on screen a footer
+  note is a screen and a half down — by the time the reader gets there they have already concluded
+  they saw every run. Styled muted rather than in the `--color-watch` tone: nothing is broken here,
+  the view is just capped.
+- The issue's line reference (`queries.ts:111`) had drifted — `listHazardScores()` was at :123
+  before this change and is at :137 after it. The issue was fine; later tasks moved the function.
+
 ## Open questions / actions for a human
 
+- **File a sibling issue for `listLakeRiskScores()` (`queries.ts:112`) — found while doing #27 and
+  arguably worse than #27 was.** It also caps at `LIMIT 120`, but with `ORDER BY observed_at ASC`,
+  so once a lake passes 120 rows the Risk scores tab keeps showing the *oldest* 120 and silently
+  hides every recent score — a truncation that gets more wrong over time, not just more partial.
+  `lake_risk_scores` is likewise empty today (nothing writes to it, per that tab's own empty state),
+  so it is equally unreproducible. Deliberately not fixed here: flipping to `DESC` changes what the
+  tab means, and #27's scope is the hazard-scores endpoint. The fix is the same envelope this issue
+  just added, plus a decision about which 120 rows a reader actually wants.
 - **File the CryoHealth-api sync-endpoint goal** (carried over from #19, still not done — I do not
   access GitHub in this workflow). Suggested scope: an endpoint that writes `sync_log` rows.
 - **Fix admin PRD §5 line 141**, which wrongly lists `chw_cases` as writer-less (see git history
@@ -204,8 +248,15 @@ by design) and that one historical session note. No source reference survives.
 For the `Kpi` task: `src/components/cryohealth/StatCard.tsx` (modified — `size` prop and icon
 normalisation) and `src/routes/dashboard.tsx` (modified — `StatCard` import, 4 call sites, local
 `Kpi` deleted).
-`src/routeTree.gen.ts` will change on the next build (adds `/api/admin/cases/$caseId`, plus
-`/admin/sync` and `/api/admin/sync` still owed from #19) — include it in the commit. This file.
+For #27: `src/lib/queries.ts` (modified again — `HAZARD_SCORES_LIMIT` + `listHazardScores` now
+returns `{ rows, total, hasMore }`), `src/routes/api/public/hazard-scores.$lakeId.ts` (modified —
+spreads the new fields onto the wire) and `src/routes/admin.lakes.$lakeId.tsx` (modified —
+`HazardScoresResponse`, the truncation note, and both `(hazardScores ?? [])` guards simplified now
+that the local const already defaults to `[]`).
+`src/routeTree.gen.ts` was regenerated by the 2026-08-25 build (it now carries
+`/api/admin/cases/$caseId`, `/admin/sync` and `/api/admin/sync` from #19, and
+`/api/public/hazard-scores/$lakeId`) and is dirty in the working tree — include it in the commit.
+This file.
 
 ## Verification status
 
@@ -238,14 +289,35 @@ normalisation) and `src/routes/dashboard.tsx` (modified — `StatCard` import, 4
   curl, CHW regression, facility_admin gating) is still unrun — see State.
 - **API gating**: `requireRole(["cryohealth_admin", "facility_admin"])` on GET/POST/PUT/DELETE.
   Runtime 401/403 behaviour not yet confirmed by execution — curl checks in the checklist.
+- **#27**: unverified by execution here. `bunx tsc --noEmit && bun run lint && bun run build` has
+  **not** been run since these three files changed — the host run on 2026-08-25 predates them, so
+  do not read the green above as covering #27.
+  Static review: `listHazardScores` was confirmed to have exactly one caller (the route) and that
+  route exactly one consumer (the tab) before its return type changed, so no third call site is
+  silently calling `.map` on what is now an object.
+  The `Promise.all` + `count(*)::int` shape is copied from `listAudit` (`queries.ts:1436`), down to
+  the `::int` cast that stops postgres.js handing the count back as a bigint-shaped string.
+  The truncation note interpolates `hazardScores.length` — the rows actually rendered — so the
+  sentence cannot contradict the table even if the cap changes.
+  The acceptance criterion "shows a 'showing latest 120' note when truncated" is met in substance
+  but not in wording: the note names the real total rather than a hardcoded 120, so it stays true
+  if `HAZARD_SCORES_LIMIT` ever moves.
+- **#27's runtime behaviour cannot be checked without data.** The issue says so itself — the table
+  is empty by design and the project rule forbids synthetic seeding. The checklist section below
+  resolves that with throwaway rows tagged `runId LIKE 'qa27-%'`, committed only long enough to read
+  the tab and then deleted by that prefix. Note the trap it documents: a `BEGIN … ROLLBACK` fixture
+  is invisible to the dev server, which queries on its own connection, so the rows must really be
+  committed and really be cleaned up. Nothing is added as a seed file.
 
 ## Resume with
 
-1. ~~`bun run build`, then `bunx tsc --noEmit && bun run lint && bun run build`~~ — done on the host
-   2026-08-25, all green, route tree regenerated. Nothing to rerun unless you change code.
+1. Run `bunx tsc --noEmit && bun run lint && bun run build` **again**. It passed clean on the host
+   on 2026-08-25 and regenerated the route tree, but that was before #27's three files — the green
+   does not cover them. This is the one step actually owed before anything else.
 2. Work through the **Manual Testing Checklist** below, skipping the Dashboard KPI section (already
    signed off). The soft-delete SQL checks are the ones that matter — they are what a passing build
-   cannot tell you.
+   cannot tell you. **Hazard-scores truncation (#27)** is the other section that cannot be skipped,
+   and it is last because it needs a throwaway transaction rather than clicking around.
 3. Commit, including the regenerated `src/routeTree.gen.ts`; push; fill in the commit hash here.
 4. The `Kpi` → `StatCard` task needs nothing further and can be closed independently — it does not
    have to wait on #15's functional QA.
@@ -350,6 +422,67 @@ change, since these are the four things that break quietly.
 - ✓ Spot-check pages that use the **default** `StatCard` size and must be untouched: `/admin`,
   `/lakes/<id>`, `/glaciers/<id>` — dense stat strips, `p-3`/`text-xl`, no icons.
 
+### Hazard-scores truncation (#27)
+
+The one check a passing build cannot give you, and the one the issue explicitly asks for. Nothing
+here is committed to the repo — the fixture rows carry a `qa27-` prefix on `runId` so cleanup is an
+exact `DELETE`, never a seed file.
+
+**The rows have to be committed.** `BEGIN … ROLLBACK` looks tidier but does not work: the dev
+server queries on its own connection and cannot see an uncommitted transaction, so the tab renders
+empty and you learn nothing. Insert, commit, check, delete by prefix.
+
+```sql
+-- 1. Any real lake will do. Keep the id; every step below needs it.
+SELECT id, name FROM lakes ORDER BY name LIMIT 1;
+
+-- 2. The "before" count, so the last step can prove the cleanup was complete.
+SELECT count(*) FROM hazard_scores WHERE "lakeId" = '<lake-id>';
+
+-- 3. 130 rows: 10 past the cap, so the boundary is exercised and not merely crossed.
+--    qa27-1 is the newest (now() - 1 hour); qa27-130 is the oldest.
+INSERT INTO hazard_scores ("lakeId", "runId", score, tier, components, "computedAt")
+SELECT '<lake-id>', 'qa27-' || n, 42.0, 'watch', '{"qa27":true}'::jsonb,
+       now() - (n || ' hours')::interval
+FROM generate_series(1, 130) AS n;
+```
+
+- ✓ **The endpoint reports the truncation** (acceptance criterion 1):
+  ```bash
+  TOKEN=<cryohealth_admin token from localStorage key `cryohealth_token`>
+  curl -s "http://localhost:8080/api/public/hazard-scores/<lake-id>" \
+    -H "Authorization: Bearer $TOKEN" | jq '{shown: (.hazardScores | length), total, hasMore}'
+  # → { "shown": 120, "total": <the step-2 count + 130>, "hasMore": true }
+  ```
+  `total` must be the real row count, **not** 120. If they are equal the count query has picked up
+  the `LIMIT` and the whole signal is worthless.
+- ✓ **The 120 it returns are the newest 120**, which is the half of the bug the note cannot fix:
+  ```bash
+  curl -s "http://localhost:8080/api/public/hazard-scores/<lake-id>" \
+    -H "Authorization: Bearer $TOKEN" | jq -r '.hazardScores[0].run_id, .hazardScores[-1].run_id'
+  # → qa27-1 then qa27-120   (qa27-121…130 are correctly the rows dropped)
+  ```
+  That exact output assumes the step-2 count was 0. If the lake already had rows newer than an
+  hour, they lead instead — what matters either way is that `qa27-121`–`qa27-130` are absent.
+- ✓ **The UI says so** (acceptance criterion 2): http://localhost:8080/admin/lakes/<lake-id> →
+  **Hazard scores** tab. Above the table, in muted small type: *"Showing the latest 120 of 130
+  pipeline runs. Older rows are kept in the database but are not listed here."* It must be visible
+  without scrolling — that is the entire reason it is not in a footer.
+- ✓ **The note disappears when nothing is truncated.** This branch matters more than it looks: a
+  note that is always on teaches the reader to ignore it.
+  ```sql
+  DELETE FROM hazard_scores WHERE "runId" LIKE 'qa27-%'
+    AND "runId" NOT IN ('qa27-1', 'qa27-2', 'qa27-3', 'qa27-4', 'qa27-5');
+  ```
+  Reload the tab → 5 rows, **no note**, and the endpoint reports `total: 5, hasMore: false`.
+- ✓ **Clean up, and prove it:**
+  ```sql
+  DELETE FROM hazard_scores WHERE "runId" LIKE 'qa27-%';
+  SELECT count(*) FROM hazard_scores WHERE "lakeId" = '<lake-id>';  -- → the step-2 count
+  ```
+  The `qa27-` prefix is the whole safety story. Never run an unqualified delete on this table —
+  CryoHealth-geo's real pipeline history lives in it on any environment that has run the pipeline.
+
 ### Test complete when
 
 All of the `cases` checks above pass — that is: cases can be created, edited and removed by an
@@ -358,3 +491,7 @@ admin; removal is a confirmed, reason-required soft delete that leaves the row i
 never clinical values; and no read path in the portal shows a soft-deleted case. **The `Kpi` half is
 already there** — the dashboard renders its KPI row through `StatCard` at `size="lg"` with no local
 `Kpi` left in `dashboard.tsx`, and every other `StatCard` call site looks exactly as it did before.
+
+**#27 is complete when** the endpoint's `total` disagrees with the 120 rows it returns, the tab
+says so above the table, the note vanishes once the count drops back under the cap, and the `qa27-`
+rows are gone from `hazard_scores`.

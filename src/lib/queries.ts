@@ -120,16 +120,35 @@ export async function listLakeRiskScores(lakeId: string) {
   `;
 }
 
+/** Hard cap on the hazard-score rows the lake detail page will render in one go (issue #27). */
+const HAZARD_SCORES_LIMIT = 120;
+
+/** Hazard scores for one lake, newest first, capped at HAZARD_SCORES_LIMIT. CryoHealth-geo
+ *  writes one row per lake per pipeline run, so this table grows without bound while the
+ *  admin page's Hazard scores tab is an *auditability* view (PRD §5) — a view that silently
+ *  stops at 120 rows is wrong, not merely partial, because 120 rows reads as "every run".
+ *  So the total comes back alongside the page and the UI says what it is not showing.
+ *  Counted with a second parallel query rather than `count(*) OVER ()`, matching listAudit()
+ *  — the window-function form would force every matching row to be materialised before the
+ *  LIMIT could apply, trading a cheap indexed count for a scan that grows with pipeline
+ *  history. Deliberately NOT cursor-paginated: nothing consumes a cursor today and the table
+ *  is empty by design, so a paging API would be unexercised guesswork. Adding one later is a
+ *  purely additive change to this envelope. */
 export async function listHazardScores(lakeId: string) {
   const sql = await getDb();
-  return sql`
-    SELECT "runId" AS run_id, score, upper(tier::text) AS tier,
-           components, "computedAt" AS computed_at
-    FROM hazard_scores
-    WHERE "lakeId" = ${lakeId}
-    ORDER BY "computedAt" DESC
-    LIMIT 120
-  `;
+  const [rows, [{ count }]] = await Promise.all([
+    sql`
+      SELECT "runId" AS run_id, score, upper(tier::text) AS tier,
+             components, "computedAt" AS computed_at
+      FROM hazard_scores
+      WHERE "lakeId" = ${lakeId}
+      ORDER BY "computedAt" DESC
+      LIMIT ${HAZARD_SCORES_LIMIT}
+    `,
+    sql`SELECT count(*)::int AS count FROM hazard_scores WHERE "lakeId" = ${lakeId}`,
+  ]);
+  const total = count as number;
+  return { rows, total, hasMore: total > rows.length };
 }
 
 export async function listAlertsForLake(lakeId: string) {

@@ -13,8 +13,11 @@ export const Route = createFileRoute("/api/public/hazard-scores/$lakeId")({
           if (e instanceof AuthError) return e.response;
           throw e;
         }
-        const hazardScores = await listHazardScores(params.lakeId);
-        return Response.json({ hazardScores });
+        // `hazardScores` keeps its original key so this stays a purely additive change for any
+        // existing consumer; `total`/`hasMore` are what let a caller tell a complete list from a
+        // list capped at 120 (issue #27).
+        const { rows, total, hasMore } = await listHazardScores(params.lakeId);
+        return Response.json({ hazardScores: rows, total, hasMore });
       },
     },
   },

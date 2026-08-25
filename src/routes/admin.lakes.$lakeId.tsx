@@ -72,6 +72,14 @@ type HazardScoreRow = {
   computed_at: string;
 };
 
+/** `total` is every hazard_scores row for the lake; `hazardScores` is only the latest 120 the
+ *  endpoint will return. When they disagree the tab has to say so — see hazardTruncationNote. */
+type HazardScoresResponse = {
+  hazardScores: HazardScoreRow[];
+  total: number;
+  hasMore: boolean;
+};
+
 function LakeDetailAdmin() {
   const { lakeId } = Route.useParams();
   const qc = useQueryClient();
@@ -101,15 +109,20 @@ function LakeDetailAdmin() {
   });
 
   const {
-    data: hazardScores,
+    data: hazard,
     isLoading: hazardLoading,
     isError: hazardError,
   } = useQuery({
     queryKey: ["admin-lake-hazard-scores", lakeId],
-    queryFn: async (): Promise<HazardScoreRow[]> => {
+    queryFn: async (): Promise<HazardScoresResponse> => {
       const res = await authFetch(`/api/public/hazard-scores/${lakeId}`);
       if (!res.ok) throw new Error(`hazard-scores fetch failed: ${res.status}`);
-      return (await res.json()).hazardScores ?? [];
+      const body = await res.json();
+      return {
+        hazardScores: body.hazardScores ?? [],
+        total: body.total ?? 0,
+        hasMore: body.hasMore ?? false,
+      };
     },
   });
 
@@ -135,6 +148,16 @@ function LakeDetailAdmin() {
 
   const lake = bundle?.lake;
   const riskScores = bundle?.history ?? [];
+  const hazardScores = hazard?.hazardScores ?? [];
+
+  // The Hazard scores tab exists to be audited, so a capped list has to admit that it is capped —
+  // otherwise 120 rows reads as "every pipeline run there has ever been". Rendered above the table
+  // rather than in a footer like admin.audit.tsx's pager line: with 120 rows a footer sits a screen
+  // and a half down, by which point the reader has already drawn the wrong conclusion.
+  const hazardTruncationNote = hazard?.hasMore
+    ? `Showing the latest ${hazardScores.length} of ${hazard.total.toLocaleString()} pipeline ` +
+      "runs. Older rows are kept in the database but are not listed here."
+    : null;
 
   if (isLoading) return <AdminPlaceholder title="Lake detail" subtitle="Loading…" />;
   if (isError)
@@ -278,6 +301,11 @@ function LakeDetailAdmin() {
 
         <TabsContent value="hazard-scores">
           <div className="rounded-xl border border-border bg-card">
+            {hazardTruncationNote && (
+              <p className="border-b border-border px-4 py-2.5 text-xs text-muted-foreground">
+                {hazardTruncationNote}
+              </p>
+            )}
             <Table>
               <TableHeader>
                 <TableRow className="border-border bg-secondary/50 hover:bg-secondary/50">
@@ -307,7 +335,7 @@ function LakeDetailAdmin() {
                     </TableCell>
                   </TableRow>
                 )}
-                {!hazardLoading && !hazardError && (hazardScores ?? []).length === 0 && (
+                {!hazardLoading && !hazardError && hazardScores.length === 0 && (
                   <TableRow className="border-border">
                     <TableCell colSpan={5} className="py-6 text-center text-muted-foreground">
                       No hazard scores yet — populated by CryoHealth-geo pipeline runs via{" "}
@@ -315,7 +343,7 @@ function LakeDetailAdmin() {
                     </TableCell>
                   </TableRow>
                 )}
-                {(hazardScores ?? []).map((h) => (
+                {hazardScores.map((h) => (
                   <TableRow key={h.run_id + h.computed_at} className="border-border">
                     <TableCell className="text-foreground">
                       {new Date(h.computed_at).toLocaleDateString()}
