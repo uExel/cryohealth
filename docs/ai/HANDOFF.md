@@ -1,10 +1,11 @@
-# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT (pre-#27)
+# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT (pre-#27, pre-#28)
 
 Session: task-cases-crud Model: claude-opus-5 Branch: Shoaib
 Goal: #15 — CRUD for Cases with a soft delete. Parent: #3 (admin portal). Depends on: #9.
 Also in this branch, each with its own section below: the `Kpi` → `StatCard` consolidation
-(p3, deferred from #5 — done and verified) and **#27** (hazard-scores truncation signal — done,
-verification owed).
+(p3, deferred from #5 — done and verified), **#27** (hazard-scores truncation signal — done,
+verification owed) and **#28** (UUID-validate path params — done, acceptance criteria
+verified live on the host, toolchain owed).
 
 ## State
 
@@ -15,8 +16,9 @@ sessions (`/admin/sync` and `/api/admin/sync` from #19, `/api/admin/cases/$caseI
 in the tree and typecheck. It also clears the same execution-gated block on #18 (audit log) and
 system-health, whose code compiled as part of the same build.
 
-**That green predates #27.** Its three files changed after that run, so the toolchain is owed one
-more pass before the commit — see Resume with.
+**That green predates #27 and #28.** Their files changed after that run — and
+`api/public/hazard-scores.$lakeId.ts` changed twice, once per issue — so the toolchain is owed one
+more pass before the commit. See Resume with.
 
 The **`Kpi` → `StatCard` task is fully verified.** Its DoD's manual visual check of the dashboard
 KPI row was done and reads correctly, so the `size` variant decision below is confirmed rather than
@@ -190,8 +192,94 @@ the one existing consumer would still work even untouched.
 - The issue's line reference (`queries.ts:111`) had drifted — `listHazardScores()` was at :123
   before this change and is at :137 after it. The issue was fine; later tasks moved the function.
 
-## Open questions / actions for a human
+## Also in this session — #28 UUID-validate `$lakeId` path params (size:s, p3)
 
+Filed as F3 during #7's `/uexel:verify`. `params.lakeId` reached SQL unvalidated, so a malformed id
+(`not-a-uuid`) hit Postgres, raised SQLSTATE **22P02** (`invalid_text_representation`) uncaught, and
+escaped as a **500 with a `text/html` SSR error shell** — the wrong content type from a JSON API and
+inconsistent with the 401/403/404 paths in the same handlers, all of which return `Response.json`.
+Both acceptance criteria are met and were confirmed live; see Verification status.
+
+**The mechanism, worth knowing before touching any error path in this repo:** `src/server.ts:55-56`
+passes any response with `status < 500` through untouched and only rewraps JSON **5xx** bodies into
+the branded HTML shell (`:21-26`). So *any* uncaught throw in a JSON route silently becomes HTML to a
+JSON client, and returning a 4xx is what keeps the response JSON. That is the whole bug, and it is
+also why the fix works rather than merely changing a status code.
+
+- **Centralised, not inlined.** The helper is `invalidUuidResponse(value, label)` in
+  `src/lib/api-errors.ts`, beside `parseJsonBody` and `mapDbError`, and follows their established
+  `const x = f(...); if (x) return x;` call shape. The issue left this conditional on "a third
+  `.$lakeId` route landing (e.g. lake CRUD in #11)" — #11 has since landed
+  (`api/admin/lakes.$lakeId.ts`), so the condition was already met when this was picked up. That
+  file's doc comment was widened from `api/admin/*` to `api/admin/* and api/public/*`.
+- **Scope widened by one route, deliberately and with sign-off.** The acceptance criteria name only
+  the two `.$lakeId` routes, but `api/public/glaciers.$glacierId.ts` had the identical bug — and it
+  is the *same 500* observed live back in **task #6's verify** (`curl .../glaciers/not-a-uuid` → 500,
+  `docs/ai/sessions/2026-08-10-task6-verify-report.md:27`). That pass fixed the admin page's
+  *handling* of the 500 but never the shape of the response, so the server-side half sat open for
+  five sessions. Fixing two of three routes would have left a known, already-reported 500 behind for
+  a future verify to re-file.
+- **A literal regex, not `z.string().uuid()`.** These are read-only public GETs that otherwise import
+  no schema code, and `package.json:73` pins zod with a caret (`^3.24.2`), so `.uuid()`'s exact
+  strictness can shift on an unrelated `bun install` — a validator guarding the 404-vs-400 boundary
+  should not move on a dependency bump. Confirmed equivalent in practice: installed zod v3's own
+  `uuidRegex` is functionally the same pattern, so path validation now agrees with the
+  `z.string().uuid()` body validation in `admin-schemas.ts`. The regex has **no `g` flag** — it is
+  module-level, and `.test()` on a `/g` regex is stateful and would alternate pass/fail across calls.
+- **Stricter than Postgres, on purpose.** Postgres's `uuid` input also accepts braced (`{…}`) and
+  hyphen-less forms, which this rejects. Safe because every id in circulation is DB-generated
+  (`uuid_generate_v4()` / `@PrimaryGeneratedColumn('uuid')`) and rendered by postgres.js in canonical
+  lowercase-hyphenated form; no client builds an id by hand, and every in-app link passes a
+  DB-sourced `.id`. The `i` flag is kept so an id upper-cased in transit still resolves rather than
+  400ing on a value Postgres would have matched.
+- **On the gated route the guard sits *after* the auth/role check**, not at the top of the handler.
+  An unauthenticated caller with a malformed id must still get 401, so the endpoint never validates
+  input for someone not allowed to call it and never reveals whether the id was well-formed. This is
+  the one behaviour that depends on placement rather than on the guard itself, which is why it has
+  its own verification line below.
+- **`mapDbError`'s 22P02 branch did not become dead and must stay.** It was never reachable from
+  these three public routes — none has a try/catch, which is precisely why the error escaped as a
+  500. It is genuinely live for all nine `api/admin/*.$param` routes, which do wrap their queries
+  and which therefore already returned a correct 400 for a bad UUID (verified live in #11's Step 3,
+  "400-bad-UUID"). So the admin routes were never broken by this bug — they validate reactively,
+  after a wasted DB round-trip, where the public routes now validate up front.
+- **No remaining unguarded `$param` route.** The three fixed files are the only `api/public/*` routes
+  taking a `$param` at all, and no public route reads `searchParams`/`new URL`, so there is no
+  query-string vector. A body-param vector does survive — see Open questions.
+
+
+
+- **File a follow-up for #28's surviving sibling vector: unvalidated ids in request *bodies*.**
+  `api/public/alert-acks.ts:17-18` binds `alertId` and `api/public/cases.ts:16-40` binds
+  `body.districtId` straight into SQL with no schema validation and no try/catch, so a malformed id
+  there still produces exactly the 22P02 → 500 HTML shell that #28 is about — same bug class, same
+  branded-shell symptom, different entry point. Deliberately not fixed: #28's scope and acceptance
+  criteria are path params. The fix is either a `.uuid()` field on those bodies or
+  `invalidUuidResponse` after parsing, plus the `mapDbError` catch the admin routes already have.
+- **Decide whether the public and admin wordings should converge.** Public routes now return
+  `{"error":"Invalid lake id"}`; the admin routes return `{"error":"Invalid ID"}` for the same class
+  of input (`api-errors.ts:65`, via `mapDbError`). Applying `invalidUuidResponse` after the auth
+  block in the nine `api/admin/*.$param` routes would unify the message and skip a pointless DB
+  round-trip, but it changes an error string those routes have returned since #11 — cosmetic, so it
+  is a judgement call rather than a defect, and it is not smuggled into #28.
+- **`data.tsx` documents the public API with ids of the wrong shape** (`:41,59,69,98,104` show
+  `"lk_shishper"` / `"gl_101"`). They are illustrative payloads, not live fetches, so nothing is
+  broken — but they were already wrong about the format, and after #28 a developer copying one gets a
+  400 rather than a 500 page. Worth correcting to a uuid shape so external consumers do not model
+  `lk_`-style ids.
+- **A correct 400 is still invisible on the public lake page.** `lakes.$lakeId.tsx:35-36` collapses
+  every non-ok response to `null`, and `:108-114` renders "Loading lake…" whenever `lake` is falsy,
+  so a 400 (like the old 500) shows an indefinite spinner. Pre-existing and untouched by #28 — the
+  wire shape is now right, the page's handling of it is not. `admin.lakes.$lakeId.tsx:96-97` and
+  `admin.glaciers.$glacierId.tsx:66-67` map only 404 to "Not found" and advise "try reloading" for
+  everything else, which for a typo'd URL can never work; `router.tsx:6` builds the `QueryClient`
+  with no `defaultOptions`, so react-query also retries the un-retryable 400 three times.
+- **`GET /api/public/lakes` returned `{"error":"fetch failed"}` during #28's verification.** That is
+  the one endpoint proxying CryoHealth-api over HTTP (`src/lib/cryohealth-api.ts`,
+  `CRYOHEALTH_API_URL`) rather than reading Postgres, so it means that Nest service was not up — it
+  is unrelated to #28 and blocked nothing, since the detail routes read the DB directly. But check
+  what **status** that error body ships under: if an upstream outage returns an error payload beneath
+  a 200, that is its own wrong-shape bug on a route #28 did not cover.
 - **File a sibling issue for `listLakeRiskScores()` (`queries.ts:112`) — found while doing #27 and
   arguably worse than #27 was.** It also caps at `LIMIT 120`, but with `ORDER BY observed_at ASC`,
   so once a lake passes 120 rows the Risk scores tab keeps showing the *oldest* 120 and silently
@@ -233,6 +321,18 @@ the one existing consumer would still work even untouched.
   do NOT move the icon sizing out to the call sites; central sizing is only safe *because* no caller
   passes explicit icon dimensions.
 
+- **#28: do NOT move the UUID guard above the auth block** in `api/public/hazard-scores.$lakeId.ts`
+  on "validate input first" tidiness grounds. It would make an anonymous caller's 401 depend on the
+  id's shape, turning the guard into an unauthenticated probe of what the route considers a valid id.
+  Auth first, then input.
+- **#28: do NOT replace the regex in `api-errors.ts` with `z.string().uuid()`** for consistency with
+  `admin-schemas.ts`, and do NOT add a `g` flag to it. See the #28 section: the caret-pinned zod
+  version makes `.uuid()`'s strictness a moving target under a validator that decides 400-vs-404, and
+  a module-level `/g` regex makes `.test()` stateful across requests.
+- **#28: do NOT delete `mapDbError`'s 22P02 branch** as newly-dead code. It was never reachable from
+  the three public routes (no try/catch there — that is the bug), and it is live for all nine
+  `api/admin/*.$param` routes.
+
 ## Loops run
 
 - None needed. `bunx tsc --noEmit && bun run lint && bun run build` passed **first try** on the
@@ -253,6 +353,14 @@ returns `{ rows, total, hasMore }`), `src/routes/api/public/hazard-scores.$lakeI
 spreads the new fields onto the wire) and `src/routes/admin.lakes.$lakeId.tsx` (modified —
 `HazardScoresResponse`, the truncation note, and both `(hazardScores ?? [])` guards simplified now
 that the local const already defaults to `[]`).
+For #28: `src/lib/api-errors.ts` (modified — module-private `UUID_RE` + exported
+`invalidUuidResponse`, and the file's doc comment widened to cover `api/public/*`),
+`src/routes/api/public/lakes.$lakeId.ts` (modified — guard at the top of GET, before the
+four-query `Promise.all`), `src/routes/api/public/hazard-scores.$lakeId.ts` (**modified again**,
+after #27 — guard placed after the auth/role block) and
+`src/routes/api/public/glaciers.$glacierId.ts` (modified — guard at the top of GET, the
+scope-adjacent third route). No client file was touched: the wire shape only gained a status code
+these pages already handled as a generic error.
 `src/routeTree.gen.ts` was regenerated by the 2026-08-25 build (it now carries
 `/api/admin/cases/$caseId`, `/admin/sync` and `/api/admin/sync` from #19, and
 `/api/public/hazard-scores/$lakeId`) and is dirty in the working tree — include it in the commit.
@@ -309,15 +417,51 @@ This file.
   is invisible to the dev server, which queries on its own connection, so the rows must really be
   committed and really be cleaned up. Nothing is added as a seed file.
 
+- **#28: acceptance criteria verified live on the host** (dev server on :8080, 2026-08-25), which is
+  the first time this branch has had execution-backed verification of anything. Confirmed from actual
+  captured `curl -i` output, all four with `content-type: application/json` and no HTML shell:
+  `GET /api/public/lakes/not-a-uuid` → **400** `{"error":"Invalid lake id"}`;
+  `GET /api/public/glaciers/not-a-uuid` → **400** `{"error":"Invalid glacier id"}`;
+  `GET /api/public/hazard-scores/not-a-uuid` with **no** token → **401** `{"error":"Unauthorized"}`,
+  which is the auth-ordering check and the one result that proves the guard's *placement*; and
+  `GET /api/public/lakes/00000000-0000-0000-0000-000000000000` → **404** `{"error":"Not found"}`,
+  proving the guard accepts a well-formed id and did not swallow the 404 path (and incidentally that
+  the detail route reads Postgres directly, not the upstream API).
+  Reported passing by Shoaib but **output not captured here**: the gated 400 with a real bearer token,
+  and a 200 on a real lake id. Treat those two as claimed-not-evidenced if you are auditing.
+  **A trap worth recording:** an earlier attempt at the gated route used `Bearer %TOKEN%` in
+  `cmd.exe` with `TOKEN` unset, so the literal string `%TOKEN%` was sent and the route returned 401.
+  That is a bad-token 401 that never reaches the guard — inconclusive, not a failure. `cmd` has no
+  clean command substitution; log in, copy `accessToken` (**not** `token`) out of the response, then
+  `set TOKEN=…`.
+- **#28: static review, independent.** A second pass re-derived the whole change from the files
+  rather than the plan: the regex was matched character-by-character against real ids from
+  `docs/ai/planning/snapshots/task-11-lakes-preflight.txt` and `lakes.service.spec.ts:35` (all
+  accepted, so no working 200 becomes a 400); id provenance was traced to `uuid_generate_v4()` /
+  `@PrimaryGeneratedColumn('uuid')` and every in-app link confirmed to pass a DB-sourced `.id`; the
+  `@/lib/api-errors` alias was confirmed against `tsconfig.json:23-25` plus the vite alias; the three
+  route ids were confirmed against `src/routeTree.gen.ts:1290-1310` so `params.lakeId`/`params.glacierId`
+  really are `string`; and every original status path (200/404/401/403) was walked to confirm the
+  guard cannot short-circuit a valid request. Also noted: upstream `lakes.controller.ts:31` already
+  uses `ParseUUIDPipe`, so this fix now *matches* CryoHealth-api's contract rather than diverging
+  from it. Prettier: the longest new line is the regex at ~94 columns, under printWidth 100, and
+  Prettier cannot split a regex literal anyway.
+- **#28: toolchain still owed, same as #27.** `bunx tsc --noEmit && bun run lint && bun run build`
+  has not been run since `api-errors.ts` and the three routes changed. `graphify update .` is also
+  owed per CLAUDE.md. The passing curls prove runtime behaviour, not that the build is clean.
+
 ## Resume with
 
-1. Run `bunx tsc --noEmit && bun run lint && bun run build` **again**. It passed clean on the host
-   on 2026-08-25 and regenerated the route tree, but that was before #27's three files — the green
-   does not cover them. This is the one step actually owed before anything else.
+1. Run `bunx tsc --noEmit && bun run lint && bun run build` **again**, then `graphify update .`. The
+   toolchain passed clean on the host on 2026-08-25 and regenerated the route tree, but that was
+   before #27's three files *and* before #28's four — the green covers neither. This is the one step
+   actually owed before anything else.
 2. Work through the **Manual Testing Checklist** below, skipping the Dashboard KPI section (already
-   signed off). The soft-delete SQL checks are the ones that matter — they are what a passing build
-   cannot tell you. **Hazard-scores truncation (#27)** is the other section that cannot be skipped,
-   and it is last because it needs a throwaway transaction rather than clicking around.
+   signed off) and the **#28** section (acceptance criteria already verified live — only the two
+   token-dependent lines there are unevidenced). The soft-delete SQL checks are the ones that matter
+   — they are what a passing build cannot tell you. **Hazard-scores truncation (#27)** is the other
+   section that cannot be skipped, and it is last because it needs a throwaway transaction rather
+   than clicking around.
 3. Commit, including the regenerated `src/routeTree.gen.ts`; push; fill in the commit hash here.
 4. The `Kpi` → `StatCard` task needs nothing further and can be closed independently — it does not
    have to wait on #15's functional QA.
@@ -483,6 +627,61 @@ FROM generate_series(1, 130) AS n;
   The `qa27-` prefix is the whole safety story. Never run an unqualified delete on this table —
   CryoHealth-geo's real pipeline history lives in it on any environment that has run the pipeline.
 
+### Malformed path params (#28) — ✅ acceptance criteria signed off 2026-08-25
+
+Verified live on the host. Kept here as the regression checklist for any future change to
+`api-errors.ts` or to a public `$param` route, since the failure mode is quiet: the status code is
+wrong *and* the content type flips to `text/html`, so a JSON client sees a parse error rather than an
+error message. **Always use `curl -i`** — without headers you cannot see the content type, which is
+half of what this issue was about.
+
+```bash
+bun run dev   # dev server on http://localhost:8080 (it has also come up on :8081 — use what it prints)
+```
+
+- ✓ **The two acceptance-criteria routes return 400 JSON, not a 500 HTML shell:**
+  ```bash
+  curl -i http://localhost:8080/api/public/lakes/not-a-uuid
+  # → HTTP/1.1 400 · content-type: application/json · {"error":"Invalid lake id"}
+  curl -i http://localhost:8080/api/public/glaciers/not-a-uuid
+  # → HTTP/1.1 400 · content-type: application/json · {"error":"Invalid glacier id"}
+  ```
+  If you see `content-type: text/html`, you are looking at the old 500 shell and the guard is not
+  running. (The glaciers route is the scope-adjacent third one — same bug, first seen in #6.)
+- ✓ **Auth still wins over the guard** — the check that proves *placement*, not just the guard:
+  ```bash
+  curl -i http://localhost:8080/api/public/hazard-scores/not-a-uuid
+  # → HTTP/1.1 401 · {"error":"Unauthorized"}   ← must NOT be 400
+  ```
+  A 400 here would mean the guard drifted above the auth block, letting an anonymous caller probe
+  which ids the route considers valid.
+- ✓ **A well-formed id still reaches the 404 path** — proves the guard did not swallow it:
+  ```bash
+  curl -i http://localhost:8080/api/public/lakes/00000000-0000-0000-0000-000000000000
+  # → HTTP/1.1 404 · {"error":"Not found"}
+  ```
+- ☐ **The gated route 400s for an authorized caller** (reported passing, output not captured):
+  ```bash
+  curl -s http://localhost:8080/api/auth/login -H "content-type: application/json" \
+    -d '{"lhwId":"admin-001","pin":"1234"}'
+  # copy accessToken (NOT `token`) from the response, then:
+  TOKEN=eyJ...
+  curl -i http://localhost:8080/api/public/hazard-scores/not-a-uuid -H "authorization: Bearer $TOKEN"
+  # → HTTP/1.1 400 · {"error":"Invalid lake id"}
+  ```
+  In `cmd.exe` use `set TOKEN=eyJ...` and `%TOKEN%`; there is no command substitution, and an unset
+  `%TOKEN%` sends the literal string and yields a misleading 401 that never reaches the guard.
+- ☐ **A real id still returns 200** (reported passing, output not captured). Do **not** source the id
+  from `GET /api/public/lakes` — that route proxies CryoHealth-api over HTTP and returns
+  `{"error":"fetch failed"}` whenever that service is down, which it was during this verification.
+  Use a seeded id from the #11 snapshot, or `SELECT id FROM lakes LIMIT 1`:
+  ```bash
+  curl -i http://localhost:8080/api/public/lakes/420f0980-b1a3-4a6e-be24-62d9676dd9eb
+  # → HTTP/1.1 200   (Badswat glacial lake, per docs/ai/planning/snapshots/task-11-lakes-preflight.txt)
+  ```
+- ☐ **Optional, cheap:** an upper-cased id should behave exactly like its lowercase form (the regex
+  carries `i` deliberately, so this must not 400).
+
 ### Test complete when
 
 All of the `cases` checks above pass — that is: cases can be created, edited and removed by an
@@ -495,3 +694,8 @@ already there** — the dashboard renders its KPI row through `StatCard` at `siz
 **#27 is complete when** the endpoint's `total` disagrees with the 120 rows it returns, the tab
 says so above the table, the note vanishes once the count drops back under the cap, and the `qa27-`
 rows are gone from `hazard_scores`.
+
+**#28 is already complete on behaviour** — both acceptance-criteria routes return 400 JSON for a
+non-UUID id, the glaciers route with them, auth still precedes the guard, and a well-formed id still
+404s. What remains is not a test but a build: `bunx tsc --noEmit && bun run lint && bun run build`
+plus `graphify update .`, neither of which has run since these four files changed.
