@@ -1,14 +1,28 @@
-# HANDOFF — cryohealth — 2026-08-24 PKT
+# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT
 
 Session: task-cases-crud Model: claude-opus-5 Branch: Shoaib
 Goal: #15 — CRUD for Cases with a soft delete. Parent: #3 (admin portal). Depends on: #9.
+Also: the `Kpi` → `StatCard` consolidation task (p3 tech-debt deferred from #5) — its own section
+below.
 
 ## State
 
-Implemented, **not yet build-verified**. The dev VM/toolchain reported "VM service not running"
-again this session (fourth session in a row with the same signature), so
-`bunx tsc --noEmit && bun run lint && bun run build` was NOT executed and `src/routeTree.gen.ts`
-was NOT regenerated. All Definition-of-Done code is written and passed a static self-review.
+**Toolchain verification passed.** Shoaib ran it on the host on 2026-08-25, after four sessions of
+"VM service not running" blocking it here: `bunx tsc --noEmit && bun run lint && bun run build` all
+green. That build regenerated `src/routeTree.gen.ts`, so the three routes accumulated across
+sessions (`/admin/sync` and `/api/admin/sync` from #19, `/api/admin/cases/$caseId` from #15) are now
+in the tree and typecheck. It also clears the same execution-gated block on #18 (audit log) and
+system-health, whose code compiled as part of the same build.
+
+The **`Kpi` → `StatCard` task is fully verified.** Its DoD's manual visual check of the dashboard
+KPI row was done and reads correctly, so the `size` variant decision below is confirmed rather than
+provisional. Nothing is outstanding on that task.
+
+**#15's functional QA is still owed.** The build proves the code compiles, not that a soft delete
+behaves. The SQL/curl checklist below has NOT been run — specifically the `deleted_at`
+row-retention check, the repeat DELETE → 404, the audit-meta "no clinical values" check, the CHW
+create-path regression (the one pre-existing signature this issue changed), and the facility_admin
+401/403 gating. Those are the checks that would catch a logic error rather than a type error.
 
 **The upstream blocker is cleared.** The DoD was blocked on a `deleted_at` migration landing in
 `CryoHealth-api` first. It has landed:
@@ -17,10 +31,8 @@ was NOT regenerated. All Definition-of-Done code is written and passed a static 
 by running the migration — confirm the column actually exists in your local DB before testing
 (`\d cases`). No migration was added here; this repo does not own migrations.
 
-Route-tree regen is now owed for **three** routes accumulated across sessions: `/admin/sync` and
-`/api/admin/sync` (#19) plus `/api/admin/cases/$caseId` (this session). `tsc` fails on all three
-until one build runs. Prior tasks #18 (audit log) and system-health are likewise code-complete and
-await the same execution-gated verification.
+`src/routeTree.gen.ts` is now regenerated and dirty in the working tree — **include it in the
+commit**. It is generated output, so never hand-edit it; if it looks wrong, rerun the build.
 
 ## Decisions taken this session
 
@@ -102,6 +114,46 @@ nullable — that would hand back null/unlinked IDs and produce 23503s at insert
 by exposing a minimal `cryohealth_admin`-or-`facility_admin` CHW-roster endpoint (id + name +
 lhwId only, no phone, no role); worth a follow-up issue.
 
+## Also in this session — `Kpi` → `StatCard` consolidation (p3, deferred from #5)
+
+`dashboard.tsx`'s local `Kpi` (the 5th `Stat`-shaped card) is deleted and its 4 call sites now use
+`StatCard` with `icon` passed. #5 added `StatCard`'s optional `icon?: React.ReactNode` precisely so
+this convergence needed no breaking prop change, and it didn't.
+
+**The finding that changed the shape of the fix: no pre-existing call site passed `icon`.** All 14
+`StatCard` usages (`admin.index`, `admin.lakes.$lakeId`, `admin.glaciers.$glacierId`,
+`lakes.$lakeId`, `glaciers.$glacierId`) pass only `label`/`value`/`tone`, so the icon slot had
+**never actually rendered** — and `StatCard` rendered `{icon}` unconstrained while lucide-react
+defaults to 24px. Migrating `Kpi`'s bare `<Mountain />` as-is would have put a 24px glyph beside
+`text-xs` label text. `StatCard` now normalises icons to 16px on the label row
+(`[&_svg]:h-4 [&_svg]:w-4`, carried over from `Kpi`, which constrained its own icon). Done
+centrally rather than per call site because no caller has explicit icon sizing to override — none
+passed an icon at all — and this way the next caller cannot get it wrong.
+
+**Size: variant added, not accepted.** The DoD allowed either. `StatCard` gains
+`size?: "sm" | "lg"`. `sm` is the default and renders byte-identically to before (`p-3`,
+`mt-1 text-xl`), so all 14 existing call sites are untouched in output; `lg` reproduces `Kpi`
+exactly (`p-4`, `mt-2 text-2xl`) and is used by the 4 dashboard cards. Reason for not simply
+accepting the shrink: **the DoD's own manual visual check could not be run in-session** (VM down),
+and that KPI row is the first data on the public landing page, sitting directly under a `text-5xl`
+hero. Choosing between an unverifiable visual regression and zero visual change, zero wins. The
+variant is also not speculative — it has 4 real callers on day one. **Since verified on the host:
+the row renders as it did before, so the variant did its job.**
+
+**One visual change is accepted by construction:** the icon moves from right-aligned (`Kpi` used
+`justify-between`) to immediately left of the label (`StatCard`'s `gap-1.5` row). That is
+`StatCard`'s layout and the whole point of converging on it; a position variant would leave almost
+nothing genuinely shared. **Checked on the host and signed off** — it reads correctly at 16px beside
+the label.
+
+Provenance correction: the issue cites `docs/ai/PLAN.md` ("NOT in scope") for the deferral, but
+PLAN.md has since been overwritten by later tasks and contains no such note. The surviving record is
+`docs/ai/sessions/2026-08-10-task5-build-handoff.md:34`. Left as it is — the dated session notes are
+historical records, not live TODOs.
+
+Remaining `Kpi` references repo-wide are in `graphify-out/` (generated call-graph snapshots, stale
+by design) and that one historical session note. No source reference survives.
+
 ## Open questions / actions for a human
 
 - **File the CryoHealth-api sync-endpoint goal** (carried over from #19, still not done — I do not
@@ -132,19 +184,26 @@ lhwId only, no phone, no role); worth a follow-up issue.
 - Do NOT source the CHW picker from `/api/public/chw-profiles` — nullable `user_id` violates the
   FK. See the gap section.
 - Do NOT add an `includeDeleted` flag to `listCasesAdmin` "for future use".
+- Do NOT "simplify" `StatCard` by collapsing `size` back to one set of classes — that silently
+  shrinks the public dashboard's KPI row, which is the regression the variant exists to avoid. And
+  do NOT move the icon sizing out to the call sites; central sizing is only safe *because* no caller
+  passes explicit icon dimensions.
 
 ## Loops run
 
-- None. No `/uexel:build` / `/uexel:verify` loop — toolchain unavailable (VM down, same
-  "VM service not running" signature as the previous three sessions). The issue's fix-loop budget
-  of 3 is untouched and available once verification can run. Per the escalation rule this is a
-  purely environmental block, not two identical *code* failure signatures.
+- None needed. `bunx tsc --noEmit && bun run lint && bun run build` passed **first try** on the
+  host, so no fix loop was consumed and the issue's budget of 3 is fully intact. The four sessions
+  of "VM service not running" were a purely environmental block, never two identical *code* failure
+  signatures, which is why the escalation rule never fired.
 
 ## Files touched
 
 `src/lib/admin-schemas.ts` (modified), `src/lib/queries.ts` (modified),
 `src/routes/api/admin/cases.ts` (modified), `src/routes/api/admin/cases.$caseId.ts` (new),
 `src/routes/api/public/cases.ts` (modified, one line), `src/routes/admin.cases.tsx` (rewritten).
+For the `Kpi` task: `src/components/cryohealth/StatCard.tsx` (modified — `size` prop and icon
+normalisation) and `src/routes/dashboard.tsx` (modified — `StatCard` import, 4 call sites, local
+`Kpi` deleted).
 `src/routeTree.gen.ts` will change on the next build (adds `/api/admin/cases/$caseId`, plus
 `/admin/sync` and `/api/admin/sync` still owed from #19) — include it in the commit. This file.
 
@@ -163,17 +222,33 @@ lhwId only, no phone, no role); worth a follow-up issue.
   badge stays on one line because Prettier cannot split a lone string attribute.
   `noUnusedLocals: false` and `@typescript-eslint/no-unused-vars: "off"` were both confirmed
   before relying on `const { chw_id: _chwId, ...patch } = values;`.
-- **qa**: `tsc`/`lint`/`build` NOT run (VM down). Regenerate the route tree first.
+  For the `Kpi` task: all 14 `StatCard` call sites were read to confirm none passes `icon` (so the
+  central 16px normalisation overrides nothing) and none passes `size` (so the `sm` default keeps
+  them byte-identical); `\bKpi\b` was grepped repo-wide to confirm no live reference survives the
+  deletion; and every lucide import in `dashboard.tsx` (`Activity`, `Mountain`, `Bell`, `Users`,
+  plus `ArrowRight`, `Github`, `Scale`) is still used after `Kpi` went. Prettier widths were
+  hand-checked: the `Lakes in HIGH+` card is pre-broken across 6 lines because its one-line form is
+  104 columns; the other three measure 96/96/93 and stay one-liners, which is what Prettier emits.
+  All of that hand-reasoning is now **confirmed correct**: `bun run lint` passed clean on the host,
+  so no `prettier/prettier` error was left behind in either file and `bun run format` was not needed.
+- **visual**: **done.** The dashboard KPI row was checked on the host — unchanged proportions, and
+  the icon reads correctly in its new position left of the label.
+- **qa**: `bunx tsc --noEmit && bun run lint && bun run build` **all passed** on the host on
+  2026-08-25, and the build regenerated `src/routeTree.gen.ts`. #15's functional checklist (SQL,
+  curl, CHW regression, facility_admin gating) is still unrun — see State.
 - **API gating**: `requireRole(["cryohealth_admin", "facility_admin"])` on GET/POST/PUT/DELETE.
   Runtime 401/403 behaviour not yet confirmed by execution — curl checks in the checklist.
 
 ## Resume with
 
-1. `bun run build` (regenerates `routeTree.gen.ts` → adds `/api/admin/cases/$caseId` and the two
-   #19 routes).
-2. `bunx tsc --noEmit && bun run lint && bun run build` (`bun run format` if lint flags only
-   `prettier/prettier` — a formatting diff, not a logic issue).
-3. Manual checklist below, then commit (with the regenerated tree), push, fill in commit hash.
+1. ~~`bun run build`, then `bunx tsc --noEmit && bun run lint && bun run build`~~ — done on the host
+   2026-08-25, all green, route tree regenerated. Nothing to rerun unless you change code.
+2. Work through the **Manual Testing Checklist** below, skipping the Dashboard KPI section (already
+   signed off). The soft-delete SQL checks are the ones that matter — they are what a passing build
+   cannot tell you.
+3. Commit, including the regenerated `src/routeTree.gen.ts`; push; fill in the commit hash here.
+4. The `Kpi` → `StatCard` task needs nothing further and can be closed independently — it does not
+   have to wait on #15's functional QA.
 
 ---
 
@@ -257,9 +332,29 @@ bun run dev
   # with a `viewer` or `chw` token → 403
   ```
 
-### Test complete ✓
+### Dashboard KPI row (the `Kpi` → `StatCard` task) — ✅ signed off 2026-08-25
 
-Cases can be created, edited and removed by an admin; removal is a confirmed, reason-required soft
-delete that leaves the row in Postgres with `deleted_at` set; every write leaves one audit row in
-the same transaction, carrying field names and never clinical values; and no read path in the
-portal shows a soft-deleted case.
+Checked on the host and passed. Kept here as the regression checklist for any future `StatCard`
+change, since these are the four things that break quietly.
+
+- http://localhost:8080/dashboard — the 4 cards under the hero.
+- ✓ Padding and number size are **unchanged** from before this task (`p-4`, `text-2xl`). If they
+  look tighter/smaller, `size="lg"` is missing from a call site.
+- ✓ Each card's icon is ~16px and sits immediately left of its label. **This is the one intended
+  visual change** — the icon used to be right-aligned at the far edge of the card. Confirm it reads
+  well; if not, the fix is `StatCard`'s label row, not a per-call-site override.
+- ✓ Icons are not oversized. A 24px icon towering over the `text-xs` label means the
+  `[&_svg]:h-4 [&_svg]:w-4` normalisation was dropped.
+- ✓ Values still populate from `/api/public/kpis` (HIGH+ lakes, alerts 30d, cases 7d, active CHWs)
+  and show `—` while loading.
+- ✓ Spot-check pages that use the **default** `StatCard` size and must be untouched: `/admin`,
+  `/lakes/<id>`, `/glaciers/<id>` — dense stat strips, `p-3`/`text-xl`, no icons.
+
+### Test complete when
+
+All of the `cases` checks above pass — that is: cases can be created, edited and removed by an
+admin; removal is a confirmed, reason-required soft delete that leaves the row in Postgres with
+`deleted_at` set; every write leaves one audit row in the same transaction, carrying field names and
+never clinical values; and no read path in the portal shows a soft-deleted case. **The `Kpi` half is
+already there** — the dashboard renders its KPI row through `StatCard` at `size="lg"` with no local
+`Kpi` left in `dashboard.tsx`, and every other `StatCard` call site looks exactly as it did before.
