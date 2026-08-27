@@ -1,11 +1,12 @@
-# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT (pre-#27, pre-#28)
+# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT (pre-#27, pre-#28/#29)
 
 Session: task-cases-crud Model: claude-opus-5 Branch: Shoaib
 Goal: #15 — CRUD for Cases with a soft delete. Parent: #3 (admin portal). Depends on: #9.
 Also in this branch, each with its own section below: the `Kpi` → `StatCard` consolidation
 (p3, deferred from #5 — done and verified), **#27** (hazard-scores truncation signal — done,
-verification owed) and **#28** (UUID-validate path params — done, acceptance criteria
-verified live on the host, toolchain owed).
+verification owed), **#28** (UUID-validate path params — done, acceptance criteria verified live
+on the host, toolchain owed) and **#29** (`Cache-Control` on the one gated GET + the
+`api/public/*` convention note — done, toolchain and one curl owed).
 
 ## State
 
@@ -16,9 +17,9 @@ sessions (`/admin/sync` and `/api/admin/sync` from #19, `/api/admin/cases/$caseI
 in the tree and typecheck. It also clears the same execution-gated block on #18 (audit log) and
 system-health, whose code compiled as part of the same build.
 
-**That green predates #27 and #28.** Their files changed after that run — and
-`api/public/hazard-scores.$lakeId.ts` changed twice, once per issue — so the toolchain is owed one
-more pass before the commit. See Resume with.
+**That green predates #27, #28 and #29.** Their files changed after that run — and
+`api/public/hazard-scores.$lakeId.ts` changed **three times**, once per issue — so the toolchain is
+owed one more pass before the commit. See Resume with.
 
 The **`Kpi` → `StatCard` task is fully verified.** Its DoD's manual visual check of the dashboard
 KPI row was done and reads correctly, so the `size` variant decision below is confirmed rather than

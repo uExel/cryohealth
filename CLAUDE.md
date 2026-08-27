@@ -61,6 +61,20 @@ No test script defined in this repo. Deploys as a Cloudflare Worker (`wrangler.j
   itself — it does not proxy login to CryoHealth-api. The two services only agree via a
   shared `JWT_SECRET` and shared schema; neither enforces the other's request-time logic
   (e.g. `RolesGuard`) on the other's directly-issued tokens.
+- **`api/public/*` is a path prefix, not a security boundary — do not read it as "no auth".**
+  Four routes on it are gated: `hazard-scores.$lakeId` (GET, `requireAuth` +
+  `requireRole(cryohealth_admin|facility_admin)`) and the POST handlers of `alerts.ts`
+  (same roles), `alert-acks.ts` and `cases.ts` (`requireAuth`). Inversely, the two
+  `*-admin.ts` routes (`lakes-admin.ts`, `facilities-admin.ts`) are deliberately
+  **un**authenticated despite the name. CryoHealth-api's CLAUDE.md rule ("Open Data
+  endpoints are unauthenticated by design... every other route requires a JWT") describes
+  *that service's* endpoints and does not carry over to this prefix. Consequences:
+  (a) never write an edge-cache/CDN rule against `/api/public/*` — `hazard-scores.$lakeId`
+  is a cacheable authenticated GET whose body carries `runId`/`components` pipeline
+  internals, so a prefix-wide cache rule would serve one role's data to another. It sends
+  `Cache-Control: private, no-store` for exactly this reason (issue #29); any future gated
+  GET added here must do the same. (b) Prefer `src/routes/api/admin/` for new
+  authenticated endpoints — PRD §4 anticipated it and it now holds the admin CRUD API.
 - **CryoHealth-api still owns migrations.** Never add a migration or `synchronize`-style
   schema change here — schema changes belong in CryoHealth-api even though this repo
   reads/writes the same tables.
