@@ -25,18 +25,12 @@ export const Route = createFileRoute("/api/public/hazard-scores/$lakeId")({
         // existing consumer; `total`/`hasMore` are what let a caller tell a complete list from a
         // list capped at 120 (issue #27).
         const { rows, total, hasMore } = await listHazardScores(params.lakeId);
-        // The only authenticated GET under `api/public/*` (the other gated routes on this
-        // prefix — alerts, alert-acks, cases — gate POSTs, which caches don't store by
-        // default). Nothing caches this prefix today (no `routes`/`assets` rule in
-        // wrangler.jsonc, nothing cache-related in vite.config.ts), but the prefix *name*
-        // reads as public, so a future edge-cache rule written against `/api/public/*`
-        // would cache a role-gated body — `runId`/`components` pipeline internals — and
-        // serve it to the wrong audience. This header makes that mistake impossible to
-        // make silently, rather than relying on the CLAUDE.md note (issue #29).
-        return Response.json(
-          { hazardScores: rows, total, hasMore },
-          { headers: { "Cache-Control": "private, no-store" } },
-        );
+        return new Response(JSON.stringify({ hazardScores: rows, total, hasMore }), {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "private, no-store",
+          },
+        });
       },
     },
   },
