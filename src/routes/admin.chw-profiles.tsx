@@ -80,17 +80,26 @@ function ChwProfilesAdmin() {
   const [deletingProfile, setDeletingProfile] = useState<ChwProfileRow | null>(null);
 
   const {
-    data: profiles,
+    data: profilesResponse,
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["admin-chw-profiles"],
-    queryFn: async (): Promise<ChwProfileRow[]> => {
+    queryFn: async (): Promise<{ profiles: ChwProfileRow[]; total: number; hasMore: boolean }> => {
       const res = await fetch("/api/public/chw-profiles");
       if (!res.ok) throw new Error(`chw-profiles fetch failed: ${res.status}`);
-      return (await res.json()).profiles ?? [];
+      const body = await res.json();
+      return {
+        profiles: body.profiles ?? [],
+        total: body.total ?? 0,
+        hasMore: body.hasMore ?? false,
+      };
     },
   });
+
+  const profiles = profilesResponse?.profiles ?? [];
+  const profilesTotal = profilesResponse?.total ?? 0;
+  const profilesHasMore = profilesResponse?.hasMore ?? false;
 
   const { data: districts } = useQuery({
     queryKey: ["admin-districts"],
@@ -163,7 +172,11 @@ function ChwProfilesAdmin() {
       <header className="mb-4 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">CHW profiles</h1>
-          <p className="text-sm text-muted-foreground">{profiles?.length ?? 0} profiles</p>
+          <p className="text-sm text-muted-foreground">
+            {profilesHasMore
+              ? `Showing the latest ${profiles.length} of ${profilesTotal.toLocaleString()} profiles`
+              : `${profilesTotal.toLocaleString()} profiles`}
+          </p>
         </div>
         <Button onClick={() => setCreating(true)}>New profile</Button>
       </header>

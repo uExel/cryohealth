@@ -7,7 +7,15 @@ import { listChwProfiles } from "@/lib/queries";
 export const Route = createFileRoute("/api/public/chw-profiles")({
   server: {
     handlers: {
-      GET: async () => Response.json({ profiles: await listChwProfiles() }),
+      GET: async () => {
+        const { rows, total, hasMore } = await listChwProfiles();
+        return new Response(JSON.stringify({ profiles: rows, total, hasMore }), {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "private, no-store",
+          },
+        });
+      },
     },
   },
 });

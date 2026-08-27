@@ -335,16 +335,29 @@ export async function listFacilities() {
   `;
 }
 
-export async function listFacilitiesAdmin() {
+/** Facilities, admin view, newest first, capped at `limit` (default 200). The admin view is an
+ *  auditability view (PRD §5), so silent truncation is wrong — total and hasMore come back
+ *  alongside the rows so the UI can say what it is not showing. Counted with a second parallel
+ *  query rather than `count(*) OVER ()`, matching listHazardScores/listAllAlerts — the
+ *  window-function form would force every matching row to be materialised before the LIMIT can
+ *  apply. Deliberately NOT cursor-paginated: nothing consumes a cursor today, so a paging API
+ *  would be unexercised guesswork. Adding one later is a purely additive change. */
+export async function listFacilitiesAdmin(limit = 200) {
   const sql = await getDb();
-  return sql`
-    SELECT id, name, type, district, vulnerability, contact,
-           ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng,
-           (geom IS NOT NULL) AS has_geom,
-           "lakeId" AS lake_id, "createdAt" AS created_at
-    FROM facilities
-    ORDER BY name
-  `;
+  const [rows, [{ count }]] = await Promise.all([
+    sql`
+      SELECT id, name, type, district, vulnerability, contact,
+             ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng,
+             (geom IS NOT NULL) AS has_geom,
+             "lakeId" AS lake_id, "createdAt" AS created_at
+      FROM facilities
+      ORDER BY name
+      LIMIT ${limit}
+    `,
+    sql`SELECT count(*)::int AS count FROM facilities`,
+  ]);
+  const total = count as number;
+  return { rows, total, hasMore: total > rows.length };
 }
 
 const FACILITY_ROW_COLUMNS = `
@@ -471,31 +484,49 @@ export async function deleteFacility(id: string, reason: string, actorId: string
  *  a follow-up that should add its own explicit query, not a boolean here. */
 export async function listCasesAdmin(limit = 200) {
   const sql = await getDb();
-  return sql`
-    SELECT c.id, c.chw_id, c.district_id, c.patient_age, c.patient_sex,
-           c.symptoms, c.diagnosis, c.treatment, c.outcome,
-           c.is_disaster_related, c.created_at,
-           u.name AS chw_name, u."lhwId" AS chw_lhw_id,
-           d.name AS district_name
-    FROM cases c
-    LEFT JOIN users u     ON u.id = c.chw_id
-    LEFT JOIN districts d ON d.id = c.district_id
-    WHERE c.deleted_at IS NULL
-    ORDER BY c.created_at DESC
-    LIMIT ${limit}
-  `;
+  const [rows, [{ count }]] = await Promise.all([
+    sql`
+      SELECT c.id, c.chw_id, c.district_id, c.patient_age, c.patient_sex,
+             c.symptoms, c.diagnosis, c.treatment, c.outcome,
+             c.is_disaster_related, c.created_at,
+             u.name AS chw_name, u."lhwId" AS chw_lhw_id,
+             d.name AS district_name
+      FROM cases c
+      LEFT JOIN users u     ON u.id = c.chw_id
+      LEFT JOIN districts d ON d.id = c.district_id
+      WHERE c.deleted_at IS NULL
+      ORDER BY c.created_at DESC
+      LIMIT ${limit}
+    `,
+    sql`SELECT count(*)::int AS count FROM cases WHERE deleted_at IS NULL`,
+  ]);
+  const total = count as number;
+  return { rows, total, hasMore: total > rows.length };
 }
 
-export async function listChwProfiles() {
+/** CHW profiles, admin view, capped at `limit` (default 200). The admin view is an auditability
+ *  view (PRD §5), so silent truncation is wrong — total and hasMore come back alongside the
+ *  rows so the UI can say what it is not showing. Counted with a second parallel query
+ *  rather than `count(*) OVER ()`, matching listHazardScores/listAllAlerts/listFacilitiesAdmin —
+ *  the window-function form would force every matching row to be materialised before the LIMIT
+ *  can apply. Deliberately NOT cursor-paginated: nothing consumes a cursor today, so a paging
+ *  API would be unexercised guesswork. Adding one later is a purely additive change. */
+export async function listChwProfiles(limit = 200) {
   const sql = await getDb();
-  return sql`
-    SELECT p.id, p.user_id, p.full_name, p.district_id, p.phone, p.language, p.created_at,
-           d.name AS district_name, u.name AS user_name, u."lhwId" AS user_lhw_id, u.active
-    FROM chw_profiles p
-    LEFT JOIN districts d ON d.id = p.district_id
-    LEFT JOIN users u     ON u.id = p.user_id
-    ORDER BY p.full_name
-  `;
+  const [rows, [{ count }]] = await Promise.all([
+    sql`
+      SELECT p.id, p.user_id, p.full_name, p.district_id, p.phone, p.language, p.created_at,
+             d.name AS district_name, u.name AS user_name, u."lhwId" AS user_lhw_id, u.active
+      FROM chw_profiles p
+      LEFT JOIN districts d ON d.id = p.district_id
+      LEFT JOIN users u     ON u.id = p.user_id
+      ORDER BY p.full_name
+      LIMIT ${limit}
+    `,
+    sql`SELECT count(*)::int AS count FROM chw_profiles`,
+  ]);
+  const total = count as number;
+  return { rows, total, hasMore: total > rows.length };
 }
 
 const CHW_PROFILE_ROW_COLUMNS = `

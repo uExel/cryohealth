@@ -23,7 +23,13 @@ export const Route = createFileRoute("/api/admin/cases")({
           if (e instanceof AuthError) return e.response;
           throw e;
         }
-        return Response.json({ cases: await listCasesAdmin() });
+        const { rows, total, hasMore } = await listCasesAdmin();
+        return new Response(JSON.stringify({ cases: rows, total, hasMore }), {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "private, no-store",
+          },
+        });
       },
       POST: async ({ request }) => {
         let claims;
