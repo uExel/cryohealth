@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { updateAlert, clearAlert, deleteAlert, HasDependentsError } from "@/lib/queries";
 import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
-import { alertUpdateSchema, deleteReasonSchema } from "@/lib/admin-schemas";
+import { alertUpdateSchema } from "@/lib/admin-schemas";
 import { parseJsonBody, mapDbError } from "@/lib/api-errors";
 
 export const Route = createFileRoute("/api/admin/alerts/$alertId")({
@@ -57,19 +57,14 @@ export const Route = createFileRoute("/api/admin/alerts/$alertId")({
           throw e;
         }
 
-        const json = await parseJsonBody(request);
-        if (!json.ok) return json.response;
-
-        const parsed = deleteReasonSchema.safeParse(json.data);
-        if (!parsed.success) {
-          return Response.json(
-            { error: "Invalid request body", issues: parsed.error.issues },
-            { status: 400 },
-          );
+        const url = new URL(request.url);
+        const reason = url.searchParams.get("reason");
+        if (!reason || reason.trim() === "") {
+          return Response.json({ error: "reason is required" }, { status: 400 });
         }
 
         try {
-          const alert = await clearAlert(params.alertId, parsed.data.reason, claims.sub);
+          const alert = await clearAlert(params.alertId, reason, claims.sub);
           if (!alert) return Response.json({ error: "Not found" }, { status: 404 });
           return Response.json({ alert });
         } catch (err) {
@@ -88,19 +83,14 @@ export const Route = createFileRoute("/api/admin/alerts/$alertId")({
           throw e;
         }
 
-        const json = await parseJsonBody(request);
-        if (!json.ok) return json.response;
-
-        const parsed = deleteReasonSchema.safeParse(json.data);
-        if (!parsed.success) {
-          return Response.json(
-            { error: "Invalid request body", issues: parsed.error.issues },
-            { status: 400 },
-          );
+        const url = new URL(request.url);
+        const reason = url.searchParams.get("reason");
+        if (!reason || reason.trim() === "") {
+          return Response.json({ error: "reason is required" }, { status: 400 });
         }
 
         try {
-          const id = await deleteAlert(params.alertId, parsed.data.reason, claims.sub);
+          const id = await deleteAlert(params.alertId, reason, claims.sub);
           if (!id) return Response.json({ error: "Not found" }, { status: 404 });
           return Response.json({ ok: true });
         } catch (err) {

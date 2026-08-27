@@ -125,11 +125,12 @@ function DistrictsAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/districts/${id}`, {
-        method: "DELETE",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ reason }),
-      });
+      const res = await authFetch(
+        `/api/admin/districts/${id}?reason=${encodeURIComponent(reason)}`,
+        {
+          method: "DELETE",
+        },
+      );
       const body = await res.json();
       if (!res.ok) {
         throw new Error(
@@ -177,6 +178,7 @@ function DistrictsAdmin() {
             <TableRow className="border-border bg-secondary/50 hover:bg-secondary/50">
               <TableHead className="text-xs uppercase text-muted-foreground">Name</TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground">Province</TableHead>
+              <TableHead className="text-xs uppercase text-muted-foreground">Population</TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground text-right">
                 Actions
               </TableHead>
@@ -185,14 +187,14 @@ function DistrictsAdmin() {
           <TableBody className="divide-y divide-border">
             {isLoading && (
               <TableRow className="border-border">
-                <TableCell colSpan={3} className="py-6 text-center text-muted-foreground">
+                <TableCell colSpan={4} className="py-6 text-center text-muted-foreground">
                   Loading…
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && !isError && (districts ?? []).length === 0 && (
               <TableRow className="border-border">
-                <TableCell colSpan={3} className="py-6 text-center text-muted-foreground">
+                <TableCell colSpan={4} className="py-6 text-center text-muted-foreground">
                   No districts yet.
                 </TableCell>
               </TableRow>
@@ -201,6 +203,9 @@ function DistrictsAdmin() {
               <TableRow key={d.id} className="border-border hover:bg-secondary/40">
                 <TableCell className="font-semibold text-foreground">{d.name}</TableCell>
                 <TableCell className="text-muted-foreground">{d.province}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {d.population?.toLocaleString() ?? "—"}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button

@@ -107,10 +107,8 @@ function LakesAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/lakes/${id}`, {
+      const res = await authFetch(`/api/admin/lakes/${id}?reason=${encodeURIComponent(reason)}`, {
         method: "DELETE",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ reason }),
       });
       const body = await res.json();
       if (!res.ok) {
