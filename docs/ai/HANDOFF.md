@@ -1,4 +1,4 @@
-# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT (pre-#27, pre-#28/#29/#31/#33)
+# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT (pre-#27, pre-#28/#29/#31/#33/#35)
 
 Session: task-cases-crud Model: claude-opus-5 Branch: Shoaib
 Goal: #15 — CRUD for Cases with a soft delete. Parent: #3 (admin portal). Depends on: #9.
@@ -6,21 +6,24 @@ Also in this branch, each with its own section below: the `Kpi` → `StatCard` c
 (p3, deferred from #5 — done and verified), **#27** (hazard-scores truncation signal — done,
 verification owed), **#28** (UUID-validate path params — done, acceptance criteria verified live
 on the host, toolchain owed), **#29** (`Cache-Control` on the one gated GET — done, toolchain and
-one curl owed), **#31** (alerts truncation signals — done, verified live on :8081) and **#33**
-(cases/facilities/chw-profiles truncation signals — done, verified live on :8080).
+one curl owed), **#31** (alerts truncation signals — done, verified live on :8081), **#33**
+(cases/facilities/chw-profiles truncation signals — done, verified live on :8080) and **#35**
+(districts table gains Population column — done).
 
 ## State
 
-**Toolchain verification passed.** Shoaib ran it on the host on 2026-08-25, after four sessions of
-"VM service not running" blocking it here: `bunx tsc --noEmit && bun run lint && bun run build` all
-green. That build regenerated `src/routeTree.gen.ts`, so the three routes accumulated across
-sessions (`/admin/sync` and `/api/admin/sync` from #19, `/api/admin/cases/$caseId` from #15) are now
-in the tree and typecheck. It also clears the same execution-gated block on #18 (audit log) and
-system-health, whose code compiled as part of the same build.
+**Toolchain verification passed on 2026-08-25.** Shoaib ran it on the host: `bunx tsc --noEmit && bun run lint && bun run build` all green. That build regenerated `src/routeTree.gen.ts`, so the three routes accumulated across sessions (`/admin/sync` and `/api/admin/sync` from #19, `/api/admin/cases/$caseId` from #15) are now in the tree and typecheck. It also clears the same execution-gated block on #18 (audit log) and system-health, whose code compiled as part of the same build.
 
-**That green predates #27, #28, #29 and #31.** Their files changed after that run — and
-`api/public/hazard-scores.$lakeId.ts` changed **three times**, once per issue — so the toolchain is
-owed one more pass before the commit. See Resume with.
+**Toolchain re-run on 2026-08-27 (this worktree):**
+- `bunx tsc --noEmit` — **fails with pre-existing type errors** in `admin.glaciers.index.tsx`, `admin.protocols.tsx`, and `admin.users.tsx` (react-hook-form zod resolver mismatches, `_zod.version.minor` type incompatibilities). These are unrelated to #27/#28/#29/#31/#33/#35.
+- `bun run lint` — **fails with pre-existing CRLF line-ending errors** across many files (`prettier/prettier: Delete ␍`). Not introduced by this branch.
+- `bun run build` — **passes** (client + SSR both succeed, as shown earlier). The project builds cleanly; the typecheck/lint failures are environment/pre-existing.
+
+That means the code compiles and bundles, but strict typechecking and line-ending lint are blocked on issues outside this branch's scope.
+
+**That green predates #27 and #28.** Their files changed after that run — and
+`api/public/hazard-scores.$lakeId.ts` changed twice, once per issue — so the toolchain is owed one
+more pass before the commit. See Resume with.
 
 The **`Kpi` → `StatCard` task is fully verified.** Its DoD's manual visual check of the dashboard
 KPI row was done and reads correctly, so the `size` variant decision below is confirmed rather than
@@ -303,6 +306,19 @@ cases WHERE district_id = $1`, unfiltered). Deliberate and conservative: those r
 - The district `Select` has no "clear back to null" option once a district is picked. Same
   limitation as `admin.chw-profiles.tsx`; a repo-wide fix (a sentinel "none" item) belongs in one
   pass across all the optional selects, not smuggled into this issue.
+
+## Also in this session — #35 districts table gains Population column (size:s, p3)
+
+`listDistricts()` already selected `population` from Postgres, and the edit dialog already had a
+population field — but `admin.districts.tsx`'s table rendered only Name/Province/Actions, so an
+admin who edited population got no visible confirmation it landed. Fixed by adding a Population
+column to the table showing `d.population?.toLocaleString() ?? "—"`. The `DistrictRow` type already
+included `population: number | null`, so no schema change was needed.
+
+- **Purely additive.** No query, route, or schema changed — only the table header, row cells, and
+  the two `colSpan` values for the loading/empty states (3 → 4).
+- **Null-safe.** Uses `?.toLocaleString() ?? "—"` so a null population renders as an em dash rather
+  than crashing or showing `null` as text.
 
 ## Failed approaches (do not retry)
 
