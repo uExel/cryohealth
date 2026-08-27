@@ -162,19 +162,31 @@ export async function listAlertsForLake(lakeId: string) {
   `;
 }
 
+/** Alerts, newest first, capped at `limit` (default 200). The admin view is an auditability
+ *  view (PRD §5), so silent truncation is wrong — total and hasMore come back alongside the
+ *  rows so the UI can say what it is not showing. Counted with a second parallel query
+ *  rather than `count(*) OVER ()`, matching listHazardScores — the window-function form
+ *  would force every matching row to be materialised before the LIMIT could apply.
+ *  Deliberately NOT cursor-paginated: nothing consumes a cursor today, so a paging API
+ *  would be unexercised guesswork. Adding one later is a purely additive change. */
 export async function listAllAlerts(limit = 200) {
   const sql = await getDb();
-  return sql`
-    SELECT a.id, a."lakeId" AS lake_id, a.district_id, upper(a.tier::text) AS tier, a.title, a.body, a.body_en, a.body_ur,
-           a.estimated_window, a.affected_population, a."createdAt" AS created_at,
-           a.status::text AS status, a."clearedAt" AS cleared_at,
-           l.name AS lake_name, d.name AS district_name
-    FROM alerts a
-    LEFT JOIN lakes l ON l.id = a."lakeId"
-    LEFT JOIN districts d ON d.id = a.district_id
-    ORDER BY a."createdAt" DESC
-    LIMIT ${limit}
-  `;
+  const [rows, [{ count }]] = await Promise.all([
+    sql`
+      SELECT a.id, a."lakeId" AS lake_id, a.district_id, upper(a.tier::text) AS tier, a.title, a.body, a.body_en, a.body_ur,
+             a.estimated_window, a.affected_population, a."createdAt" AS created_at,
+             a.status::text AS status, a."clearedAt" AS cleared_at,
+             l.name AS lake_name, d.name AS district_name
+      FROM alerts a
+      LEFT JOIN lakes l ON l.id = a."lakeId"
+      LEFT JOIN districts d ON d.id = a.district_id
+      ORDER BY a."createdAt" DESC
+      LIMIT ${limit}
+    `,
+    sql`SELECT count(*)::int AS count FROM alerts`,
+  ]);
+  const total = count as number;
+  return { rows, total, hasMore: total > rows.length };
 }
 
 export async function listOpenAlerts(limit = 5) {

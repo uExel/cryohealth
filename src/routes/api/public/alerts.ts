@@ -6,8 +6,13 @@ export const Route = createFileRoute("/api/public/alerts")({
   server: {
     handlers: {
       GET: async () => {
-        const alerts = await listAllAlerts(200);
-        return Response.json({ alerts });
+        const { rows, total, hasMore } = await listAllAlerts(200);
+        return new Response(JSON.stringify({ alerts: rows, total, hasMore }), {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "private, no-store",
+          },
+        });
       },
       POST: async ({ request }) => {
         let claims;
