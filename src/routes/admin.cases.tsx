@@ -106,17 +106,26 @@ function CasesAdmin() {
   const [deletingCase, setDeletingCase] = useState<CaseRow | null>(null);
 
   const {
-    data: cases,
+    data: casesResponse,
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["admin-cases"],
-    queryFn: async (): Promise<CaseRow[]> => {
+    queryFn: async (): Promise<{ cases: CaseRow[]; total: number; hasMore: boolean }> => {
       const res = await authFetch("/api/admin/cases");
       if (!res.ok) throw new Error(`cases fetch failed: ${res.status}`);
-      return (await res.json()).cases ?? [];
+      const body = await res.json();
+      return {
+        cases: body.cases ?? [],
+        total: body.total ?? 0,
+        hasMore: body.hasMore ?? false,
+      };
     },
   });
+
+  const cases = casesResponse?.cases ?? [];
+  const casesTotal = casesResponse?.total ?? 0;
+  const casesHasMore = casesResponse?.hasMore ?? false;
 
   const { data: districts } = useQuery({
     queryKey: ["admin-districts"],
@@ -206,7 +215,11 @@ function CasesAdmin() {
       <header className="mb-4 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Cases</h1>
-          <p className="text-sm text-muted-foreground">{cases?.length ?? 0} cases</p>
+          <p className="text-sm text-muted-foreground">
+            {casesHasMore
+              ? `Showing the latest ${cases.length} of ${casesTotal.toLocaleString()} cases`
+              : `${casesTotal.toLocaleString()} cases`}
+          </p>
         </div>
         <div className="text-right">
           <Button disabled={!isCryoHealthAdmin} onClick={() => setCreating(true)}>

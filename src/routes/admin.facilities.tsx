@@ -71,17 +71,26 @@ function FacilitiesAdmin() {
   const [deletingFacility, setDeletingFacility] = useState<FacilityRow | null>(null);
 
   const {
-    data: facilities,
+    data: facilitiesResponse,
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["admin-facilities"],
-    queryFn: async (): Promise<FacilityRow[]> => {
+    queryFn: async (): Promise<{ facilities: FacilityRow[]; total: number; hasMore: boolean }> => {
       const res = await fetch("/api/public/facilities-admin");
       if (!res.ok) throw new Error(`facilities fetch failed: ${res.status}`);
-      return (await res.json()).facilities ?? [];
+      const body = await res.json();
+      return {
+        facilities: body.facilities ?? [],
+        total: body.total ?? 0,
+        hasMore: body.hasMore ?? false,
+      };
     },
   });
+
+  const facilities = facilitiesResponse?.facilities ?? [];
+  const facilitiesTotal = facilitiesResponse?.total ?? 0;
+  const facilitiesHasMore = facilitiesResponse?.hasMore ?? false;
 
   const createMutation = useMutation({
     mutationFn: async (values: FacilityCreate) => {
@@ -148,7 +157,9 @@ function FacilitiesAdmin() {
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Facilities</h1>
           <p className="text-sm text-muted-foreground">
-            {facilities?.length ?? 0} facilities
+            {facilitiesHasMore
+              ? `Showing the latest ${facilities.length} of ${facilitiesTotal.toLocaleString()} facilities`
+              : `${facilitiesTotal.toLocaleString()} facilities`}
             {unmappedCount > 0
               ? ` · ${unmappedCount} with no mapped location (hidden from the hazard map)`
               : ""}

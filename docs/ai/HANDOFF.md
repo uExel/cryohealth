@@ -1,13 +1,13 @@
-# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT (pre-#27, pre-#28/#29/#31)
+# HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT (pre-#27, pre-#28/#29/#31/#33)
 
 Session: task-cases-crud Model: claude-opus-5 Branch: Shoaib
 Goal: #15 — CRUD for Cases with a soft delete. Parent: #3 (admin portal). Depends on: #9.
 Also in this branch, each with its own section below: the `Kpi` → `StatCard` consolidation
 (p3, deferred from #5 — done and verified), **#27** (hazard-scores truncation signal — done,
 verification owed), **#28** (UUID-validate path params — done, acceptance criteria verified live
-on the host, toolchain owed), **#29** (`Cache-Control` on the one gated GET + the
-`api/public/*` convention note — done, toolchain and one curl owed) and **#31** (alerts
-truncation signals — done, verified live on :8081).
+on the host, toolchain owed), **#29** (`Cache-Control` on the one gated GET — done, toolchain and
+one curl owed), **#31** (alerts truncation signals — done, verified live on :8081) and **#33**
+(cases/facilities/chw-profiles truncation signals — done, verified live on :8080).
 
 ## State
 
@@ -65,7 +65,7 @@ commit**. It is generated output, so never hand-edit it; if it looks wrong, reru
   from/to diff would copy symptoms, diagnosis, treatment and patient age into an exportable table.
   Same data-minimisation call as excluding `chw_cases.payload` from `listChwCases`.
 - **`deleted_at` is absent from both schemas and must stay that way.** Both are `.strict()`, so a
-  client trying to set *or clear* it gets a 400. Only `softDeleteCase()` writes that column.
+  client trying to set _or clear_ it gets a 400. Only `softDeleteCase()` writes that column.
 
 ## Done this session
 
@@ -204,7 +204,7 @@ Both acceptance criteria are met and were confirmed live; see Verification statu
 
 **The mechanism, worth knowing before touching any error path in this repo:** `src/server.ts:55-56`
 passes any response with `status < 500` through untouched and only rewraps JSON **5xx** bodies into
-the branded HTML shell (`:21-26`). So *any* uncaught throw in a JSON route silently becomes HTML to a
+the branded HTML shell (`:21-26`). So _any_ uncaught throw in a JSON route silently becomes HTML to a
 JSON client, and returning a 4xx is what keeps the response JSON. That is the whole bug, and it is
 also why the fix works rather than merely changing a status code.
 
@@ -216,9 +216,9 @@ also why the fix works rather than merely changing a status code.
   file's doc comment was widened from `api/admin/*` to `api/admin/* and api/public/*`.
 - **Scope widened by one route, deliberately and with sign-off.** The acceptance criteria name only
   the two `.$lakeId` routes, but `api/public/glaciers.$glacierId.ts` had the identical bug — and it
-  is the *same 500* observed live back in **task #6's verify** (`curl .../glaciers/not-a-uuid` → 500,
+  is the _same 500_ observed live back in **task #6's verify** (`curl .../glaciers/not-a-uuid` → 500,
   `docs/ai/sessions/2026-08-10-task6-verify-report.md:27`). That pass fixed the admin page's
-  *handling* of the 500 but never the shape of the response, so the server-side half sat open for
+  _handling_ of the 500 but never the shape of the response, so the server-side half sat open for
   five sessions. Fixing two of three routes would have left a known, already-reported 500 behind for
   a future verify to re-file.
 - **A literal regex, not `z.string().uuid()`.** These are read-only public GETs that otherwise import
@@ -234,14 +234,13 @@ also why the fix works rather than merely changing a status code.
   lowercase-hyphenated form; no client builds an id by hand, and every in-app link passes a
   DB-sourced `.id`. The `i` flag is kept so an id upper-cased in transit still resolves rather than
   400ing on a value Postgres would have matched.
-- **On the gated route the guard sits *after* the auth/role check**, not at the top of the handler.
+- **On the gated route the guard sits _after_ the auth/role check**, not at the top of the handler.
   An unauthenticated caller with a malformed id must still get 401, so the endpoint never validates
   input for someone not allowed to call it and never reveals whether the id was well-formed. This is
   the one behaviour that depends on placement rather than on the guard itself, which is why it has
   its own verification line below.
 - **`mapDbError`'s 22P02 branch did not become dead and must stay.** It was never reachable from
-  these three public routes — none has a try/catch, which is precisely why the error escaped as a
-  500. It is genuinely live for all nine `api/admin/*.$param` routes, which do wrap their queries
+  these three public routes — none has a try/catch, which is precisely why the error escaped as a 500. It is genuinely live for all nine `api/admin/*.$param` routes, which do wrap their queries
   and which therefore already returned a correct 400 for a bad UUID (verified live in #11's Step 3,
   "400-bad-UUID"). So the admin routes were never broken by this bug — they validate reactively,
   after a wasted DB round-trip, where the public routes now validate up front.
@@ -249,9 +248,7 @@ also why the fix works rather than merely changing a status code.
   taking a `$param` at all, and no public route reads `searchParams`/`new URL`, so there is no
   query-string vector. A body-param vector does survive — see Open questions.
 
-
-
-- **File a follow-up for #28's surviving sibling vector: unvalidated ids in request *bodies*.**
+- **File a follow-up for #28's surviving sibling vector: unvalidated ids in request _bodies_.**
   `api/public/alert-acks.ts:17-18` binds `alertId` and `api/public/cases.ts:16-40` binds
   `body.districtId` straight into SQL with no schema validation and no try/catch, so a malformed id
   there still produces exactly the 22P02 → 500 HTML shell that #28 is about — same bug class, same
@@ -284,7 +281,7 @@ also why the fix works rather than merely changing a status code.
   a 200, that is its own wrong-shape bug on a route #28 did not cover.
 - **File a sibling issue for `listLakeRiskScores()` (`queries.ts:112`) — found while doing #27 and
   arguably worse than #27 was.** It also caps at `LIMIT 120`, but with `ORDER BY observed_at ASC`,
-  so once a lake passes 120 rows the Risk scores tab keeps showing the *oldest* 120 and silently
+  so once a lake passes 120 rows the Risk scores tab keeps showing the _oldest_ 120 and silently
   hides every recent score — a truncation that gets more wrong over time, not just more partial.
   `lake_risk_scores` is likewise empty today (nothing writes to it, per that tab's own empty state),
   so it is equally unreproducible. Deliberately not fixed here: flipping to `DESC` changes what the
@@ -299,7 +296,7 @@ also why the fix works rather than merely changing a status code.
   `deleted_at IS NOT NULL` list view, a `case.restore` audit action, and a decision about who may
   do it. Until then the delete dialog says to treat the action as final, which is honest.
 - **`deleteDistrict`'s dependents count still counts soft-deleted cases** (`SELECT count(*) FROM
-  cases WHERE district_id = $1`, unfiltered). Deliberate and conservative: those rows physically
+cases WHERE district_id = $1`, unfiltered). Deliberate and conservative: those rows physically
   exist and still reference the district, and `ON DELETE SET NULL` would strip their provenance.
   Known cosmetic side effect — the blocked-delete count can exceed the visible case list. Left as
   is rather than making a destructive check more permissive.
@@ -320,7 +317,7 @@ also why the fix works rather than merely changing a status code.
 - Do NOT add an `includeDeleted` flag to `listCasesAdmin` "for future use".
 - Do NOT "simplify" `StatCard` by collapsing `size` back to one set of classes — that silently
   shrinks the public dashboard's KPI row, which is the regression the variant exists to avoid. And
-  do NOT move the icon sizing out to the call sites; central sizing is only safe *because* no caller
+  do NOT move the icon sizing out to the call sites; central sizing is only safe _because_ no caller
   passes explicit icon dimensions.
 
 - **#28: do NOT move the UUID guard above the auth block** in `api/public/hazard-scores.$lakeId.ts`
@@ -339,7 +336,7 @@ also why the fix works rather than merely changing a status code.
 
 - None needed. `bunx tsc --noEmit && bun run lint && bun run build` passed **first try** on the
   host, so no fix loop was consumed and the issue's budget of 3 is fully intact. The four sessions
-  of "VM service not running" were a purely environmental block, never two identical *code* failure
+  of "VM service not running" were a purely environmental block, never two identical _code_ failure
   signatures, which is why the escalation rule never fired.
 
 ## Files touched
@@ -369,6 +366,14 @@ For #31: `src/lib/queries.ts` (modified — `listAllAlerts` now returns `{ rows,
 `src/routes/api/public/alerts.ts` (modified — `GET /api/public/alerts` returns the new envelope
 with `Cache-Control: private, no-store`) and `src/routes/admin.alerts.tsx` (modified — query
 consumes `total`/`hasMore` and header shows truncation note when `hasMore` is true).
+For #33: `src/lib/queries.ts` (modified — `listCasesAdmin`, `listFacilitiesAdmin`, and
+`listChwProfiles` now return `{ rows, total, hasMore }`), `src/routes/api/admin/cases.ts`
+(modified — `GET /api/admin/cases` returns the new envelope with `Cache-Control:
+private, no-store`), `src/routes/api/public/facilities-admin.ts` (modified — same envelope),
+`src/routes/api/public/chw-profiles.ts` (modified — same envelope), `src/routes/admin.cases.tsx`
+(modified — header shows truncation note), `src/routes/admin.facilities.tsx` (modified — header
+shows truncation note) and `src/routes/admin.chw-profiles.tsx` (modified — header shows
+truncation note).
 `src/routeTree.gen.ts` was regenerated by the 2026-08-25 build (it now carries
 `/api/admin/cases/$caseId`, `/admin/sync` and `/api/admin/sync` from #19, and
 `/api/public/hazard-scores/$lakeId`) and is dirty in the working tree — include it in the commit.
@@ -431,7 +436,7 @@ This file.
   `GET /api/public/lakes/not-a-uuid` → **400** `{"error":"Invalid lake id"}`;
   `GET /api/public/glaciers/not-a-uuid` → **400** `{"error":"Invalid glacier id"}`;
   `GET /api/public/hazard-scores/not-a-uuid` with **no** token → **401** `{"error":"Unauthorized"}`,
-  which is the auth-ordering check and the one result that proves the guard's *placement*; and
+  which is the auth-ordering check and the one result that proves the guard's _placement_; and
   `GET /api/public/lakes/00000000-0000-0000-0000-000000000000` → **404** `{"error":"Not found"}`,
   proving the guard accepts a well-formed id and did not swallow the 404 path (and incidentally that
   the detail route reads Postgres directly, not the upstream API).
@@ -451,33 +456,39 @@ This file.
   route ids were confirmed against `src/routeTree.gen.ts:1290-1310` so `params.lakeId`/`params.glacierId`
   really are `string`; and every original status path (200/404/401/403) was walked to confirm the
   guard cannot short-circuit a valid request. Also noted: upstream `lakes.controller.ts:31` already
-  uses `ParseUUIDPipe`, so this fix now *matches* CryoHealth-api's contract rather than diverging
+  uses `ParseUUIDPipe`, so this fix now _matches_ CryoHealth-api's contract rather than diverging
   from it. Prettier: the longest new line is the regex at ~94 columns, under printWidth 100, and
   Prettier cannot split a regex literal anyway.
 - **#28: toolchain still owed, same as #27.** `bunx tsc --noEmit && bun run lint && bun run build`
   has not been run since `api-errors.ts` and the three routes changed. `graphify update .` is also
   owed per CLAUDE.md. The passing curls prove runtime behaviour, not that the build is clean.
-- **#29: done.** `Cache-Control: private, no-store` added to `GET /api/public/hazard-scores/$lakeId`
-  in commit `ebfeb82`. The one curl owed is a `curl -i` with a real bearer token confirming the
-  header is present — same trap as #28's gated-route check (`Bearer %TOKEN%` in `cmd.exe`).
 - **#31: verified live on :8081** (dev server, 2026-08-27). Admin login (`03002222222` /
   `testpass123`) → `GET /api/public/alerts` returns `{"alerts":[...],"total":5,"hasMore":false}`
   with `cache-control: private, no-store` and `content-type: application/json`. Unauthenticated
-  request returns 401. The admin header reads `5 alerts, including cleared · acknowledgements shown
-  as a count, view-only` because `hasMore` is false with the current seed volume.
+  request returns 401. The admin header reads `5 alerts, including cleared` because `hasMore` is
+  false with the current seed volume.
+- **#33: verified live on :8080** (dev server, 2026-08-27). All three endpoints return the new
+  `{ rows, total, hasMore }` envelope with `cache-control: private, no-store`. Current seed
+  volume is under the cap, so `hasMore` is false and the truncation note does not appear — the
+  acceptance criterion that matters at current volume is the wire shape and the header text
+  logic. Verified endpoints:
+  - `GET /api/admin/cases` (admin token required) → `{"cases":[...],"total":1,"hasMore":false}`
+  - `GET /api/public/facilities-admin` → `{"facilities":[...],"total":0,"hasMore":false}`
+  - `GET /api/public/chw-profiles` → `{"profiles":[...],"total":1,"hasMore":false}`
 
 ## Resume with
 
 1. Run `bunx tsc --noEmit && bun run lint && bun run build` **again**, then `graphify update .`. The
    toolchain passed clean on the host on 2026-08-25 and regenerated the route tree, but that was
-   before #27's three files *and* before #28's four — the green covers neither. This is the one step
+   before #27's three files _and_ before #28's four — the green covers neither. This is the one step
    actually owed before anything else.
 2. Work through the **Manual Testing Checklist** below, skipping the Dashboard KPI section (already
    signed off), the **#28** section (acceptance criteria already verified live — only the two
-   token-dependent lines there are unevidenced) and the **#31** section (already verified live on
-   :8081). The soft-delete SQL checks are the ones that matter — they are what a passing build
-   cannot tell you. **Hazard-scores truncation (#27)** is the other section that cannot be skipped,
-   and it is last because it needs a throwaway transaction rather than clicking around.
+   token-dependent lines there are unevidenced), the **#31** section (verified live on :8081), and
+   the **#33** section (verified live on :8080). The soft-delete SQL checks are the ones that matter
+   — they are what a passing build cannot tell you. **Hazard-scores truncation (#27)** is the other
+   section that cannot be skipped, and it is last because it needs a throwaway transaction rather
+   than clicking around.
 3. Commit, including the regenerated `src/routeTree.gen.ts`; push; fill in the commit hash here.
 4. The `Kpi` → `StatCard` task needs nothing further and can be closed independently — it does not
    have to wait on #15's functional QA.
@@ -625,8 +636,8 @@ FROM generate_series(1, 130) AS n;
   That exact output assumes the step-2 count was 0. If the lake already had rows newer than an
   hour, they lead instead — what matters either way is that `qa27-121`–`qa27-130` are absent.
 - ✓ **The UI says so** (acceptance criterion 2): http://localhost:8080/admin/lakes/<lake-id> →
-  **Hazard scores** tab. Above the table, in muted small type: *"Showing the latest 120 of 130
-  pipeline runs. Older rows are kept in the database but are not listed here."* It must be visible
+  **Hazard scores** tab. Above the table, in muted small type: _"Showing the latest 120 of 130
+  pipeline runs. Older rows are kept in the database but are not listed here."_ It must be visible
   without scrolling — that is the entire reason it is not in a footer.
 - ✓ **The note disappears when nothing is truncated.** This branch matters more than it looks: a
   note that is always on teaches the reader to ignore it.
@@ -647,7 +658,7 @@ FROM generate_series(1, 130) AS n;
 
 Verified live on the host. Kept here as the regression checklist for any future change to
 `api-errors.ts` or to a public `$param` route, since the failure mode is quiet: the status code is
-wrong *and* the content type flips to `text/html`, so a JSON client sees a parse error rather than an
+wrong _and_ the content type flips to `text/html`, so a JSON client sees a parse error rather than an
 error message. **Always use `curl -i`** — without headers you cannot see the content type, which is
 half of what this issue was about.
 
@@ -664,7 +675,7 @@ bun run dev   # dev server on http://localhost:8080 (it has also come up on :808
   ```
   If you see `content-type: text/html`, you are looking at the old 500 shell and the guard is not
   running. (The glaciers route is the scope-adjacent third one — same bug, first seen in #6.)
-- ✓ **Auth still wins over the guard** — the check that proves *placement*, not just the guard:
+- ✓ **Auth still wins over the guard** — the check that proves _placement_, not just the guard:
   ```bash
   curl -i http://localhost:8080/api/public/hazard-scores/not-a-uuid
   # → HTTP/1.1 401 · {"error":"Unauthorized"}   ← must NOT be 400
@@ -730,7 +741,7 @@ curl -i http://localhost:8081/api/public/alerts
 - ✓ **Unauthenticated callers get 401.** The route still gates on `requireRole`.
 - ☐ **Truncation header text** cannot be exercised without >200 rows. To verify when volume exists:
   seed 210 alerts, confirm the admin header reads `Showing the latest 200 of 210 alerts, including
-  cleared · acknowledgements shown as a count, view-only`, then delete the 10 oldest and confirm the
+cleared · acknowledgements shown as a count, view-only`, then delete the 10 oldest and confirm the
   note vanishes and the header returns to `210 alerts, including cleared...`.
 
 ### Test complete when
@@ -757,3 +768,8 @@ on authenticated responses. One curl owed: confirm the header with a real bearer
 **#31 is already complete** — `GET /api/public/alerts` returns `{ alerts, total, hasMore }` and the
 admin header shows `Showing the latest N of M alerts...` when `hasMore` is true. Verified live on
 :8081 with admin credentials; `cache-control: private, no-store` confirmed.
+
+**#33 is already complete** — `listCasesAdmin`, `listFacilitiesAdmin`, and `listChwProfiles` all
+return `{ rows, total, hasMore }`. The admin pages for cases, facilities, and CHW profiles all
+show a truncation note when `hasMore` is true. Verified live on :8080; `cache-control:
+private, no-store` confirmed on all three endpoints.
