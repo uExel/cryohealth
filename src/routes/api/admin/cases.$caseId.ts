@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { updateCase, softDeleteCase } from "@/lib/queries";
 import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
-import { caseUpdateSchema, deleteReasonSchema } from "@/lib/admin-schemas";
+import { caseUpdateSchema } from "@/lib/admin-schemas";
 import { parseJsonBody, mapDbError } from "@/lib/api-errors";
 
 /** Issue #15. Same role gate as the collection route (both admin roles) — see
@@ -60,23 +60,14 @@ export const Route = createFileRoute("/api/admin/cases/$caseId")({
           throw e;
         }
 
-        const json = await parseJsonBody(request);
-        if (!json.ok) return json.response;
-
-        // Same mandatory reason as every other admin DELETE (deleteReasonSchema), and it
-        // lands in the audit row rather than in the `cases` row itself.
-        const parsed = deleteReasonSchema.safeParse(json.data);
-        if (!parsed.success) {
-          return Response.json(
-            { error: "Invalid request body", issues: parsed.error.issues },
-            { status: 400 },
-          );
+        const url = new URL(request.url);
+        const reason = url.searchParams.get("reason");
+        if (!reason || reason.trim() === "") {
+          return Response.json({ error: "reason is required" }, { status: 400 });
         }
 
         try {
-          const id = await softDeleteCase(params.caseId, parsed.data.reason, claims.sub);
-          // Null means no live row matched — unknown id, or already soft-deleted. A
-          // repeat delete is a 404, not a second audit row for the same removal.
+          const id = await softDeleteCase(params.caseId, reason, claims.sub);
           if (!id) return Response.json({ error: "Not found" }, { status: 404 });
           return Response.json({ ok: true });
         } catch (err) {

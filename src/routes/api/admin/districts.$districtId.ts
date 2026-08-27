@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { updateDistrict, deleteDistrict, HasDependentsError } from "@/lib/queries";
 import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
-import { districtUpdateSchema, deleteReasonSchema } from "@/lib/admin-schemas";
+import { districtUpdateSchema } from "@/lib/admin-schemas";
 import { parseJsonBody, mapDbError } from "@/lib/api-errors";
 
 export const Route = createFileRoute("/api/admin/districts/$districtId")({
@@ -57,19 +57,14 @@ export const Route = createFileRoute("/api/admin/districts/$districtId")({
           throw e;
         }
 
-        const json = await parseJsonBody(request);
-        if (!json.ok) return json.response;
-
-        const parsed = deleteReasonSchema.safeParse(json.data);
-        if (!parsed.success) {
-          return Response.json(
-            { error: "Invalid request body", issues: parsed.error.issues },
-            { status: 400 },
-          );
+        const url = new URL(request.url);
+        const reason = url.searchParams.get("reason");
+        if (!reason || reason.trim() === "") {
+          return Response.json({ error: "reason is required" }, { status: 400 });
         }
 
         try {
-          const id = await deleteDistrict(params.districtId, parsed.data.reason, claims.sub);
+          const id = await deleteDistrict(params.districtId, reason, claims.sub);
           if (!id) return Response.json({ error: "Not found" }, { status: 404 });
           return Response.json({ ok: true });
         } catch (err) {

@@ -193,10 +193,8 @@ function CasesAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/cases/${id}`, {
+      const res = await authFetch(`/api/admin/cases/${id}?reason=${encodeURIComponent(reason)}`, {
         method: "DELETE",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ reason }),
       });
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? "Failed to delete case");

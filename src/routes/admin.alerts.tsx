@@ -154,10 +154,8 @@ function AlertsAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/alerts/${id}`, {
+      const res = await authFetch(`/api/admin/alerts/${id}?reason=${encodeURIComponent(reason)}`, {
         method: "DELETE",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ reason }),
       });
       const body = await res.json();
       if (!res.ok) {

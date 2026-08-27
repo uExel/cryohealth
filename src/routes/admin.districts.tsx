@@ -125,11 +125,12 @@ function DistrictsAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/districts/${id}`, {
-        method: "DELETE",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ reason }),
-      });
+      const res = await authFetch(
+        `/api/admin/districts/${id}?reason=${encodeURIComponent(reason)}`,
+        {
+          method: "DELETE",
+        },
+      );
       const body = await res.json();
       if (!res.ok) {
         throw new Error(
