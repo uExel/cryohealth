@@ -93,17 +93,26 @@ function AlertsAdmin() {
   const [deletingAlert, setDeletingAlert] = useState<AlertRow | null>(null);
 
   const {
-    data: alerts,
+    data: alertsResponse,
     isLoading,
     isError: alertsError,
   } = useQuery({
     queryKey: ["admin-alerts"],
-    queryFn: async (): Promise<AlertRow[]> => {
+    queryFn: async (): Promise<{ alerts: AlertRow[]; total: number; hasMore: boolean }> => {
       const res = await fetch("/api/public/alerts");
       if (!res.ok) throw new Error(`alerts fetch failed: ${res.status}`);
-      return (await res.json()).alerts ?? [];
+      const body = await res.json();
+      return {
+        alerts: body.alerts ?? [],
+        total: body.total ?? 0,
+        hasMore: body.hasMore ?? false,
+      };
     },
   });
+
+  const alerts = alertsResponse?.alerts ?? [];
+  const alertsTotal = alertsResponse?.total ?? 0;
+  const alertsHasMore = alertsResponse?.hasMore ?? false;
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string; values: AlertUpdate }) => {
@@ -191,8 +200,9 @@ function AlertsAdmin() {
       <header className="mb-4">
         <h1 className="text-2xl font-semibold text-foreground">Alerts</h1>
         <p className="text-sm text-muted-foreground">
-          {alerts?.length ?? 0} alerts, including cleared · acknowledgements shown as a count,
-          view-only
+          {alertsHasMore
+            ? `Showing the latest ${alerts.length} of ${alertsTotal.toLocaleString()} alerts, including cleared · acknowledgements shown as a count, view-only`
+            : `${alertsTotal.toLocaleString()} alerts, including cleared · acknowledgements shown as a count, view-only`}
         </p>
       </header>
 
