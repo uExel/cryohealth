@@ -1,22 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { updateGlacier, deleteGlacier, HasDependentsError } from "@/lib/queries";
-import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
+import { apiFetch } from "@/lib/cryohealth-api";
 import { glacierUpdateSchema } from "@/lib/admin-schemas";
-import { parseJsonBody, mapDbError } from "@/lib/api-errors";
+import { parseJsonBody } from "@/lib/api-errors";
+
+function getToken(request: Request): string | undefined {
+  const auth = request.headers.get("authorization");
+  if (auth?.startsWith("Bearer ")) return auth.substring(7);
+  return undefined;
+}
 
 export const Route = createFileRoute("/api/admin/glaciers/$glacierId")({
   server: {
     handlers: {
       PUT: async ({ request, params }) => {
-        let claims;
-        try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin", "facility_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
-        }
-
+        const token = getToken(request);
         const json = await parseJsonBody(request);
         if (!json.ok) return json.response;
 
@@ -32,25 +29,18 @@ export const Route = createFileRoute("/api/admin/glaciers/$glacierId")({
         }
 
         try {
-          const glacier = await updateGlacier(params.glacierId, parsed.data, claims.sub);
-          if (!glacier) return Response.json({ error: "Not found" }, { status: 404 });
+          const glacier = await apiFetch(`/admin/glaciers/${params.glacierId}`, {
+            method: "PUT",
+            body: JSON.stringify(parsed.data),
+          }, token);
           return Response.json({ glacier });
-        } catch (err) {
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("404") ? 404 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
       DELETE: async ({ request, params }) => {
-        let claims;
-        try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin", "facility_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
-        }
-
+        const token = getToken(request);
         const url = new URL(request.url);
         const reason = url.searchParams.get("reason");
         if (!reason || reason.trim() === "") {
@@ -58,19 +48,14 @@ export const Route = createFileRoute("/api/admin/glaciers/$glacierId")({
         }
 
         try {
-          const id = await deleteGlacier(params.glacierId, reason, claims.sub);
-          if (!id) return Response.json({ error: "Not found" }, { status: 404 });
+          await apiFetch(`/admin/glaciers/${params.glacierId}`, {
+            method: "DELETE",
+            body: JSON.stringify({ reason }),
+          }, token);
           return Response.json({ ok: true });
-        } catch (err) {
-          if (err instanceof HasDependentsError) {
-            return Response.json(
-              { error: "Cannot delete: dependent rows exist", dependents: err.dependents },
-              { status: 409 },
-            );
-          }
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("409") ? 409 : err.message?.includes("404") ? 404 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
     },

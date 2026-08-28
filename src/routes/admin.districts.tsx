@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { authFetch } from "@/lib/auth-client";
+import { fetchDistricts, adminRequest } from "@/lib/cryohealth-client";
 import { districtCreateSchema, type DistrictCreate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -79,21 +79,18 @@ function DistrictsAdmin() {
   } = useQuery({
     queryKey: ["admin-districts"],
     queryFn: async (): Promise<DistrictRow[]> => {
-      const res = await fetch("/api/public/districts");
-      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
-      return (await res.json()).districts ?? [];
+      return (await fetchDistricts()).districts ?? [];
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (values: DistrictCreate) => {
-      const res = await authFetch("/api/admin/districts", {
+      const { ok, body } = await adminRequest("/admin/districts", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to create district");
+      if (!ok) throw new Error(body.error ?? "Failed to create district");
       return body.district;
     },
     onSuccess: () => {
@@ -106,13 +103,12 @@ function DistrictsAdmin() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string; values: DistrictCreate }) => {
-      const res = await authFetch(`/api/admin/districts/${id}`, {
+      const { ok, body } = await adminRequest(`/admin/districts/${id}`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to update district");
+      if (!ok) throw new Error(body.error ?? "Failed to update district");
       return body.district;
     },
     onSuccess: () => {
@@ -125,14 +121,11 @@ function DistrictsAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(
-        `/api/admin/districts/${id}?reason=${encodeURIComponent(reason)}`,
-        {
-          method: "DELETE",
-        },
+      const { ok, body } = await adminRequest(
+        `/admin/districts/${id}?reason=${encodeURIComponent(reason)}`,
+        { method: "DELETE" },
       );
-      const body = await res.json();
-      if (!res.ok) {
+      if (!ok) {
         throw new Error(
           body.dependents
             ? dependentsMessage(body.dependents)

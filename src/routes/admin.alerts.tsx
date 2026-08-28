@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { TierBadge, type Tier } from "@/lib/tier";
-import { authFetch } from "@/lib/auth-client";
+import { fetchAlerts, fetchAlertAcks, adminRequest } from "@/lib/cryohealth-client";
 import { alertUpdateSchema, type AlertUpdate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -99,13 +99,11 @@ function AlertsAdmin() {
   } = useQuery({
     queryKey: ["admin-alerts"],
     queryFn: async (): Promise<{ alerts: AlertRow[]; total: number; hasMore: boolean }> => {
-      const res = await fetch("/api/public/alerts");
-      if (!res.ok) throw new Error(`alerts fetch failed: ${res.status}`);
-      const body = await res.json();
+      const r = await fetchAlerts();
       return {
-        alerts: body.alerts ?? [],
-        total: body.total ?? 0,
-        hasMore: body.hasMore ?? false,
+        alerts: r.alerts ?? [],
+        total: r.total ?? 0,
+        hasMore: r.hasMore ?? false,
       };
     },
   });
@@ -116,13 +114,12 @@ function AlertsAdmin() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string; values: AlertUpdate }) => {
-      const res = await authFetch(`/api/admin/alerts/${id}`, {
+      const { ok, body } = await adminRequest(`/admin/alerts/${id}`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to update alert");
+      if (!ok) throw new Error(body.error ?? "Failed to update alert");
       return body.alert;
     },
     onSuccess: () => {
@@ -135,13 +132,12 @@ function AlertsAdmin() {
 
   const clearMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/alerts/${id}`, {
+      const { ok, body } = await adminRequest(`/admin/alerts/${id}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ reason }),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to clear alert");
+      if (!ok) throw new Error(body.error ?? "Failed to clear alert");
       return body.alert;
     },
     onSuccess: () => {
@@ -154,11 +150,11 @@ function AlertsAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/alerts/${id}?reason=${encodeURIComponent(reason)}`, {
-        method: "DELETE",
-      });
-      const body = await res.json();
-      if (!res.ok) {
+      const { ok, body } = await adminRequest(
+        `/admin/alerts/${id}?reason=${encodeURIComponent(reason)}`,
+        { method: "DELETE" },
+      );
+      if (!ok) {
         throw new Error(
           body.dependents
             ? dependentsMessage(body.dependents)
@@ -177,9 +173,7 @@ function AlertsAdmin() {
   const { data: acks, isError: acksError } = useQuery({
     queryKey: ["admin-alert-acks"],
     queryFn: async (): Promise<AckRow[]> => {
-      const res = await fetch("/api/public/alert-acks");
-      if (!res.ok) throw new Error(`alert-acks fetch failed: ${res.status}`);
-      return (await res.json()).acks ?? [];
+      return (await fetchAlertAcks()).acks ?? [];
     },
   });
   const isError = alertsError || acksError;

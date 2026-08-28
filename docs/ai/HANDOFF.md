@@ -607,7 +607,7 @@ bun run dev
 - ✓ Repeat the DELETE by hand → **404**, and no second audit row:
   ```bash
   TOKEN=<cryohealth_admin token from localStorage key `cryohealth_token`>
-  curl -i -X DELETE "http://localhost:8080/api/admin/cases/<id>" \
+  curl -i -X DELETE "http://localhost:3000/api/admin/cases/<id>" \
     -H "Authorization: Bearer $TOKEN" -H 'content-type: application/json' \
     -d '{"reason":"again"}'
   # → HTTP 404
@@ -628,7 +628,7 @@ bun run dev
 - ✓ Edit and Delete both work.
 - ✓ Gating is real, not just UI:
   ```bash
-  curl -i "http://localhost:8080/api/admin/cases"   # → 401 with no token
+  curl -i "http://localhost:3000/api/admin/cases"   # → 401 with no token
   # with a `viewer` or `chw` token → 403
   ```
 
@@ -678,7 +678,7 @@ FROM generate_series(1, 130) AS n;
 - ✓ **The endpoint reports the truncation** (acceptance criterion 1):
   ```bash
   TOKEN=<cryohealth_admin token from localStorage key `cryohealth_token`>
-  curl -s "http://localhost:8080/api/public/hazard-scores/<lake-id>" \
+  curl -s "http://localhost:3000/api/public/hazard-scores/<lake-id>" \
     -H "Authorization: Bearer $TOKEN" | jq '{shown: (.hazardScores | length), total, hasMore}'
   # → { "shown": 120, "total": <the step-2 count + 130>, "hasMore": true }
   ```
@@ -686,7 +686,7 @@ FROM generate_series(1, 130) AS n;
   the `LIMIT` and the whole signal is worthless.
 - ✓ **The 120 it returns are the newest 120**, which is the half of the bug the note cannot fix:
   ```bash
-  curl -s "http://localhost:8080/api/public/hazard-scores/<lake-id>" \
+  curl -s "http://localhost:3000/api/public/hazard-scores/<lake-id>" \
     -H "Authorization: Bearer $TOKEN" | jq -r '.hazardScores[0].run_id, .hazardScores[-1].run_id'
   # → qa27-1 then qa27-120   (qa27-121…130 are correctly the rows dropped)
   ```
@@ -725,32 +725,32 @@ bun run dev   # dev server on http://localhost:8080 (it has also come up on :808
 
 - ✓ **The two acceptance-criteria routes return 400 JSON, not a 500 HTML shell:**
   ```bash
-  curl -i http://localhost:8080/api/public/lakes/not-a-uuid
+  curl -i http://localhost:3000/api/public/lakes/not-a-uuid
   # → HTTP/1.1 400 · content-type: application/json · {"error":"Invalid lake id"}
-  curl -i http://localhost:8080/api/public/glaciers/not-a-uuid
+  curl -i http://localhost:3000/api/public/glaciers/not-a-uuid
   # → HTTP/1.1 400 · content-type: application/json · {"error":"Invalid glacier id"}
   ```
   If you see `content-type: text/html`, you are looking at the old 500 shell and the guard is not
   running. (The glaciers route is the scope-adjacent third one — same bug, first seen in #6.)
 - ✓ **Auth still wins over the guard** — the check that proves _placement_, not just the guard:
   ```bash
-  curl -i http://localhost:8080/api/public/hazard-scores/not-a-uuid
+  curl -i http://localhost:3000/api/public/hazard-scores/not-a-uuid
   # → HTTP/1.1 401 · {"error":"Unauthorized"}   ← must NOT be 400
   ```
   A 400 here would mean the guard drifted above the auth block, letting an anonymous caller probe
   which ids the route considers valid.
 - ✓ **A well-formed id still reaches the 404 path** — proves the guard did not swallow it:
   ```bash
-  curl -i http://localhost:8080/api/public/lakes/00000000-0000-0000-0000-000000000000
+  curl -i http://localhost:3000/api/public/lakes/00000000-0000-0000-0000-000000000000
   # → HTTP/1.1 404 · {"error":"Not found"}
   ```
 - ☐ **The gated route 400s for an authorized caller** (reported passing, output not captured):
   ```bash
-  curl -s http://localhost:8080/api/auth/login -H "content-type: application/json" \
+  curl -s http://localhost:3000/api/auth/login -H "content-type: application/json" \
     -d '{"lhwId":"admin-001","pin":"1234"}'
   # copy accessToken (NOT `token`) from the response, then:
   TOKEN=eyJ...
-  curl -i http://localhost:8080/api/public/hazard-scores/not-a-uuid -H "authorization: Bearer $TOKEN"
+  curl -i http://localhost:3000/api/public/hazard-scores/not-a-uuid -H "authorization: Bearer $TOKEN"
   # → HTTP/1.1 400 · {"error":"Invalid lake id"}
   ```
   In `cmd.exe` use `set TOKEN=eyJ...` and `%TOKEN%`; there is no command substitution, and an unset
@@ -760,7 +760,7 @@ bun run dev   # dev server on http://localhost:8080 (it has also come up on :808
   `{"error":"fetch failed"}` whenever that service is down, which it was during this verification.
   Use a seeded id from the #11 snapshot, or `SELECT id FROM lakes LIMIT 1`:
   ```bash
-  curl -i http://localhost:8080/api/public/lakes/420f0980-b1a3-4a6e-be24-62d9676dd9eb
+  curl -i http://localhost:3000/api/public/lakes/420f0980-b1a3-4a6e-be24-62d9676dd9eb
   # → HTTP/1.1 200   (Badswat glacial lake, per docs/ai/planning/snapshots/task-11-lakes-preflight.txt)
   ```
 - ☐ **Optional, cheap:** an upper-cased id should behave exactly like its lowercase form (the regex

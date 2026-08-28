@@ -31,7 +31,7 @@ export function decodeUser(token: string): AuthUser | null {
 }
 
 export async function login(identifier: string, password: string): Promise<AuthUser> {
-  const res = await fetch("/api/auth/login", {
+  const res = await fetch("/auth/login", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ identifier, password }),

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { authFetch } from "@/lib/auth-client";
+import { fetchChwProfiles, fetchDistricts, adminRequest } from "@/lib/cryohealth-client";
 import { chwProfileCreateSchema, type ChwProfileCreate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -86,13 +86,11 @@ function ChwProfilesAdmin() {
   } = useQuery({
     queryKey: ["admin-chw-profiles"],
     queryFn: async (): Promise<{ profiles: ChwProfileRow[]; total: number; hasMore: boolean }> => {
-      const res = await fetch("/api/public/chw-profiles");
-      if (!res.ok) throw new Error(`chw-profiles fetch failed: ${res.status}`);
-      const body = await res.json();
+      const r = await fetchChwProfiles();
       return {
-        profiles: body.profiles ?? [],
-        total: body.total ?? 0,
-        hasMore: body.hasMore ?? false,
+        profiles: r.profiles ?? [],
+        total: r.total ?? 0,
+        hasMore: r.hasMore ?? false,
       };
     },
   });
@@ -104,21 +102,18 @@ function ChwProfilesAdmin() {
   const { data: districts } = useQuery({
     queryKey: ["admin-districts"],
     queryFn: async (): Promise<DistrictRow[]> => {
-      const res = await fetch("/api/public/districts");
-      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
-      return (await res.json()).districts ?? [];
+      return (await fetchDistricts()).districts ?? [];
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (values: ChwProfileCreate) => {
-      const res = await authFetch("/api/admin/chw-profiles", {
+      const { ok, body } = await adminRequest("/admin/chw-profiles", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to create CHW profile");
+      if (!ok) throw new Error(body.error ?? "Failed to create CHW profile");
       return body.profile;
     },
     onSuccess: () => {
@@ -131,13 +126,12 @@ function ChwProfilesAdmin() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string; values: ChwProfileCreate }) => {
-      const res = await authFetch(`/api/admin/chw-profiles/${id}`, {
+      const { ok, body } = await adminRequest(`/admin/chw-profiles/${id}`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to update CHW profile");
+      if (!ok) throw new Error(body.error ?? "Failed to update CHW profile");
       return body.profile;
     },
     onSuccess: () => {
@@ -150,14 +144,11 @@ function ChwProfilesAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(
-        `/api/admin/chw-profiles/${id}?reason=${encodeURIComponent(reason)}`,
-        {
-          method: "DELETE",
-        },
+      const { ok, body } = await adminRequest(
+        `/admin/chw-profiles/${id}?reason=${encodeURIComponent(reason)}`,
+        { method: "DELETE" },
       );
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to delete CHW profile");
+      if (!ok) throw new Error(body.error ?? "Failed to delete CHW profile");
       return body;
     },
     onSuccess: () => {

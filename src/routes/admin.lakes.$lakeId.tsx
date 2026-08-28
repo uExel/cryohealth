@@ -6,7 +6,7 @@ import { AdminPlaceholder } from "@/components/cryohealth/AdminPlaceholder";
 import { StatCard } from "@/components/cryohealth/StatCard";
 import { LakeFormDialog } from "@/components/cryohealth/LakeFormDialog";
 import { TierBadge, type Tier } from "@/lib/tier";
-import { authFetch } from "@/lib/auth-client";
+import { fetchLakeDetail, fetchDistricts, fetchHazardScores, adminRequest } from "@/lib/cryohealth-client";
 import type { LakeCreate } from "@/lib/admin-schemas";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -92,19 +92,14 @@ function LakeDetailAdmin() {
   } = useQuery({
     queryKey: ["admin-lake", lakeId],
     queryFn: async () => {
-      const res = await fetch(`/api/public/lakes/${lakeId}`);
-      if (res.status === 404) return null;
-      if (!res.ok) throw new Error(`lake fetch failed: ${res.status}`);
-      return res.json() as Promise<{ lake: LakeRow; history: RiskScoreRow[] }>;
+      return fetchLakeDetail(lakeId) as Promise<{ lake: LakeRow; history: RiskScoreRow[] } | null>;
     },
   });
 
   const { data: districts } = useQuery({
     queryKey: ["admin-districts"],
     queryFn: async (): Promise<DistrictRow[]> => {
-      const res = await fetch("/api/public/districts");
-      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
-      return (await res.json()).districts ?? [];
+      return (await fetchDistricts()).districts ?? [];
     },
   });
 

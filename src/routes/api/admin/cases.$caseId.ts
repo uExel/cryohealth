@@ -1,29 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { updateCase, softDeleteCase } from "@/lib/queries";
-import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
+import { apiFetch } from "@/lib/cryohealth-api";
 import { caseUpdateSchema } from "@/lib/admin-schemas";
-import { parseJsonBody, mapDbError } from "@/lib/api-errors";
+import { parseJsonBody } from "@/lib/api-errors";
 
-/** Issue #15. Same role gate as the collection route (both admin roles) — see
- *  api/admin/cases.ts for why.
- *
- *  DELETE here is a **soft** delete: it calls softDeleteCase, which runs
- *  `UPDATE cases SET deleted_at = now()`. There is no hard-delete path to `cases`
- *  anywhere in this repo, and there should not be one — unlike facilities/protocols,
- *  whose DELETE handlers do destroy the row. */
+function getToken(request: Request): string | undefined {
+  const auth = request.headers.get("authorization");
+  if (auth?.startsWith("Bearer ")) return auth.substring(7);
+  return undefined;
+}
+
 export const Route = createFileRoute("/api/admin/cases/$caseId")({
   server: {
     handlers: {
       PUT: async ({ request, params }) => {
-        let claims;
-        try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin", "facility_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
-        }
-
+        const token = getToken(request);
         const json = await parseJsonBody(request);
         if (!json.ok) return json.response;
 
@@ -39,27 +29,18 @@ export const Route = createFileRoute("/api/admin/cases/$caseId")({
         }
 
         try {
-          const updated = await updateCase(params.caseId, parsed.data, claims.sub);
-          // Also the 404 for an already soft-deleted case: updateCase only matches rows
-          // with `deleted_at IS NULL`, so a deleted case is not editable.
-          if (!updated) return Response.json({ error: "Not found" }, { status: 404 });
+          const updated = await apiFetch(`/admin/cases/${params.caseId}`, {
+            method: "PUT",
+            body: JSON.stringify(parsed.data),
+          }, token);
           return Response.json({ case: updated });
-        } catch (err) {
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("404") ? 404 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
       DELETE: async ({ request, params }) => {
-        let claims;
-        try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin", "facility_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
-        }
-
+        const token = getToken(request);
         const url = new URL(request.url);
         const reason = url.searchParams.get("reason");
         if (!reason || reason.trim() === "") {
@@ -67,13 +48,14 @@ export const Route = createFileRoute("/api/admin/cases/$caseId")({
         }
 
         try {
-          const id = await softDeleteCase(params.caseId, reason, claims.sub);
-          if (!id) return Response.json({ error: "Not found" }, { status: 404 });
+          await apiFetch(`/admin/cases/${params.caseId}`, {
+            method: "DELETE",
+            body: JSON.stringify({ reason }),
+          }, token);
           return Response.json({ ok: true });
-        } catch (err) {
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("404") ? 404 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
     },

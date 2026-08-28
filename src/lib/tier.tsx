@@ -80,20 +80,22 @@ export function TierBadge({
   solid = false,
   className = "",
 }: {
-  tier: Tier;
+  tier?: Tier;
   solid?: boolean;
   className?: string;
 }) {
-  const Icon = TIER_ICON[tier];
-  const background = solid ? TIER_SOLID_VAR[tier] : TIER_SOFT_VAR[tier];
-  const color = solid ? TIER_ON_SOLID_VAR[tier] : TIER_SOLID_VAR[tier];
+  const effectiveTier = ((tier ?? "NORMAL").toUpperCase()) as Tier;
+  const Icon = TIER_ICON[effectiveTier] ?? Check;
+  const background = solid ? TIER_SOLID_VAR[effectiveTier] : TIER_SOFT_VAR[effectiveTier];
+  const color = solid ? TIER_ON_SOLID_VAR[effectiveTier] : TIER_SOLID_VAR[effectiveTier];
+  const label = tierClasses[effectiveTier]?.label ?? "Unknown";
   return (
     <span
       className={`inline-flex items-center gap-1.5 px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] ${className}`}
       style={{ background, color }}
     >
       <Icon className="h-[13px] w-[13px]" strokeWidth={2.6} />
-      {tierClasses[tier].label.toUpperCase()}
+      {label.toUpperCase()}
     </span>
   );
 }

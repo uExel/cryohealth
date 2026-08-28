@@ -77,11 +77,14 @@ function FacilitiesAdmin() {
   } = useQuery({
     queryKey: ["admin-facilities"],
     queryFn: async (): Promise<{ facilities: FacilityRow[]; total: number; hasMore: boolean }> => {
-      const res = await fetch("/api/public/facilities-admin");
+      const res = await authFetch("/api/admin/facilities");
       if (!res.ok) throw new Error(`facilities fetch failed: ${res.status}`);
       const body = await res.json();
+      if (!body || !Array.isArray(body.rows))
+        throw new Error("facilities fetch returned invalid data");
+      // console.log("facilities fetch respons/e", body);
       return {
-        facilities: body.facilities ?? [],
+        facilities: body.rows ?? [],
         total: body.total ?? 0,
         hasMore: body.hasMore ?? false,
       };
@@ -101,7 +104,7 @@ function FacilitiesAdmin() {
       });
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? "Failed to create facility");
-      return body.facility;
+      return body;
     },
     onSuccess: () => {
       toast.success("Facility created");
@@ -120,7 +123,7 @@ function FacilitiesAdmin() {
       });
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? "Failed to update facility");
-      return body.facility;
+      return body;
     },
     onSuccess: () => {
       toast.success("Facility updated");
@@ -132,12 +135,9 @@ function FacilitiesAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(
-        `/api/admin/facilities/${id}?reason=${encodeURIComponent(reason)}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const res = await authFetch(`/api/admin/facilities/${id}?reason=${encodeURIComponent(reason)}`, {
+        method: "DELETE",
+      });
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? "Failed to delete facility");
       return body;

@@ -1,22 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createFacility } from "@/lib/queries";
-import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
+import { apiFetch } from "@/lib/cryohealth-api";
 import { facilityCreateSchema } from "@/lib/admin-schemas";
-import { parseJsonBody, mapDbError } from "@/lib/api-errors";
+import { parseJsonBody } from "@/lib/api-errors";
+
+function getToken(request: Request): string | undefined {
+  const auth = request.headers.get("authorization");
+  if (auth?.startsWith("Bearer ")) return auth.substring(7);
+  return undefined;
+}
 
 export const Route = createFileRoute("/api/admin/facilities")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
-        let claims;
+      GET: async ({ request }) => {
+        const token = getToken(request);
         try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin", "facility_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
+          const res = await apiFetch("/admin/facilities", { method: "GET" }, token);
+          return Response.json(res);
+        } catch (err: any) {
+          return Response.json({ error: err.message }, { status: 500 });
         }
-
+      },
+      POST: async ({ request }) => {
+        const token = getToken(request);
         const json = await parseJsonBody(request);
         if (!json.ok) return json.response;
 
@@ -29,12 +35,14 @@ export const Route = createFileRoute("/api/admin/facilities")({
         }
 
         try {
-          const facility = await createFacility({ ...parsed.data, actorId: claims.sub });
+          const facility = await apiFetch("/admin/facilities", {
+            method: "POST",
+            body: JSON.stringify(parsed.data),
+          }, token);
           return Response.json({ facility });
-        } catch (err) {
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("409") ? 409 : err.message?.includes("403") ? 403 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
     },

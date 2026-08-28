@@ -1,40 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { listUsers, createUser } from "@/lib/queries";
-import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
+import { apiFetch } from "@/lib/cryohealth-api";
 import { userCreateSchema } from "@/lib/admin-schemas";
-import { parseJsonBody, mapDbError } from "@/lib/api-errors";
+import { parseJsonBody } from "@/lib/api-errors";
 
-/** Issue #16. Every handler here is `cryohealth_admin` only — unlike the rest of
- *  api/admin/*, `facility_admin` is NOT included. That's the whole point of the gate:
- *  the sidebar hides "Users & roles" from a facility_admin, but a facility_admin token
- *  hitting this endpoint directly gets a 403 from requireRole, not a listing.
- *
- *  The listing lives here rather than in api/public/* (where the other admin tables
- *  read from) precisely because it can't be ungated: roles, lhwIds and phone numbers
- *  are exactly the material an attacker needs to target the sign-in endpoint. */
+function getToken(request: Request): string | undefined {
+  const auth = request.headers.get("authorization");
+  if (auth?.startsWith("Bearer ")) return auth.substring(7);
+  return undefined;
+}
+
 export const Route = createFileRoute("/api/admin/users")({
   server: {
     handlers: {
       GET: async ({ request }) => {
+        const token = getToken(request);
         try {
-          const claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
+          const users = await apiFetch("/users", { method: "GET" }, token);
+          return Response.json({ users });
+        } catch (err: any) {
+          const status = err.message?.includes("403") ? 403 : err.message?.includes("401") ? 401 : 500;
+          return Response.json({ error: err.message }, { status });
         }
-        return Response.json({ users: await listUsers() });
       },
       POST: async ({ request }) => {
-        let claims;
-        try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
-        }
-
+        const token = getToken(request);
         const json = await parseJsonBody(request);
         if (!json.ok) return json.response;
 
@@ -47,14 +36,14 @@ export const Route = createFileRoute("/api/admin/users")({
         }
 
         try {
-          const user = await createUser({ ...parsed.data, actorId: claims.sub });
+          const user = await apiFetch("/users", {
+            method: "POST",
+            body: JSON.stringify(parsed.data),
+          }, token);
           return Response.json({ user });
-        } catch (err) {
-          // 23505 (duplicate lhwId/phone) -> 409 via mapDbError; both columns are
-          // UNIQUE in CryoHealth-api's schema and are the sign-in lookup keys.
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("409") ? 409 : err.message?.includes("403") ? 403 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
     },

@@ -1,22 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { updateFacility, deleteFacility } from "@/lib/queries";
-import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
+import { apiFetch } from "@/lib/cryohealth-api";
 import { facilityUpdateSchema } from "@/lib/admin-schemas";
-import { parseJsonBody, mapDbError } from "@/lib/api-errors";
+import { parseJsonBody } from "@/lib/api-errors";
+
+function getToken(request: Request): string | undefined {
+  const auth = request.headers.get("authorization");
+  if (auth?.startsWith("Bearer ")) return auth.substring(7);
+  return undefined;
+}
 
 export const Route = createFileRoute("/api/admin/facilities/$facilityId")({
   server: {
     handlers: {
       PUT: async ({ request, params }) => {
-        let claims;
-        try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin", "facility_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
-        }
-
+        const token = getToken(request);
         const json = await parseJsonBody(request);
         if (!json.ok) return json.response;
 
@@ -32,25 +29,18 @@ export const Route = createFileRoute("/api/admin/facilities/$facilityId")({
         }
 
         try {
-          const facility = await updateFacility(params.facilityId, parsed.data, claims.sub);
-          if (!facility) return Response.json({ error: "Not found" }, { status: 404 });
+          const facility = await apiFetch(`/admin/facilities/${params.facilityId}`, {
+            method: "PUT",
+            body: JSON.stringify(parsed.data),
+          }, token);
           return Response.json({ facility });
-        } catch (err) {
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("404") ? 404 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
       DELETE: async ({ request, params }) => {
-        let claims;
-        try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin", "facility_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
-        }
-
+        const token = getToken(request);
         const url = new URL(request.url);
         const reason = url.searchParams.get("reason");
         if (!reason || reason.trim() === "") {
@@ -58,13 +48,14 @@ export const Route = createFileRoute("/api/admin/facilities/$facilityId")({
         }
 
         try {
-          const id = await deleteFacility(params.facilityId, reason, claims.sub);
-          if (!id) return Response.json({ error: "Not found" }, { status: 404 });
+          await apiFetch(`/admin/facilities/${params.facilityId}`, {
+            method: "DELETE",
+            body: JSON.stringify({ reason }),
+          }, token);
           return Response.json({ ok: true });
-        } catch (err) {
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("404") ? 404 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
     },

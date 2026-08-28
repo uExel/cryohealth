@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
 import { TierBadge, type Tier } from "@/lib/tier";
+import { fetchOpenAlerts, fetchProtocols } from "@/lib/cryohealth-client";
 
 export const Route = createFileRoute("/chw")({
   head: () => ({
@@ -39,9 +40,7 @@ function CHWHome() {
         estimated_window: string | null;
       }[]
     > => {
-      const res = await fetch("/api/public/open-alerts");
-      const body = await res.json();
-      return body.alerts ?? [];
+      return (await fetchOpenAlerts()).alerts ?? [];
     },
   });
   const { data: protocols } = useQuery({
@@ -57,9 +56,7 @@ function CHWHome() {
         source: string;
       }[]
     > => {
-      const res = await fetch("/api/public/protocols");
-      const body = await res.json();
-      return body.protocols ?? [];
+      return (await fetchProtocols()).protocols ?? [];
     },
   });
 

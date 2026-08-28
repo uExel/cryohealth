@@ -1,28 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { updateUser, LastAdminError } from "@/lib/queries";
-import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
+import { apiFetch } from "@/lib/cryohealth-api";
 import { userUpdateSchema } from "@/lib/admin-schemas";
-import { parseJsonBody, mapDbError } from "@/lib/api-errors";
+import { parseJsonBody } from "@/lib/api-errors";
 
-/** Issue #16. There is intentionally no DELETE handler on this route — users are
- *  deactivated (`PUT { active: false }`), never destroyed. See the header comment on
- *  the users section of queries.ts: `cases.chw_id` is ON DELETE RESTRICT and
- *  `audit."actorId"` references users, so a hard delete would either be refused by
- *  the DB or shred the audit trail. `cryohealth_admin` only, same as the collection
- *  route — a facility_admin token gets a 403 here directly. */
+function getToken(request: Request): string | undefined {
+  const auth = request.headers.get("authorization");
+  if (auth?.startsWith("Bearer ")) return auth.substring(7);
+  return undefined;
+}
+
 export const Route = createFileRoute("/api/admin/users/$userId")({
   server: {
     handlers: {
       PUT: async ({ request, params }) => {
-        let claims;
-        try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
-        }
-
+        const token = getToken(request);
         const json = await parseJsonBody(request);
         if (!json.ok) return json.response;
 
@@ -38,22 +29,14 @@ export const Route = createFileRoute("/api/admin/users/$userId")({
         }
 
         try {
-          const user = await updateUser(params.userId, parsed.data, claims.sub);
-          if (!user) return Response.json({ error: "Not found" }, { status: 404 });
+          const user = await apiFetch(`/users/${params.userId}`, {
+            method: "PUT",
+            body: JSON.stringify(parsed.data),
+          }, token);
           return Response.json({ user });
-        } catch (err) {
-          if (err instanceof LastAdminError) {
-            return Response.json(
-              {
-                error:
-                  "This is the last active cryohealth_admin. Promote another admin first — no one could restore access otherwise.",
-              },
-              { status: 409 },
-            );
-          }
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("409") ? 409 : err.message?.includes("404") ? 404 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
     },

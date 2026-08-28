@@ -1,10 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { listFacilities } from "@/lib/queries";
+import { apiFetch } from "@/lib/cryohealth-api";
 
 export const Route = createFileRoute("/api/public/facilities")({
   server: {
     handlers: {
-      GET: async () => Response.json({ facilities: await listFacilities() }),
+      GET: async () => {
+        try {
+          const facilities = await apiFetch("/facilities", { method: "GET" });
+          return Response.json({ facilities });
+        } catch (err: any) {
+          return Response.json({ error: err.message }, { status: 500 });
+        }
+      },
     },
   },
 });

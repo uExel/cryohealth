@@ -1,22 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createProtocol } from "@/lib/queries";
-import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
+import { apiFetch } from "@/lib/cryohealth-api";
 import { protocolCreateSchema } from "@/lib/admin-schemas";
-import { parseJsonBody, mapDbError } from "@/lib/api-errors";
+import { parseJsonBody } from "@/lib/api-errors";
+
+function getToken(request: Request): string | undefined {
+  const auth = request.headers.get("authorization");
+  if (auth?.startsWith("Bearer ")) return auth.substring(7);
+  return undefined;
+}
 
 export const Route = createFileRoute("/api/admin/protocols")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        let claims;
-        try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin", "facility_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
-        }
-
+        const token = getToken(request);
         const json = await parseJsonBody(request);
         if (!json.ok) return json.response;
 
@@ -29,18 +26,14 @@ export const Route = createFileRoute("/api/admin/protocols")({
         }
 
         try {
-          const protocol = await createProtocol({ ...parsed.data, actorId: claims.sub });
+          const protocol = await apiFetch("/admin/protocols", {
+            method: "POST",
+            body: JSON.stringify(parsed.data),
+          }, token);
           return Response.json({ protocol });
-        } catch (err) {
-          if ((err as { code?: string })?.code === "23505") {
-            return Response.json(
-              { error: `A protocol with slug "${parsed.data.slug}" already exists.` },
-              { status: 409 },
-            );
-          }
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("409") ? 409 : err.message?.includes("403") ? 403 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
     },

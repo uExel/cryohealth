@@ -1,6 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { TierBadge, type Tier } from "@/lib/tier";
+import {
+  fetchKpis,
+  fetchHotLakes,
+  fetchOpenAlerts,
+} from "@/lib/cryohealth-client";
 import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
@@ -51,8 +56,7 @@ function Index() {
   const { data: kpis } = useQuery({
     queryKey: ["kpis"],
     queryFn: async () => {
-      const res = await fetch("/api/public/kpis");
-      return res.json();
+      return fetchKpis();
     },
   });
 
@@ -68,9 +72,7 @@ function Index() {
         last_updated: string;
       }[]
     > => {
-      const res = await fetch("/api/public/hot-lakes");
-      const body = await res.json();
-      return body.lakes ?? [];
+      return (await fetchHotLakes()).lakes ?? [];
     },
   });
 
@@ -85,9 +87,7 @@ function Index() {
         estimated_window: string | null;
       }[]
     > => {
-      const res = await fetch("/api/public/open-alerts");
-      const body = await res.json();
-      return body.alerts ?? [];
+      return (await fetchOpenAlerts()).alerts ?? [];
     },
   });
 

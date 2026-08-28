@@ -1,22 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createDistrict } from "@/lib/queries";
-import { requireAuth, requireRole, AuthError } from "@/lib/auth-guard";
+import { apiFetch } from "@/lib/cryohealth-api";
 import { districtCreateSchema } from "@/lib/admin-schemas";
-import { parseJsonBody, mapDbError } from "@/lib/api-errors";
+import { parseJsonBody } from "@/lib/api-errors";
+
+function getToken(request: Request): string | undefined {
+  const auth = request.headers.get("authorization");
+  if (auth?.startsWith("Bearer ")) return auth.substring(7);
+  return undefined;
+}
 
 export const Route = createFileRoute("/api/admin/districts")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        let claims;
-        try {
-          claims = await requireAuth(request);
-          requireRole(claims, ["cryohealth_admin", "facility_admin"]);
-        } catch (e) {
-          if (e instanceof AuthError) return e.response;
-          throw e;
-        }
-
+        const token = getToken(request);
         const json = await parseJsonBody(request);
         if (!json.ok) return json.response;
 
@@ -29,25 +26,14 @@ export const Route = createFileRoute("/api/admin/districts")({
         }
 
         try {
-          const district = await createDistrict({
-            name: parsed.data.name,
-            province: parsed.data.province,
-            population: parsed.data.population ?? null,
-            centroidLat: parsed.data.centroid_lat ?? null,
-            centroidLng: parsed.data.centroid_lng ?? null,
-            actorId: claims.sub,
-          });
+          const district = await apiFetch("/districts", {
+            method: "POST",
+            body: JSON.stringify(parsed.data),
+          }, token);
           return Response.json({ district });
-        } catch (err) {
-          if ((err as { code?: string })?.code === "23505") {
-            return Response.json(
-              { error: `A district named "${parsed.data.name}" already exists.` },
-              { status: 409 },
-            );
-          }
-          const mapped = mapDbError(err);
-          if (mapped) return mapped;
-          throw err;
+        } catch (err: any) {
+          const status = err.message?.includes("409") ? 409 : err.message?.includes("403") ? 403 : 400;
+          return Response.json({ error: err.message }, { status });
         }
       },
     },
