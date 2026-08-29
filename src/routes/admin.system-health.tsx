@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { authFetch } from "@/lib/auth-client";
+import { fetchSystemHealth, adminRequest } from "@/lib/cryohealth-client";
 import { CryoHealthAdminOnly } from "@/components/cryohealth/AdminPlaceholder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,18 +55,15 @@ function SystemHealthAdmin() {
     enabled,
     refetchInterval: POLL_INTERVAL_MS,
     queryFn: async (): Promise<HealthResponse> => {
-      const res = await authFetch("/api/admin/system-health");
-      if (!res.ok) throw new Error(`system-health fetch failed: ${res.status}`);
-      return res.json();
+      return await fetchSystemHealth();
     },
   });
 
   const runMutation = useMutation({
     mutationFn: async (action: RunAction) => {
-      const res = await authFetch(`/api/admin/system-health/${action}`, { method: "POST" });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? `Request failed (${res.status})`);
-      return body;
+      const result = await adminRequest(`/admin/health/${action}`, { method: "POST" });
+      if (!result.ok) throw new Error(result.body.error ?? `Request failed (${result.status})`);
+      return result.body;
     },
     onSuccess: (_body, action) => {
       toast.success(action === "run" ? "Pipeline run started" : "Hazard pass started");

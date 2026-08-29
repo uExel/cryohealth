@@ -13,6 +13,7 @@ import {
 import { haversineKm, glacierLakeAssocScore, glacierStatusWeight } from "@/lib/geo";
 import { BreakdownDetails, DriverBadge, DriverLegend } from "./glaciers.$glacierId";
 import { StatCard } from "@/components/cryohealth/StatCard";
+import { fetchLakeDetail } from "@/lib/cryohealth-client";
 
 export const Route = createFileRoute("/lakes/$lakeId")({
   head: ({ params }) => ({
@@ -32,9 +33,9 @@ function LakeDetail() {
   const { data: lakeBundle } = useQuery({
     queryKey: ["lake", lakeId],
     queryFn: async () => {
-      const res = await fetch(`/api/public/lakes/${lakeId}`);
-      if (!res.ok) return null;
-      return res.json() as Promise<{
+      const data = await fetchLakeDetail(lakeId);
+      if (!data) return null;
+      return data as {
         lake: {
           name: string;
           district_name?: string | null;
@@ -66,7 +67,7 @@ function LakeDetail() {
           elevation_max_m: number | null;
           district_name: string | null;
         }[];
-      }>;
+      };
     },
   });
 

@@ -115,6 +115,31 @@ export async function fetchHazardScores(lakeId: string): Promise<any> {
   return apiFetch(`/lakes/${lakeId}/hazard-scores`, { method: "GET" }, token());
 }
 
+export async function fetchCases(): Promise<{ cases: any[]; total: number; hasMore: boolean }> {
+  const res = (await apiFetch("/admin/cases", { method: "GET" }, token())) as any;
+  const cases = res?.cases ?? res?.rows ?? [];
+  const total = res?.total ?? cases.length;
+  const hasMore = res?.hasMore ?? false;
+  return { cases: asArray(cases), total, hasMore };
+}
+
+export async function fetchAdminUsers(): Promise<{ users: any[] }> {
+  const res = (await apiFetch("/users", { method: "GET" }, token())) as any;
+  return { users: asArray(res) };
+}
+
+export async function fetchSync(): Promise<any> {
+  return apiFetch("/admin/sync", { method: "GET" }, token());
+}
+
+export async function fetchSystemHealth(): Promise<any> {
+  return apiFetch("/admin/health", { method: "GET" }, token());
+}
+
+export async function fetchAudit(): Promise<any> {
+  return apiFetch("/admin/audit", { method: "GET" }, token());
+}
+
 /* ------------------------------------------------------------------ *
  * Admin / write endpoints — call the backend directly with the       *
  * stored bearer token. Returns { ok, status, body } so components     *

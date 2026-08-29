@@ -74,12 +74,10 @@ export async function fetchLakesFromApi(): Promise<Lake[]> {
   return items.map(toLake);
 }
 
-/** Client-side: proxy endpoint */
+/** Client-side: calls backend directly */
 export async function fetchLakes(): Promise<Lake[]> {
-  const res = await fetch("/api/public/lakes");
-  if (!res.ok) throw new Error(`/api/public/lakes returned ${res.status}`);
-  const body: { lakes: Lake[] } = await res.json();
-  return body.lakes;
+  const body: { items: ApiLake[]; total: number } = await apiFetch("/lakes", { method: "GET" });
+  return body.items.map(toLake);
 }
 
 export type ApiHealth = { status: string; database: string };

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { authFetch } from "@/lib/auth-client";
+import { fetchAdminUsers, fetchFacilitiesAdmin, adminRequest } from "@/lib/cryohealth-client";
 import {
   userCreateSchema,
   USER_ROLES,
@@ -106,9 +106,8 @@ function UsersAdmin() {
     queryKey: ["admin-users"],
     enabled,
     queryFn: async (): Promise<UserRow[]> => {
-      const res = await authFetch("/api/admin/users");
-      if (!res.ok) throw new Error(`users fetch failed: ${res.status}`);
-      return (await res.json()).users ?? [];
+      const { users } = await fetchAdminUsers();
+      return users as UserRow[];
     },
   });
 
@@ -116,22 +115,19 @@ function UsersAdmin() {
     queryKey: ["admin-facilities"],
     enabled,
     queryFn: async (): Promise<FacilityRow[]> => {
-      const res = await fetch("/api/public/facilities-admin");
-      if (!res.ok) throw new Error(`facilities fetch failed: ${res.status}`);
-      return (await res.json()).facilities ?? [];
+      const { facilities } = await fetchFacilitiesAdmin();
+      return facilities as FacilityRow[];
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (values: UserCreate) => {
-      const res = await authFetch("/api/admin/users", {
+      const result = await adminRequest("/users", {
         method: "POST",
-        headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to create user");
-      return body.user;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to create user");
+      return result.body.user;
     },
     onSuccess: () => {
       toast.success("User created");
@@ -143,14 +139,12 @@ function UsersAdmin() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string; values: UserUpdate }) => {
-      const res = await authFetch(`/api/admin/users/${id}`, {
+      const result = await adminRequest(`/users/${id}`, {
         method: "PUT",
-        headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to update user");
-      return body.user as UserRow;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to update user");
+      return result.body.user as UserRow;
     },
     onSuccess: (user) => {
       toast.success(user.active ? "User updated" : "User deactivated");

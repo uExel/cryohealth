@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AdminPlaceholder } from "@/components/cryohealth/AdminPlaceholder";
 import { StatCard, StatusPill } from "@/components/cryohealth/StatCard";
+import { fetchGlacierDetail } from "@/lib/cryohealth-client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Table,
@@ -62,10 +63,7 @@ function GlacierDetailAdmin() {
   } = useQuery({
     queryKey: ["admin-glacier", glacierId],
     queryFn: async () => {
-      const res = await fetch(`/api/public/glaciers/${glacierId}`);
-      if (res.status === 404) return null;
-      if (!res.ok) throw new Error(`glacier fetch failed: ${res.status}`);
-      return res.json() as Promise<{ glacier: GlacierRow; observations: ObservationRow[] }>;
+      return await fetchGlacierDetail(glacierId);
     },
   });
 

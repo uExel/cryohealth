@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { authFetch } from "@/lib/auth-client";
+import { fetchProtocols, adminRequest } from "@/lib/cryohealth-client";
 import { protocolCreateSchema, type ProtocolCreate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -76,22 +76,19 @@ function ProtocolsAdmin() {
   } = useQuery({
     queryKey: ["admin-protocols"],
     queryFn: async (): Promise<ProtocolRow[]> => {
-      const res = await fetch("/api/public/protocols");
-      if (!res.ok) throw new Error(`protocols fetch failed: ${res.status}`);
-      return (await res.json()).protocols ?? [];
+      const { protocols } = await fetchProtocols();
+      return protocols as ProtocolRow[];
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (values: ProtocolCreate) => {
-      const res = await authFetch("/api/admin/protocols", {
+      const result = await adminRequest("/admin/protocols", {
         method: "POST",
-        headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to create protocol");
-      return body.protocol;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to create protocol");
+      return result.body.protocol;
     },
     onSuccess: () => {
       toast.success("Protocol created");
@@ -103,14 +100,12 @@ function ProtocolsAdmin() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string; values: Omit<ProtocolCreate, "slug"> }) => {
-      const res = await authFetch(`/api/admin/protocols/${id}`, {
+      const result = await adminRequest(`/admin/protocols/${id}`, {
         method: "PUT",
-        headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to update protocol");
-      return body.protocol;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to update protocol");
+      return result.body.protocol;
     },
     onSuccess: () => {
       toast.success("Protocol updated");
@@ -122,15 +117,14 @@ function ProtocolsAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(
-        `/api/admin/protocols/${id}?reason=${encodeURIComponent(reason)}`,
+      const result = await adminRequest(
+        `/admin/protocols/${id}?reason=${encodeURIComponent(reason)}`,
         {
           method: "DELETE",
         },
       );
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to delete protocol");
-      return body;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to delete protocol");
+      return result.body;
     },
     onSuccess: () => {
       toast.success("Protocol deleted");

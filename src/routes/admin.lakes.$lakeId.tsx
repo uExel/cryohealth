@@ -110,27 +110,23 @@ function LakeDetailAdmin() {
   } = useQuery({
     queryKey: ["admin-lake-hazard-scores", lakeId],
     queryFn: async (): Promise<HazardScoresResponse> => {
-      const res = await authFetch(`/api/public/hazard-scores/${lakeId}`);
-      if (!res.ok) throw new Error(`hazard-scores fetch failed: ${res.status}`);
-      const body = await res.json();
+      const data = await fetchHazardScores(lakeId);
       return {
-        hazardScores: body.hazardScores ?? [],
-        total: body.total ?? 0,
-        hasMore: body.hasMore ?? false,
+        hazardScores: (data as any)?.hazardScores ?? [],
+        total: (data as any)?.total ?? 0,
+        hasMore: (data as any)?.hasMore ?? false,
       };
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: async (values: LakeCreate) => {
-      const res = await authFetch(`/api/admin/lakes/${lakeId}`, {
+      const result = await adminRequest(`/admin/lakes/${lakeId}`, {
         method: "PUT",
-        headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to update lake");
-      return body.lake;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to update lake");
+      return result.body.lake;
     },
     onSuccess: () => {
       toast.success("Lake updated");

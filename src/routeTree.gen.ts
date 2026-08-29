@@ -36,48 +36,8 @@ import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminAlertsRouteImport } from './routes/admin.alerts'
 import { Route as AdminLakesIndexRouteImport } from './routes/admin.lakes.index'
 import { Route as AdminGlaciersIndexRouteImport } from './routes/admin.glaciers.index'
-import { Route as ApiPublicProtocolsRouteImport } from './routes/api/public/protocols'
-import { Route as ApiPublicOpenAlertsRouteImport } from './routes/api/public/open-alerts'
-import { Route as ApiPublicLakesAdminRouteImport } from './routes/api/public/lakes-admin'
-import { Route as ApiPublicLakesRouteImport } from './routes/api/public/lakes'
-import { Route as ApiPublicKpisRouteImport } from './routes/api/public/kpis'
-import { Route as ApiPublicHotLakesRouteImport } from './routes/api/public/hot-lakes'
-import { Route as ApiPublicGlaciersRouteImport } from './routes/api/public/glaciers'
-import { Route as ApiPublicFacilitiesAdminRouteImport } from './routes/api/public/facilities-admin'
-import { Route as ApiPublicFacilitiesRouteImport } from './routes/api/public/facilities'
-import { Route as ApiPublicDistrictsRouteImport } from './routes/api/public/districts'
-import { Route as ApiPublicChwProfilesRouteImport } from './routes/api/public/chw-profiles'
-import { Route as ApiPublicCasesRouteImport } from './routes/api/public/cases'
-import { Route as ApiPublicAlertsRouteImport } from './routes/api/public/alerts'
-import { Route as ApiPublicAlertAcksRouteImport } from './routes/api/public/alert-acks'
-import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
-import { Route as ApiAdminUsersRouteImport } from './routes/api/admin/users'
-import { Route as ApiAdminSystemHealthRouteImport } from './routes/api/admin/system-health'
-import { Route as ApiAdminSyncRouteImport } from './routes/api/admin/sync'
-import { Route as ApiAdminProtocolsRouteImport } from './routes/api/admin/protocols'
-import { Route as ApiAdminLakesRouteImport } from './routes/api/admin/lakes'
-import { Route as ApiAdminGlaciersRouteImport } from './routes/api/admin/glaciers'
-import { Route as ApiAdminFacilitiesRouteImport } from './routes/api/admin/facilities'
-import { Route as ApiAdminDistrictsRouteImport } from './routes/api/admin/districts'
-import { Route as ApiAdminChwProfilesRouteImport } from './routes/api/admin/chw-profiles'
-import { Route as ApiAdminCasesRouteImport } from './routes/api/admin/cases'
-import { Route as ApiAdminAuditRouteImport } from './routes/api/admin/audit'
 import { Route as AdminLakesLakeIdRouteImport } from './routes/admin.lakes.$lakeId'
 import { Route as AdminGlaciersGlacierIdRouteImport } from './routes/admin.glaciers.$glacierId'
-import { Route as ApiPublicLakesLakeIdRouteImport } from './routes/api/public/lakes.$lakeId'
-import { Route as ApiPublicHazardScoresLakeIdRouteImport } from './routes/api/public/hazard-scores.$lakeId'
-import { Route as ApiPublicGlaciersGlacierIdRouteImport } from './routes/api/public/glaciers.$glacierId'
-import { Route as ApiAdminUsersUserIdRouteImport } from './routes/api/admin/users.$userId'
-import { Route as ApiAdminSystemHealthRunHazardRouteImport } from './routes/api/admin/system-health.run-hazard'
-import { Route as ApiAdminSystemHealthRunRouteImport } from './routes/api/admin/system-health.run'
-import { Route as ApiAdminProtocolsProtocolIdRouteImport } from './routes/api/admin/protocols.$protocolId'
-import { Route as ApiAdminLakesLakeIdRouteImport } from './routes/api/admin/lakes.$lakeId'
-import { Route as ApiAdminGlaciersGlacierIdRouteImport } from './routes/api/admin/glaciers.$glacierId'
-import { Route as ApiAdminFacilitiesFacilityIdRouteImport } from './routes/api/admin/facilities.$facilityId'
-import { Route as ApiAdminDistrictsDistrictIdRouteImport } from './routes/api/admin/districts.$districtId'
-import { Route as ApiAdminChwProfilesChwProfileIdRouteImport } from './routes/api/admin/chw-profiles.$chwProfileId'
-import { Route as ApiAdminCasesCaseIdRouteImport } from './routes/api/admin/cases.$caseId'
-import { Route as ApiAdminAlertsAlertIdRouteImport } from './routes/api/admin/alerts.$alertId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -214,137 +174,6 @@ const AdminGlaciersIndexRoute = AdminGlaciersIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminGlaciersRoute,
 } as any)
-const ApiPublicProtocolsRoute = ApiPublicProtocolsRouteImport.update({
-  id: '/api/public/protocols',
-  path: '/api/public/protocols',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicOpenAlertsRoute = ApiPublicOpenAlertsRouteImport.update({
-  id: '/api/public/open-alerts',
-  path: '/api/public/open-alerts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicLakesAdminRoute = ApiPublicLakesAdminRouteImport.update({
-  id: '/api/public/lakes-admin',
-  path: '/api/public/lakes-admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicLakesRoute = ApiPublicLakesRouteImport.update({
-  id: '/api/public/lakes',
-  path: '/api/public/lakes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicKpisRoute = ApiPublicKpisRouteImport.update({
-  id: '/api/public/kpis',
-  path: '/api/public/kpis',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicHotLakesRoute = ApiPublicHotLakesRouteImport.update({
-  id: '/api/public/hot-lakes',
-  path: '/api/public/hot-lakes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicGlaciersRoute = ApiPublicGlaciersRouteImport.update({
-  id: '/api/public/glaciers',
-  path: '/api/public/glaciers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicFacilitiesAdminRoute =
-  ApiPublicFacilitiesAdminRouteImport.update({
-    id: '/api/public/facilities-admin',
-    path: '/api/public/facilities-admin',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicFacilitiesRoute = ApiPublicFacilitiesRouteImport.update({
-  id: '/api/public/facilities',
-  path: '/api/public/facilities',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicDistrictsRoute = ApiPublicDistrictsRouteImport.update({
-  id: '/api/public/districts',
-  path: '/api/public/districts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicChwProfilesRoute = ApiPublicChwProfilesRouteImport.update({
-  id: '/api/public/chw-profiles',
-  path: '/api/public/chw-profiles',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicCasesRoute = ApiPublicCasesRouteImport.update({
-  id: '/api/public/cases',
-  path: '/api/public/cases',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicAlertsRoute = ApiPublicAlertsRouteImport.update({
-  id: '/api/public/alerts',
-  path: '/api/public/alerts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicAlertAcksRoute = ApiPublicAlertAcksRouteImport.update({
-  id: '/api/public/alert-acks',
-  path: '/api/public/alert-acks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
-  id: '/api/auth/login',
-  path: '/api/auth/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminUsersRoute = ApiAdminUsersRouteImport.update({
-  id: '/api/admin/users',
-  path: '/api/admin/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminSystemHealthRoute = ApiAdminSystemHealthRouteImport.update({
-  id: '/api/admin/system-health',
-  path: '/api/admin/system-health',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminSyncRoute = ApiAdminSyncRouteImport.update({
-  id: '/api/admin/sync',
-  path: '/api/admin/sync',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminProtocolsRoute = ApiAdminProtocolsRouteImport.update({
-  id: '/api/admin/protocols',
-  path: '/api/admin/protocols',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminLakesRoute = ApiAdminLakesRouteImport.update({
-  id: '/api/admin/lakes',
-  path: '/api/admin/lakes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminGlaciersRoute = ApiAdminGlaciersRouteImport.update({
-  id: '/api/admin/glaciers',
-  path: '/api/admin/glaciers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminFacilitiesRoute = ApiAdminFacilitiesRouteImport.update({
-  id: '/api/admin/facilities',
-  path: '/api/admin/facilities',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminDistrictsRoute = ApiAdminDistrictsRouteImport.update({
-  id: '/api/admin/districts',
-  path: '/api/admin/districts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminChwProfilesRoute = ApiAdminChwProfilesRouteImport.update({
-  id: '/api/admin/chw-profiles',
-  path: '/api/admin/chw-profiles',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminCasesRoute = ApiAdminCasesRouteImport.update({
-  id: '/api/admin/cases',
-  path: '/api/admin/cases',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminAuditRoute = ApiAdminAuditRouteImport.update({
-  id: '/api/admin/audit',
-  path: '/api/admin/audit',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminLakesLakeIdRoute = AdminLakesLakeIdRouteImport.update({
   id: '/$lakeId',
   path: '/$lakeId',
@@ -354,84 +183,6 @@ const AdminGlaciersGlacierIdRoute = AdminGlaciersGlacierIdRouteImport.update({
   id: '/$glacierId',
   path: '/$glacierId',
   getParentRoute: () => AdminGlaciersRoute,
-} as any)
-const ApiPublicLakesLakeIdRoute = ApiPublicLakesLakeIdRouteImport.update({
-  id: '/$lakeId',
-  path: '/$lakeId',
-  getParentRoute: () => ApiPublicLakesRoute,
-} as any)
-const ApiPublicHazardScoresLakeIdRoute =
-  ApiPublicHazardScoresLakeIdRouteImport.update({
-    id: '/api/public/hazard-scores/$lakeId',
-    path: '/api/public/hazard-scores/$lakeId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicGlaciersGlacierIdRoute =
-  ApiPublicGlaciersGlacierIdRouteImport.update({
-    id: '/$glacierId',
-    path: '/$glacierId',
-    getParentRoute: () => ApiPublicGlaciersRoute,
-  } as any)
-const ApiAdminUsersUserIdRoute = ApiAdminUsersUserIdRouteImport.update({
-  id: '/$userId',
-  path: '/$userId',
-  getParentRoute: () => ApiAdminUsersRoute,
-} as any)
-const ApiAdminSystemHealthRunHazardRoute =
-  ApiAdminSystemHealthRunHazardRouteImport.update({
-    id: '/run-hazard',
-    path: '/run-hazard',
-    getParentRoute: () => ApiAdminSystemHealthRoute,
-  } as any)
-const ApiAdminSystemHealthRunRoute = ApiAdminSystemHealthRunRouteImport.update({
-  id: '/run',
-  path: '/run',
-  getParentRoute: () => ApiAdminSystemHealthRoute,
-} as any)
-const ApiAdminProtocolsProtocolIdRoute =
-  ApiAdminProtocolsProtocolIdRouteImport.update({
-    id: '/$protocolId',
-    path: '/$protocolId',
-    getParentRoute: () => ApiAdminProtocolsRoute,
-  } as any)
-const ApiAdminLakesLakeIdRoute = ApiAdminLakesLakeIdRouteImport.update({
-  id: '/$lakeId',
-  path: '/$lakeId',
-  getParentRoute: () => ApiAdminLakesRoute,
-} as any)
-const ApiAdminGlaciersGlacierIdRoute =
-  ApiAdminGlaciersGlacierIdRouteImport.update({
-    id: '/$glacierId',
-    path: '/$glacierId',
-    getParentRoute: () => ApiAdminGlaciersRoute,
-  } as any)
-const ApiAdminFacilitiesFacilityIdRoute =
-  ApiAdminFacilitiesFacilityIdRouteImport.update({
-    id: '/$facilityId',
-    path: '/$facilityId',
-    getParentRoute: () => ApiAdminFacilitiesRoute,
-  } as any)
-const ApiAdminDistrictsDistrictIdRoute =
-  ApiAdminDistrictsDistrictIdRouteImport.update({
-    id: '/$districtId',
-    path: '/$districtId',
-    getParentRoute: () => ApiAdminDistrictsRoute,
-  } as any)
-const ApiAdminChwProfilesChwProfileIdRoute =
-  ApiAdminChwProfilesChwProfileIdRouteImport.update({
-    id: '/$chwProfileId',
-    path: '/$chwProfileId',
-    getParentRoute: () => ApiAdminChwProfilesRoute,
-  } as any)
-const ApiAdminCasesCaseIdRoute = ApiAdminCasesCaseIdRouteImport.update({
-  id: '/$caseId',
-  path: '/$caseId',
-  getParentRoute: () => ApiAdminCasesRoute,
-} as any)
-const ApiAdminAlertsAlertIdRoute = ApiAdminAlertsAlertIdRouteImport.update({
-  id: '/api/admin/alerts/$alertId',
-  path: '/api/admin/alerts/$alertId',
-  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -462,48 +213,8 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
-  '/api/admin/audit': typeof ApiAdminAuditRoute
-  '/api/admin/cases': typeof ApiAdminCasesRouteWithChildren
-  '/api/admin/chw-profiles': typeof ApiAdminChwProfilesRouteWithChildren
-  '/api/admin/districts': typeof ApiAdminDistrictsRouteWithChildren
-  '/api/admin/facilities': typeof ApiAdminFacilitiesRouteWithChildren
-  '/api/admin/glaciers': typeof ApiAdminGlaciersRouteWithChildren
-  '/api/admin/lakes': typeof ApiAdminLakesRouteWithChildren
-  '/api/admin/protocols': typeof ApiAdminProtocolsRouteWithChildren
-  '/api/admin/sync': typeof ApiAdminSyncRoute
-  '/api/admin/system-health': typeof ApiAdminSystemHealthRouteWithChildren
-  '/api/admin/users': typeof ApiAdminUsersRouteWithChildren
-  '/api/auth/login': typeof ApiAuthLoginRoute
-  '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
-  '/api/public/alerts': typeof ApiPublicAlertsRoute
-  '/api/public/cases': typeof ApiPublicCasesRoute
-  '/api/public/chw-profiles': typeof ApiPublicChwProfilesRoute
-  '/api/public/districts': typeof ApiPublicDistrictsRoute
-  '/api/public/facilities': typeof ApiPublicFacilitiesRoute
-  '/api/public/facilities-admin': typeof ApiPublicFacilitiesAdminRoute
-  '/api/public/glaciers': typeof ApiPublicGlaciersRouteWithChildren
-  '/api/public/hot-lakes': typeof ApiPublicHotLakesRoute
-  '/api/public/kpis': typeof ApiPublicKpisRoute
-  '/api/public/lakes': typeof ApiPublicLakesRouteWithChildren
-  '/api/public/lakes-admin': typeof ApiPublicLakesAdminRoute
-  '/api/public/open-alerts': typeof ApiPublicOpenAlertsRoute
-  '/api/public/protocols': typeof ApiPublicProtocolsRoute
   '/admin/glaciers/': typeof AdminGlaciersIndexRoute
   '/admin/lakes/': typeof AdminLakesIndexRoute
-  '/api/admin/alerts/$alertId': typeof ApiAdminAlertsAlertIdRoute
-  '/api/admin/cases/$caseId': typeof ApiAdminCasesCaseIdRoute
-  '/api/admin/chw-profiles/$chwProfileId': typeof ApiAdminChwProfilesChwProfileIdRoute
-  '/api/admin/districts/$districtId': typeof ApiAdminDistrictsDistrictIdRoute
-  '/api/admin/facilities/$facilityId': typeof ApiAdminFacilitiesFacilityIdRoute
-  '/api/admin/glaciers/$glacierId': typeof ApiAdminGlaciersGlacierIdRoute
-  '/api/admin/lakes/$lakeId': typeof ApiAdminLakesLakeIdRoute
-  '/api/admin/protocols/$protocolId': typeof ApiAdminProtocolsProtocolIdRoute
-  '/api/admin/system-health/run': typeof ApiAdminSystemHealthRunRoute
-  '/api/admin/system-health/run-hazard': typeof ApiAdminSystemHealthRunHazardRoute
-  '/api/admin/users/$userId': typeof ApiAdminUsersUserIdRoute
-  '/api/public/glaciers/$glacierId': typeof ApiPublicGlaciersGlacierIdRoute
-  '/api/public/hazard-scores/$lakeId': typeof ApiPublicHazardScoresLakeIdRoute
-  '/api/public/lakes/$lakeId': typeof ApiPublicLakesLakeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -530,48 +241,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
-  '/api/admin/audit': typeof ApiAdminAuditRoute
-  '/api/admin/cases': typeof ApiAdminCasesRouteWithChildren
-  '/api/admin/chw-profiles': typeof ApiAdminChwProfilesRouteWithChildren
-  '/api/admin/districts': typeof ApiAdminDistrictsRouteWithChildren
-  '/api/admin/facilities': typeof ApiAdminFacilitiesRouteWithChildren
-  '/api/admin/glaciers': typeof ApiAdminGlaciersRouteWithChildren
-  '/api/admin/lakes': typeof ApiAdminLakesRouteWithChildren
-  '/api/admin/protocols': typeof ApiAdminProtocolsRouteWithChildren
-  '/api/admin/sync': typeof ApiAdminSyncRoute
-  '/api/admin/system-health': typeof ApiAdminSystemHealthRouteWithChildren
-  '/api/admin/users': typeof ApiAdminUsersRouteWithChildren
-  '/api/auth/login': typeof ApiAuthLoginRoute
-  '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
-  '/api/public/alerts': typeof ApiPublicAlertsRoute
-  '/api/public/cases': typeof ApiPublicCasesRoute
-  '/api/public/chw-profiles': typeof ApiPublicChwProfilesRoute
-  '/api/public/districts': typeof ApiPublicDistrictsRoute
-  '/api/public/facilities': typeof ApiPublicFacilitiesRoute
-  '/api/public/facilities-admin': typeof ApiPublicFacilitiesAdminRoute
-  '/api/public/glaciers': typeof ApiPublicGlaciersRouteWithChildren
-  '/api/public/hot-lakes': typeof ApiPublicHotLakesRoute
-  '/api/public/kpis': typeof ApiPublicKpisRoute
-  '/api/public/lakes': typeof ApiPublicLakesRouteWithChildren
-  '/api/public/lakes-admin': typeof ApiPublicLakesAdminRoute
-  '/api/public/open-alerts': typeof ApiPublicOpenAlertsRoute
-  '/api/public/protocols': typeof ApiPublicProtocolsRoute
   '/admin/glaciers': typeof AdminGlaciersIndexRoute
   '/admin/lakes': typeof AdminLakesIndexRoute
-  '/api/admin/alerts/$alertId': typeof ApiAdminAlertsAlertIdRoute
-  '/api/admin/cases/$caseId': typeof ApiAdminCasesCaseIdRoute
-  '/api/admin/chw-profiles/$chwProfileId': typeof ApiAdminChwProfilesChwProfileIdRoute
-  '/api/admin/districts/$districtId': typeof ApiAdminDistrictsDistrictIdRoute
-  '/api/admin/facilities/$facilityId': typeof ApiAdminFacilitiesFacilityIdRoute
-  '/api/admin/glaciers/$glacierId': typeof ApiAdminGlaciersGlacierIdRoute
-  '/api/admin/lakes/$lakeId': typeof ApiAdminLakesLakeIdRoute
-  '/api/admin/protocols/$protocolId': typeof ApiAdminProtocolsProtocolIdRoute
-  '/api/admin/system-health/run': typeof ApiAdminSystemHealthRunRoute
-  '/api/admin/system-health/run-hazard': typeof ApiAdminSystemHealthRunHazardRoute
-  '/api/admin/users/$userId': typeof ApiAdminUsersUserIdRoute
-  '/api/public/glaciers/$glacierId': typeof ApiPublicGlaciersGlacierIdRoute
-  '/api/public/hazard-scores/$lakeId': typeof ApiPublicHazardScoresLakeIdRoute
-  '/api/public/lakes/$lakeId': typeof ApiPublicLakesLakeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -602,48 +273,8 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
-  '/api/admin/audit': typeof ApiAdminAuditRoute
-  '/api/admin/cases': typeof ApiAdminCasesRouteWithChildren
-  '/api/admin/chw-profiles': typeof ApiAdminChwProfilesRouteWithChildren
-  '/api/admin/districts': typeof ApiAdminDistrictsRouteWithChildren
-  '/api/admin/facilities': typeof ApiAdminFacilitiesRouteWithChildren
-  '/api/admin/glaciers': typeof ApiAdminGlaciersRouteWithChildren
-  '/api/admin/lakes': typeof ApiAdminLakesRouteWithChildren
-  '/api/admin/protocols': typeof ApiAdminProtocolsRouteWithChildren
-  '/api/admin/sync': typeof ApiAdminSyncRoute
-  '/api/admin/system-health': typeof ApiAdminSystemHealthRouteWithChildren
-  '/api/admin/users': typeof ApiAdminUsersRouteWithChildren
-  '/api/auth/login': typeof ApiAuthLoginRoute
-  '/api/public/alert-acks': typeof ApiPublicAlertAcksRoute
-  '/api/public/alerts': typeof ApiPublicAlertsRoute
-  '/api/public/cases': typeof ApiPublicCasesRoute
-  '/api/public/chw-profiles': typeof ApiPublicChwProfilesRoute
-  '/api/public/districts': typeof ApiPublicDistrictsRoute
-  '/api/public/facilities': typeof ApiPublicFacilitiesRoute
-  '/api/public/facilities-admin': typeof ApiPublicFacilitiesAdminRoute
-  '/api/public/glaciers': typeof ApiPublicGlaciersRouteWithChildren
-  '/api/public/hot-lakes': typeof ApiPublicHotLakesRoute
-  '/api/public/kpis': typeof ApiPublicKpisRoute
-  '/api/public/lakes': typeof ApiPublicLakesRouteWithChildren
-  '/api/public/lakes-admin': typeof ApiPublicLakesAdminRoute
-  '/api/public/open-alerts': typeof ApiPublicOpenAlertsRoute
-  '/api/public/protocols': typeof ApiPublicProtocolsRoute
   '/admin/glaciers/': typeof AdminGlaciersIndexRoute
   '/admin/lakes/': typeof AdminLakesIndexRoute
-  '/api/admin/alerts/$alertId': typeof ApiAdminAlertsAlertIdRoute
-  '/api/admin/cases/$caseId': typeof ApiAdminCasesCaseIdRoute
-  '/api/admin/chw-profiles/$chwProfileId': typeof ApiAdminChwProfilesChwProfileIdRoute
-  '/api/admin/districts/$districtId': typeof ApiAdminDistrictsDistrictIdRoute
-  '/api/admin/facilities/$facilityId': typeof ApiAdminFacilitiesFacilityIdRoute
-  '/api/admin/glaciers/$glacierId': typeof ApiAdminGlaciersGlacierIdRoute
-  '/api/admin/lakes/$lakeId': typeof ApiAdminLakesLakeIdRoute
-  '/api/admin/protocols/$protocolId': typeof ApiAdminProtocolsProtocolIdRoute
-  '/api/admin/system-health/run': typeof ApiAdminSystemHealthRunRoute
-  '/api/admin/system-health/run-hazard': typeof ApiAdminSystemHealthRunHazardRoute
-  '/api/admin/users/$userId': typeof ApiAdminUsersUserIdRoute
-  '/api/public/glaciers/$glacierId': typeof ApiPublicGlaciersGlacierIdRoute
-  '/api/public/hazard-scores/$lakeId': typeof ApiPublicHazardScoresLakeIdRoute
-  '/api/public/lakes/$lakeId': typeof ApiPublicLakesLakeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -675,48 +306,8 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
-    | '/api/admin/audit'
-    | '/api/admin/cases'
-    | '/api/admin/chw-profiles'
-    | '/api/admin/districts'
-    | '/api/admin/facilities'
-    | '/api/admin/glaciers'
-    | '/api/admin/lakes'
-    | '/api/admin/protocols'
-    | '/api/admin/sync'
-    | '/api/admin/system-health'
-    | '/api/admin/users'
-    | '/api/auth/login'
-    | '/api/public/alert-acks'
-    | '/api/public/alerts'
-    | '/api/public/cases'
-    | '/api/public/chw-profiles'
-    | '/api/public/districts'
-    | '/api/public/facilities'
-    | '/api/public/facilities-admin'
-    | '/api/public/glaciers'
-    | '/api/public/hot-lakes'
-    | '/api/public/kpis'
-    | '/api/public/lakes'
-    | '/api/public/lakes-admin'
-    | '/api/public/open-alerts'
-    | '/api/public/protocols'
     | '/admin/glaciers/'
     | '/admin/lakes/'
-    | '/api/admin/alerts/$alertId'
-    | '/api/admin/cases/$caseId'
-    | '/api/admin/chw-profiles/$chwProfileId'
-    | '/api/admin/districts/$districtId'
-    | '/api/admin/facilities/$facilityId'
-    | '/api/admin/glaciers/$glacierId'
-    | '/api/admin/lakes/$lakeId'
-    | '/api/admin/protocols/$protocolId'
-    | '/api/admin/system-health/run'
-    | '/api/admin/system-health/run-hazard'
-    | '/api/admin/users/$userId'
-    | '/api/public/glaciers/$glacierId'
-    | '/api/public/hazard-scores/$lakeId'
-    | '/api/public/lakes/$lakeId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -743,48 +334,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
-    | '/api/admin/audit'
-    | '/api/admin/cases'
-    | '/api/admin/chw-profiles'
-    | '/api/admin/districts'
-    | '/api/admin/facilities'
-    | '/api/admin/glaciers'
-    | '/api/admin/lakes'
-    | '/api/admin/protocols'
-    | '/api/admin/sync'
-    | '/api/admin/system-health'
-    | '/api/admin/users'
-    | '/api/auth/login'
-    | '/api/public/alert-acks'
-    | '/api/public/alerts'
-    | '/api/public/cases'
-    | '/api/public/chw-profiles'
-    | '/api/public/districts'
-    | '/api/public/facilities'
-    | '/api/public/facilities-admin'
-    | '/api/public/glaciers'
-    | '/api/public/hot-lakes'
-    | '/api/public/kpis'
-    | '/api/public/lakes'
-    | '/api/public/lakes-admin'
-    | '/api/public/open-alerts'
-    | '/api/public/protocols'
     | '/admin/glaciers'
     | '/admin/lakes'
-    | '/api/admin/alerts/$alertId'
-    | '/api/admin/cases/$caseId'
-    | '/api/admin/chw-profiles/$chwProfileId'
-    | '/api/admin/districts/$districtId'
-    | '/api/admin/facilities/$facilityId'
-    | '/api/admin/glaciers/$glacierId'
-    | '/api/admin/lakes/$lakeId'
-    | '/api/admin/protocols/$protocolId'
-    | '/api/admin/system-health/run'
-    | '/api/admin/system-health/run-hazard'
-    | '/api/admin/users/$userId'
-    | '/api/public/glaciers/$glacierId'
-    | '/api/public/hazard-scores/$lakeId'
-    | '/api/public/lakes/$lakeId'
   id:
     | '__root__'
     | '/'
@@ -814,48 +365,8 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
-    | '/api/admin/audit'
-    | '/api/admin/cases'
-    | '/api/admin/chw-profiles'
-    | '/api/admin/districts'
-    | '/api/admin/facilities'
-    | '/api/admin/glaciers'
-    | '/api/admin/lakes'
-    | '/api/admin/protocols'
-    | '/api/admin/sync'
-    | '/api/admin/system-health'
-    | '/api/admin/users'
-    | '/api/auth/login'
-    | '/api/public/alert-acks'
-    | '/api/public/alerts'
-    | '/api/public/cases'
-    | '/api/public/chw-profiles'
-    | '/api/public/districts'
-    | '/api/public/facilities'
-    | '/api/public/facilities-admin'
-    | '/api/public/glaciers'
-    | '/api/public/hot-lakes'
-    | '/api/public/kpis'
-    | '/api/public/lakes'
-    | '/api/public/lakes-admin'
-    | '/api/public/open-alerts'
-    | '/api/public/protocols'
     | '/admin/glaciers/'
     | '/admin/lakes/'
-    | '/api/admin/alerts/$alertId'
-    | '/api/admin/cases/$caseId'
-    | '/api/admin/chw-profiles/$chwProfileId'
-    | '/api/admin/districts/$districtId'
-    | '/api/admin/facilities/$facilityId'
-    | '/api/admin/glaciers/$glacierId'
-    | '/api/admin/lakes/$lakeId'
-    | '/api/admin/protocols/$protocolId'
-    | '/api/admin/system-health/run'
-    | '/api/admin/system-health/run-hazard'
-    | '/api/admin/users/$userId'
-    | '/api/public/glaciers/$glacierId'
-    | '/api/public/hazard-scores/$lakeId'
-    | '/api/public/lakes/$lakeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -870,34 +381,6 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   GlaciersGlacierIdRoute: typeof GlaciersGlacierIdRoute
-  ApiAdminAuditRoute: typeof ApiAdminAuditRoute
-  ApiAdminCasesRoute: typeof ApiAdminCasesRouteWithChildren
-  ApiAdminChwProfilesRoute: typeof ApiAdminChwProfilesRouteWithChildren
-  ApiAdminDistrictsRoute: typeof ApiAdminDistrictsRouteWithChildren
-  ApiAdminFacilitiesRoute: typeof ApiAdminFacilitiesRouteWithChildren
-  ApiAdminGlaciersRoute: typeof ApiAdminGlaciersRouteWithChildren
-  ApiAdminLakesRoute: typeof ApiAdminLakesRouteWithChildren
-  ApiAdminProtocolsRoute: typeof ApiAdminProtocolsRouteWithChildren
-  ApiAdminSyncRoute: typeof ApiAdminSyncRoute
-  ApiAdminSystemHealthRoute: typeof ApiAdminSystemHealthRouteWithChildren
-  ApiAdminUsersRoute: typeof ApiAdminUsersRouteWithChildren
-  ApiAuthLoginRoute: typeof ApiAuthLoginRoute
-  ApiPublicAlertAcksRoute: typeof ApiPublicAlertAcksRoute
-  ApiPublicAlertsRoute: typeof ApiPublicAlertsRoute
-  ApiPublicCasesRoute: typeof ApiPublicCasesRoute
-  ApiPublicChwProfilesRoute: typeof ApiPublicChwProfilesRoute
-  ApiPublicDistrictsRoute: typeof ApiPublicDistrictsRoute
-  ApiPublicFacilitiesRoute: typeof ApiPublicFacilitiesRoute
-  ApiPublicFacilitiesAdminRoute: typeof ApiPublicFacilitiesAdminRoute
-  ApiPublicGlaciersRoute: typeof ApiPublicGlaciersRouteWithChildren
-  ApiPublicHotLakesRoute: typeof ApiPublicHotLakesRoute
-  ApiPublicKpisRoute: typeof ApiPublicKpisRoute
-  ApiPublicLakesRoute: typeof ApiPublicLakesRouteWithChildren
-  ApiPublicLakesAdminRoute: typeof ApiPublicLakesAdminRoute
-  ApiPublicOpenAlertsRoute: typeof ApiPublicOpenAlertsRoute
-  ApiPublicProtocolsRoute: typeof ApiPublicProtocolsRoute
-  ApiAdminAlertsAlertIdRoute: typeof ApiAdminAlertsAlertIdRoute
-  ApiPublicHazardScoresLakeIdRoute: typeof ApiPublicHazardScoresLakeIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1091,188 +574,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGlaciersIndexRouteImport
       parentRoute: typeof AdminGlaciersRoute
     }
-    '/api/public/protocols': {
-      id: '/api/public/protocols'
-      path: '/api/public/protocols'
-      fullPath: '/api/public/protocols'
-      preLoaderRoute: typeof ApiPublicProtocolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/open-alerts': {
-      id: '/api/public/open-alerts'
-      path: '/api/public/open-alerts'
-      fullPath: '/api/public/open-alerts'
-      preLoaderRoute: typeof ApiPublicOpenAlertsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/lakes-admin': {
-      id: '/api/public/lakes-admin'
-      path: '/api/public/lakes-admin'
-      fullPath: '/api/public/lakes-admin'
-      preLoaderRoute: typeof ApiPublicLakesAdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/lakes': {
-      id: '/api/public/lakes'
-      path: '/api/public/lakes'
-      fullPath: '/api/public/lakes'
-      preLoaderRoute: typeof ApiPublicLakesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/kpis': {
-      id: '/api/public/kpis'
-      path: '/api/public/kpis'
-      fullPath: '/api/public/kpis'
-      preLoaderRoute: typeof ApiPublicKpisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/hot-lakes': {
-      id: '/api/public/hot-lakes'
-      path: '/api/public/hot-lakes'
-      fullPath: '/api/public/hot-lakes'
-      preLoaderRoute: typeof ApiPublicHotLakesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/glaciers': {
-      id: '/api/public/glaciers'
-      path: '/api/public/glaciers'
-      fullPath: '/api/public/glaciers'
-      preLoaderRoute: typeof ApiPublicGlaciersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/facilities-admin': {
-      id: '/api/public/facilities-admin'
-      path: '/api/public/facilities-admin'
-      fullPath: '/api/public/facilities-admin'
-      preLoaderRoute: typeof ApiPublicFacilitiesAdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/facilities': {
-      id: '/api/public/facilities'
-      path: '/api/public/facilities'
-      fullPath: '/api/public/facilities'
-      preLoaderRoute: typeof ApiPublicFacilitiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/districts': {
-      id: '/api/public/districts'
-      path: '/api/public/districts'
-      fullPath: '/api/public/districts'
-      preLoaderRoute: typeof ApiPublicDistrictsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/chw-profiles': {
-      id: '/api/public/chw-profiles'
-      path: '/api/public/chw-profiles'
-      fullPath: '/api/public/chw-profiles'
-      preLoaderRoute: typeof ApiPublicChwProfilesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/cases': {
-      id: '/api/public/cases'
-      path: '/api/public/cases'
-      fullPath: '/api/public/cases'
-      preLoaderRoute: typeof ApiPublicCasesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/alerts': {
-      id: '/api/public/alerts'
-      path: '/api/public/alerts'
-      fullPath: '/api/public/alerts'
-      preLoaderRoute: typeof ApiPublicAlertsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/alert-acks': {
-      id: '/api/public/alert-acks'
-      path: '/api/public/alert-acks'
-      fullPath: '/api/public/alert-acks'
-      preLoaderRoute: typeof ApiPublicAlertAcksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/auth/login': {
-      id: '/api/auth/login'
-      path: '/api/auth/login'
-      fullPath: '/api/auth/login'
-      preLoaderRoute: typeof ApiAuthLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/users': {
-      id: '/api/admin/users'
-      path: '/api/admin/users'
-      fullPath: '/api/admin/users'
-      preLoaderRoute: typeof ApiAdminUsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/system-health': {
-      id: '/api/admin/system-health'
-      path: '/api/admin/system-health'
-      fullPath: '/api/admin/system-health'
-      preLoaderRoute: typeof ApiAdminSystemHealthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/sync': {
-      id: '/api/admin/sync'
-      path: '/api/admin/sync'
-      fullPath: '/api/admin/sync'
-      preLoaderRoute: typeof ApiAdminSyncRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/protocols': {
-      id: '/api/admin/protocols'
-      path: '/api/admin/protocols'
-      fullPath: '/api/admin/protocols'
-      preLoaderRoute: typeof ApiAdminProtocolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/lakes': {
-      id: '/api/admin/lakes'
-      path: '/api/admin/lakes'
-      fullPath: '/api/admin/lakes'
-      preLoaderRoute: typeof ApiAdminLakesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/glaciers': {
-      id: '/api/admin/glaciers'
-      path: '/api/admin/glaciers'
-      fullPath: '/api/admin/glaciers'
-      preLoaderRoute: typeof ApiAdminGlaciersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/facilities': {
-      id: '/api/admin/facilities'
-      path: '/api/admin/facilities'
-      fullPath: '/api/admin/facilities'
-      preLoaderRoute: typeof ApiAdminFacilitiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/districts': {
-      id: '/api/admin/districts'
-      path: '/api/admin/districts'
-      fullPath: '/api/admin/districts'
-      preLoaderRoute: typeof ApiAdminDistrictsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/chw-profiles': {
-      id: '/api/admin/chw-profiles'
-      path: '/api/admin/chw-profiles'
-      fullPath: '/api/admin/chw-profiles'
-      preLoaderRoute: typeof ApiAdminChwProfilesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/cases': {
-      id: '/api/admin/cases'
-      path: '/api/admin/cases'
-      fullPath: '/api/admin/cases'
-      preLoaderRoute: typeof ApiAdminCasesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/audit': {
-      id: '/api/admin/audit'
-      path: '/api/admin/audit'
-      fullPath: '/api/admin/audit'
-      preLoaderRoute: typeof ApiAdminAuditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/lakes/$lakeId': {
       id: '/admin/lakes/$lakeId'
       path: '/$lakeId'
@@ -1286,104 +587,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/glaciers/$glacierId'
       preLoaderRoute: typeof AdminGlaciersGlacierIdRouteImport
       parentRoute: typeof AdminGlaciersRoute
-    }
-    '/api/public/lakes/$lakeId': {
-      id: '/api/public/lakes/$lakeId'
-      path: '/$lakeId'
-      fullPath: '/api/public/lakes/$lakeId'
-      preLoaderRoute: typeof ApiPublicLakesLakeIdRouteImport
-      parentRoute: typeof ApiPublicLakesRoute
-    }
-    '/api/public/hazard-scores/$lakeId': {
-      id: '/api/public/hazard-scores/$lakeId'
-      path: '/api/public/hazard-scores/$lakeId'
-      fullPath: '/api/public/hazard-scores/$lakeId'
-      preLoaderRoute: typeof ApiPublicHazardScoresLakeIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/glaciers/$glacierId': {
-      id: '/api/public/glaciers/$glacierId'
-      path: '/$glacierId'
-      fullPath: '/api/public/glaciers/$glacierId'
-      preLoaderRoute: typeof ApiPublicGlaciersGlacierIdRouteImport
-      parentRoute: typeof ApiPublicGlaciersRoute
-    }
-    '/api/admin/users/$userId': {
-      id: '/api/admin/users/$userId'
-      path: '/$userId'
-      fullPath: '/api/admin/users/$userId'
-      preLoaderRoute: typeof ApiAdminUsersUserIdRouteImport
-      parentRoute: typeof ApiAdminUsersRoute
-    }
-    '/api/admin/system-health/run-hazard': {
-      id: '/api/admin/system-health/run-hazard'
-      path: '/run-hazard'
-      fullPath: '/api/admin/system-health/run-hazard'
-      preLoaderRoute: typeof ApiAdminSystemHealthRunHazardRouteImport
-      parentRoute: typeof ApiAdminSystemHealthRoute
-    }
-    '/api/admin/system-health/run': {
-      id: '/api/admin/system-health/run'
-      path: '/run'
-      fullPath: '/api/admin/system-health/run'
-      preLoaderRoute: typeof ApiAdminSystemHealthRunRouteImport
-      parentRoute: typeof ApiAdminSystemHealthRoute
-    }
-    '/api/admin/protocols/$protocolId': {
-      id: '/api/admin/protocols/$protocolId'
-      path: '/$protocolId'
-      fullPath: '/api/admin/protocols/$protocolId'
-      preLoaderRoute: typeof ApiAdminProtocolsProtocolIdRouteImport
-      parentRoute: typeof ApiAdminProtocolsRoute
-    }
-    '/api/admin/lakes/$lakeId': {
-      id: '/api/admin/lakes/$lakeId'
-      path: '/$lakeId'
-      fullPath: '/api/admin/lakes/$lakeId'
-      preLoaderRoute: typeof ApiAdminLakesLakeIdRouteImport
-      parentRoute: typeof ApiAdminLakesRoute
-    }
-    '/api/admin/glaciers/$glacierId': {
-      id: '/api/admin/glaciers/$glacierId'
-      path: '/$glacierId'
-      fullPath: '/api/admin/glaciers/$glacierId'
-      preLoaderRoute: typeof ApiAdminGlaciersGlacierIdRouteImport
-      parentRoute: typeof ApiAdminGlaciersRoute
-    }
-    '/api/admin/facilities/$facilityId': {
-      id: '/api/admin/facilities/$facilityId'
-      path: '/$facilityId'
-      fullPath: '/api/admin/facilities/$facilityId'
-      preLoaderRoute: typeof ApiAdminFacilitiesFacilityIdRouteImport
-      parentRoute: typeof ApiAdminFacilitiesRoute
-    }
-    '/api/admin/districts/$districtId': {
-      id: '/api/admin/districts/$districtId'
-      path: '/$districtId'
-      fullPath: '/api/admin/districts/$districtId'
-      preLoaderRoute: typeof ApiAdminDistrictsDistrictIdRouteImport
-      parentRoute: typeof ApiAdminDistrictsRoute
-    }
-    '/api/admin/chw-profiles/$chwProfileId': {
-      id: '/api/admin/chw-profiles/$chwProfileId'
-      path: '/$chwProfileId'
-      fullPath: '/api/admin/chw-profiles/$chwProfileId'
-      preLoaderRoute: typeof ApiAdminChwProfilesChwProfileIdRouteImport
-      parentRoute: typeof ApiAdminChwProfilesRoute
-    }
-    '/api/admin/cases/$caseId': {
-      id: '/api/admin/cases/$caseId'
-      path: '/$caseId'
-      fullPath: '/api/admin/cases/$caseId'
-      preLoaderRoute: typeof ApiAdminCasesCaseIdRouteImport
-      parentRoute: typeof ApiAdminCasesRoute
-    }
-    '/api/admin/alerts/$alertId': {
-      id: '/api/admin/alerts/$alertId'
-      path: '/api/admin/alerts/$alertId'
-      fullPath: '/api/admin/alerts/$alertId'
-      preLoaderRoute: typeof ApiAdminAlertsAlertIdRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -1460,133 +663,6 @@ const LakesRouteChildren: LakesRouteChildren = {
 
 const LakesRouteWithChildren = LakesRoute._addFileChildren(LakesRouteChildren)
 
-interface ApiAdminCasesRouteChildren {
-  ApiAdminCasesCaseIdRoute: typeof ApiAdminCasesCaseIdRoute
-}
-
-const ApiAdminCasesRouteChildren: ApiAdminCasesRouteChildren = {
-  ApiAdminCasesCaseIdRoute: ApiAdminCasesCaseIdRoute,
-}
-
-const ApiAdminCasesRouteWithChildren = ApiAdminCasesRoute._addFileChildren(
-  ApiAdminCasesRouteChildren,
-)
-
-interface ApiAdminChwProfilesRouteChildren {
-  ApiAdminChwProfilesChwProfileIdRoute: typeof ApiAdminChwProfilesChwProfileIdRoute
-}
-
-const ApiAdminChwProfilesRouteChildren: ApiAdminChwProfilesRouteChildren = {
-  ApiAdminChwProfilesChwProfileIdRoute: ApiAdminChwProfilesChwProfileIdRoute,
-}
-
-const ApiAdminChwProfilesRouteWithChildren =
-  ApiAdminChwProfilesRoute._addFileChildren(ApiAdminChwProfilesRouteChildren)
-
-interface ApiAdminDistrictsRouteChildren {
-  ApiAdminDistrictsDistrictIdRoute: typeof ApiAdminDistrictsDistrictIdRoute
-}
-
-const ApiAdminDistrictsRouteChildren: ApiAdminDistrictsRouteChildren = {
-  ApiAdminDistrictsDistrictIdRoute: ApiAdminDistrictsDistrictIdRoute,
-}
-
-const ApiAdminDistrictsRouteWithChildren =
-  ApiAdminDistrictsRoute._addFileChildren(ApiAdminDistrictsRouteChildren)
-
-interface ApiAdminFacilitiesRouteChildren {
-  ApiAdminFacilitiesFacilityIdRoute: typeof ApiAdminFacilitiesFacilityIdRoute
-}
-
-const ApiAdminFacilitiesRouteChildren: ApiAdminFacilitiesRouteChildren = {
-  ApiAdminFacilitiesFacilityIdRoute: ApiAdminFacilitiesFacilityIdRoute,
-}
-
-const ApiAdminFacilitiesRouteWithChildren =
-  ApiAdminFacilitiesRoute._addFileChildren(ApiAdminFacilitiesRouteChildren)
-
-interface ApiAdminGlaciersRouteChildren {
-  ApiAdminGlaciersGlacierIdRoute: typeof ApiAdminGlaciersGlacierIdRoute
-}
-
-const ApiAdminGlaciersRouteChildren: ApiAdminGlaciersRouteChildren = {
-  ApiAdminGlaciersGlacierIdRoute: ApiAdminGlaciersGlacierIdRoute,
-}
-
-const ApiAdminGlaciersRouteWithChildren =
-  ApiAdminGlaciersRoute._addFileChildren(ApiAdminGlaciersRouteChildren)
-
-interface ApiAdminLakesRouteChildren {
-  ApiAdminLakesLakeIdRoute: typeof ApiAdminLakesLakeIdRoute
-}
-
-const ApiAdminLakesRouteChildren: ApiAdminLakesRouteChildren = {
-  ApiAdminLakesLakeIdRoute: ApiAdminLakesLakeIdRoute,
-}
-
-const ApiAdminLakesRouteWithChildren = ApiAdminLakesRoute._addFileChildren(
-  ApiAdminLakesRouteChildren,
-)
-
-interface ApiAdminProtocolsRouteChildren {
-  ApiAdminProtocolsProtocolIdRoute: typeof ApiAdminProtocolsProtocolIdRoute
-}
-
-const ApiAdminProtocolsRouteChildren: ApiAdminProtocolsRouteChildren = {
-  ApiAdminProtocolsProtocolIdRoute: ApiAdminProtocolsProtocolIdRoute,
-}
-
-const ApiAdminProtocolsRouteWithChildren =
-  ApiAdminProtocolsRoute._addFileChildren(ApiAdminProtocolsRouteChildren)
-
-interface ApiAdminSystemHealthRouteChildren {
-  ApiAdminSystemHealthRunRoute: typeof ApiAdminSystemHealthRunRoute
-  ApiAdminSystemHealthRunHazardRoute: typeof ApiAdminSystemHealthRunHazardRoute
-}
-
-const ApiAdminSystemHealthRouteChildren: ApiAdminSystemHealthRouteChildren = {
-  ApiAdminSystemHealthRunRoute: ApiAdminSystemHealthRunRoute,
-  ApiAdminSystemHealthRunHazardRoute: ApiAdminSystemHealthRunHazardRoute,
-}
-
-const ApiAdminSystemHealthRouteWithChildren =
-  ApiAdminSystemHealthRoute._addFileChildren(ApiAdminSystemHealthRouteChildren)
-
-interface ApiAdminUsersRouteChildren {
-  ApiAdminUsersUserIdRoute: typeof ApiAdminUsersUserIdRoute
-}
-
-const ApiAdminUsersRouteChildren: ApiAdminUsersRouteChildren = {
-  ApiAdminUsersUserIdRoute: ApiAdminUsersUserIdRoute,
-}
-
-const ApiAdminUsersRouteWithChildren = ApiAdminUsersRoute._addFileChildren(
-  ApiAdminUsersRouteChildren,
-)
-
-interface ApiPublicGlaciersRouteChildren {
-  ApiPublicGlaciersGlacierIdRoute: typeof ApiPublicGlaciersGlacierIdRoute
-}
-
-const ApiPublicGlaciersRouteChildren: ApiPublicGlaciersRouteChildren = {
-  ApiPublicGlaciersGlacierIdRoute: ApiPublicGlaciersGlacierIdRoute,
-}
-
-const ApiPublicGlaciersRouteWithChildren =
-  ApiPublicGlaciersRoute._addFileChildren(ApiPublicGlaciersRouteChildren)
-
-interface ApiPublicLakesRouteChildren {
-  ApiPublicLakesLakeIdRoute: typeof ApiPublicLakesLakeIdRoute
-}
-
-const ApiPublicLakesRouteChildren: ApiPublicLakesRouteChildren = {
-  ApiPublicLakesLakeIdRoute: ApiPublicLakesLakeIdRoute,
-}
-
-const ApiPublicLakesRouteWithChildren = ApiPublicLakesRoute._addFileChildren(
-  ApiPublicLakesRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -1599,34 +675,6 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   GlaciersGlacierIdRoute: GlaciersGlacierIdRoute,
-  ApiAdminAuditRoute: ApiAdminAuditRoute,
-  ApiAdminCasesRoute: ApiAdminCasesRouteWithChildren,
-  ApiAdminChwProfilesRoute: ApiAdminChwProfilesRouteWithChildren,
-  ApiAdminDistrictsRoute: ApiAdminDistrictsRouteWithChildren,
-  ApiAdminFacilitiesRoute: ApiAdminFacilitiesRouteWithChildren,
-  ApiAdminGlaciersRoute: ApiAdminGlaciersRouteWithChildren,
-  ApiAdminLakesRoute: ApiAdminLakesRouteWithChildren,
-  ApiAdminProtocolsRoute: ApiAdminProtocolsRouteWithChildren,
-  ApiAdminSyncRoute: ApiAdminSyncRoute,
-  ApiAdminSystemHealthRoute: ApiAdminSystemHealthRouteWithChildren,
-  ApiAdminUsersRoute: ApiAdminUsersRouteWithChildren,
-  ApiAuthLoginRoute: ApiAuthLoginRoute,
-  ApiPublicAlertAcksRoute: ApiPublicAlertAcksRoute,
-  ApiPublicAlertsRoute: ApiPublicAlertsRoute,
-  ApiPublicCasesRoute: ApiPublicCasesRoute,
-  ApiPublicChwProfilesRoute: ApiPublicChwProfilesRoute,
-  ApiPublicDistrictsRoute: ApiPublicDistrictsRoute,
-  ApiPublicFacilitiesRoute: ApiPublicFacilitiesRoute,
-  ApiPublicFacilitiesAdminRoute: ApiPublicFacilitiesAdminRoute,
-  ApiPublicGlaciersRoute: ApiPublicGlaciersRouteWithChildren,
-  ApiPublicHotLakesRoute: ApiPublicHotLakesRoute,
-  ApiPublicKpisRoute: ApiPublicKpisRoute,
-  ApiPublicLakesRoute: ApiPublicLakesRouteWithChildren,
-  ApiPublicLakesAdminRoute: ApiPublicLakesAdminRoute,
-  ApiPublicOpenAlertsRoute: ApiPublicOpenAlertsRoute,
-  ApiPublicProtocolsRoute: ApiPublicProtocolsRoute,
-  ApiAdminAlertsAlertIdRoute: ApiAdminAlertsAlertIdRoute,
-  ApiPublicHazardScoresLakeIdRoute: ApiPublicHazardScoresLakeIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
