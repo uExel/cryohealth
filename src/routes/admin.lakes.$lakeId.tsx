@@ -6,7 +6,12 @@ import { AdminPlaceholder } from "@/components/cryohealth/AdminPlaceholder";
 import { StatCard } from "@/components/cryohealth/StatCard";
 import { LakeFormDialog } from "@/components/cryohealth/LakeFormDialog";
 import { TierBadge, type Tier } from "@/lib/tier";
-import { fetchLakeDetail, fetchDistricts, fetchHazardScores, adminRequest } from "@/lib/cryohealth-client";
+import {
+  fetchLakeDetail,
+  fetchDistricts,
+  fetchHazardScores,
+  adminRequest,
+} from "@/lib/cryohealth-client";
 import type { LakeCreate } from "@/lib/admin-schemas";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -112,9 +117,9 @@ function LakeDetailAdmin() {
     queryFn: async (): Promise<HazardScoresResponse> => {
       const data = await fetchHazardScores(lakeId);
       return {
-        hazardScores: (data as any)?.hazardScores ?? [],
-        total: (data as any)?.total ?? 0,
-        hasMore: (data as any)?.hasMore ?? false,
+        hazardScores: (data as HazardScoresResponse).hazardScores ?? [],
+        total: (data as HazardScoresResponse).total ?? 0,
+        hasMore: (data as HazardScoresResponse).hasMore ?? false,
       };
     },
   });

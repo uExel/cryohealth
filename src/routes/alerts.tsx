@@ -1,7 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { fetchAlerts, fetchAlertAcks, fetchLakesAdmin, fetchDistricts, adminRequest } from "@/lib/cryohealth-client";
+import {
+  fetchAlerts,
+  fetchAlertAcks,
+  fetchLakesAdmin,
+  fetchDistricts,
+  adminRequest,
+} from "@/lib/cryohealth-client";
 import { TierBadge, type Tier } from "@/lib/tier";
 import { useAuth } from "@/lib/auth";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
@@ -67,7 +73,8 @@ function AlertsPage() {
         method: "POST",
         body: JSON.stringify({ alertId }),
       });
-      if (!result.ok) throw new Error((result.body as any)?.error ?? "Failed to acknowledge");
+      if (!result.ok)
+        throw new Error((result.body as { error?: string })?.error ?? "Failed to acknowledge");
     },
     onSuccess: () => {
       toast.success("Acknowledged");
@@ -220,7 +227,7 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
     });
     setSubmitting(false);
     if (!result.ok) {
-      toast.error((result.body as any)?.error ?? "Failed to broadcast alert");
+      toast.error((result.body as { error?: string })?.error ?? "Failed to broadcast alert");
       return;
     }
     toast.success("Alert broadcast");

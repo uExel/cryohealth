@@ -102,7 +102,11 @@ export async function fetchFacilitiesAdmin(): Promise<{
 export async function fetchGlacierDetail(glacierId: string): Promise<any | null> {
   try {
     const glacier = await apiFetch(`/glaciers/${glacierId}`, { method: "GET" }, token());
-    const observations = await apiFetch(`/glaciers/${glacierId}/observations`, { method: "GET" }, token());
+    const observations = await apiFetch(
+      `/glaciers/${glacierId}/observations`,
+      { method: "GET" },
+      token(),
+    );
     const lakes = await apiFetch("/lakes", { method: "GET" }, token());
     const lakesList = asArray(lakes);
     return { glacier, observations, lakes: lakesList, cases: [] };

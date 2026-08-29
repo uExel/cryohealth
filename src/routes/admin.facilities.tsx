@@ -122,9 +122,12 @@ function FacilitiesAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const result = await adminRequest(`/admin/facilities/${id}?reason=${encodeURIComponent(reason)}`, {
-        method: "DELETE",
-      });
+      const result = await adminRequest(
+        `/admin/facilities/${id}?reason=${encodeURIComponent(reason)}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (!result.ok) throw new Error(result.body.error ?? "Failed to delete facility");
       return result.body;
     },

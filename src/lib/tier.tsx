@@ -84,7 +84,7 @@ export function TierBadge({
   solid?: boolean;
   className?: string;
 }) {
-  const effectiveTier = ((tier ?? "NORMAL").toUpperCase()) as Tier;
+  const effectiveTier = (tier ?? "NORMAL").toUpperCase() as Tier;
   const Icon = TIER_ICON[effectiveTier] ?? Check;
   const background = solid ? TIER_SOLID_VAR[effectiveTier] : TIER_SOFT_VAR[effectiveTier];
   const color = solid ? TIER_ON_SOLID_VAR[effectiveTier] : TIER_SOLID_VAR[effectiveTier];

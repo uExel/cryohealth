@@ -4,7 +4,5 @@
 // TODO: Remove this file and the postgres.js dependency once fully verified.
 
 export async function getDb(): Promise<never> {
-  throw new Error(
-    "Direct database access has been removed. Use the CryoHealth-api backend.",
-  );
+  throw new Error("Direct database access has been removed. Use the CryoHealth-api backend.");
 }
