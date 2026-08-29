@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Download } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { authFetch } from "@/lib/auth-client";
+import { fetchAudit, adminRequest } from "@/lib/cryohealth-client";
 import { CryoHealthAdminOnly } from "@/components/cryohealth/AdminPlaceholder";
 import {
   Table,
@@ -150,14 +150,12 @@ function AuditAdmin() {
   const { data, isLoading, isError, isFetching } = useQuery({
     queryKey: ["admin-audit", actorId, entityType, from, to, page],
     enabled,
-    // Keep the current page (and the facet dropdowns) on screen while the next page or a
-    // re-filter loads, so the table doesn't blank out between pages.
     placeholderData: keepPreviousData,
     queryFn: async (): Promise<AuditResponse> => {
       const qs = buildAuditQuery({ actorId, entityType, from, to, page, pageSize: PAGE_SIZE });
-      const res = await authFetch(`/api/admin/audit?${qs}`);
-      if (!res.ok) throw new Error(`audit fetch failed: ${res.status}`);
-      return await res.json();
+      const result = await adminRequest(`/admin/audit?${qs}`);
+      if (!result.ok) throw new Error(`audit fetch failed: ${result.status}`);
+      return result.body as AuditResponse;
     },
   });
 
@@ -201,13 +199,10 @@ function AuditAdmin() {
   async function handleExport() {
     setExporting(true);
     try {
-      // Export honors the current filters but not pagination — the whole filtered set,
-      // capped server-side. authFetch (not a plain <a href>) so the Bearer token rides
-      // along; the CSV comes back as a blob we turn into a one-shot download.
       const qs = buildAuditQuery({ actorId, entityType, from, to, format: "csv" });
-      const res = await authFetch(`/api/admin/audit?${qs}`);
-      if (!res.ok) throw new Error(`Export failed (${res.status})`);
-      const blob = await res.blob();
+      const result = await adminRequest(`/admin/audit?${qs}`);
+      if (!result.ok) throw new Error(`Export failed (${result.status})`);
+      const blob = new Blob([result.body as string], { type: "text/csv; charset=utf-8" });
       const href = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = href;

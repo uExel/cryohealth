@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { authFetch } from "@/lib/auth-client";
+import { fetchCases, fetchDistricts, fetchAdminUsers, adminRequest } from "@/lib/cryohealth-client";
 import { caseCreateSchema, type CaseCreate, type CaseUpdate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -112,14 +112,8 @@ function CasesAdmin() {
   } = useQuery({
     queryKey: ["admin-cases"],
     queryFn: async (): Promise<{ cases: CaseRow[]; total: number; hasMore: boolean }> => {
-      const res = await authFetch("/api/admin/cases");
-      if (!res.ok) throw new Error(`cases fetch failed: ${res.status}`);
-      const body = await res.json();
-      return {
-        cases: body.cases ?? [],
-        total: body.total ?? 0,
-        hasMore: body.hasMore ?? false,
-      };
+      const { cases, total, hasMore } = await fetchCases();
+      return { cases: cases as CaseRow[], total, hasMore };
     },
   });
 
@@ -130,24 +124,17 @@ function CasesAdmin() {
   const { data: districts } = useQuery({
     queryKey: ["admin-districts"],
     queryFn: async (): Promise<DistrictRow[]> => {
-      const res = await fetch("/api/public/districts");
-      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
-      return (await res.json()).districts ?? [];
+      const { districts } = await fetchDistricts();
+      return districts as DistrictRow[];
     },
   });
 
-  // The CHW picker needs a users.id (cases.chw_id FKs it ON DELETE RESTRICT), and the
-  // only endpoint listing users is cryohealth_admin-only by design (#16). So a
-  // facility_admin can edit and soft-delete cases but not create one — named openly in
-  // ROSTER_GATED_HINT rather than worked around with the chw_profiles roster, whose
-  // user_id is nullable and would hand back IDs that violate the FK.
   const { data: users } = useQuery({
     queryKey: ["admin-users"],
     enabled: isCryoHealthAdmin,
     queryFn: async (): Promise<UserRow[]> => {
-      const res = await authFetch("/api/admin/users");
-      if (!res.ok) throw new Error(`users fetch failed: ${res.status}`);
-      return (await res.json()).users ?? [];
+      const { users } = await fetchAdminUsers();
+      return users as UserRow[];
     },
   });
 
@@ -155,14 +142,12 @@ function CasesAdmin() {
 
   const createMutation = useMutation({
     mutationFn: async (values: CaseCreate) => {
-      const res = await authFetch("/api/admin/cases", {
+      const result = await adminRequest("/admin/cases", {
         method: "POST",
-        headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to create case");
-      return body.case;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to create case");
+      return result.body.case;
     },
     onSuccess: () => {
       toast.success("Case logged");
@@ -174,14 +159,12 @@ function CasesAdmin() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string; values: CaseUpdate }) => {
-      const res = await authFetch(`/api/admin/cases/${id}`, {
+      const result = await adminRequest(`/admin/cases/${id}`, {
         method: "PUT",
-        headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to update case");
-      return body.case;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to update case");
+      return result.body.case;
     },
     onSuccess: () => {
       toast.success("Case updated");
@@ -193,12 +176,11 @@ function CasesAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/cases/${id}?reason=${encodeURIComponent(reason)}`, {
+      const result = await adminRequest(`/admin/cases/${id}?reason=${encodeURIComponent(reason)}`, {
         method: "DELETE",
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to delete case");
-      return body;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to delete case");
+      return result.body;
     },
     onSuccess: () => {
       toast.success("Case deleted — the row is retained with deleted_at set");

@@ -1,7 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { authFetch } from "@/lib/auth-client";
+import {
+  fetchAlerts,
+  fetchAlertAcks,
+  fetchLakesAdmin,
+  fetchDistricts,
+  adminRequest,
+} from "@/lib/cryohealth-client";
 import { TierBadge, type Tier } from "@/lib/tier";
 import { useAuth } from "@/lib/auth";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
@@ -46,9 +52,8 @@ function AlertsPage() {
         district_name: string | null;
       }[]
     > => {
-      const res = await fetch("/api/public/alerts");
-      const body = await res.json();
-      return body.alerts ?? [];
+      const { alerts } = await fetchAlerts();
+      return alerts;
     },
   });
 
@@ -56,21 +61,20 @@ function AlertsPage() {
     queryKey: ["alert-acks", user?.id, isAdmin],
     enabled: !!user,
     queryFn: async (): Promise<{ alert_id: string; chw_id: string; acknowledged_at: string }[]> => {
-      const res = await fetch("/api/public/alert-acks");
-      const body = await res.json();
-      return body.acks ?? [];
+      const { acks } = await fetchAlertAcks();
+      return acks;
     },
   });
 
   const ackMutation = useMutation({
     mutationFn: async (alertId: string) => {
       if (!user) throw new Error("Sign in required");
-      const res = await authFetch("/api/public/alert-acks", {
+      const result = await adminRequest("/admin/alerts", {
         method: "POST",
-        headers: { "content-type": "application/json" },
         body: JSON.stringify({ alertId }),
       });
-      if (!res.ok) throw new Error((await res.json()).error ?? "Failed to acknowledge");
+      if (!result.ok)
+        throw new Error((result.body as { error?: string })?.error ?? "Failed to acknowledge");
     },
     onSuccess: () => {
       toast.success("Acknowledged");
@@ -176,17 +180,15 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
   const { data: lakes } = useQuery({
     queryKey: ["lakes-min"],
     queryFn: async () => {
-      const res = await fetch("/api/public/lakes-admin");
-      const body = await res.json();
-      return (body.lakes ?? []) as { id: string; name: string; district_id: string | null }[];
+      const { lakes } = await fetchLakesAdmin();
+      return (lakes ?? []) as { id: string; name: string; district_id: string | null }[];
     },
   });
   const { data: districts } = useQuery({
     queryKey: ["districts-min"],
     queryFn: async () => {
-      const res = await fetch("/api/public/districts");
-      const body = await res.json();
-      return (body.districts ?? []) as { id: string; name: string }[];
+      const { districts } = await fetchDistricts();
+      return (districts ?? []) as { id: string; name: string }[];
     },
   });
 
@@ -210,9 +212,8 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
     }
     setSubmitting(true);
     const resolvedDistrict = districtId || lakeDistrict || null;
-    const res = await authFetch("/api/public/alerts", {
+    const result = await adminRequest("/alerts", {
       method: "POST",
-      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         title: title.trim(),
         bodyEn: bodyEn.trim(),
@@ -225,9 +226,8 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
       }),
     });
     setSubmitting(false);
-    if (!res.ok) {
-      const body = await res.json();
-      toast.error(body.error ?? "Failed to broadcast alert");
+    if (!result.ok) {
+      toast.error((result.body as { error?: string })?.error ?? "Failed to broadcast alert");
       return;
     }
     toast.success("Alert broadcast");

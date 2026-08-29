@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
-import { authFetch } from "@/lib/auth-client";
+import { fetchSync } from "@/lib/cryohealth-client";
 import { CryoHealthAdminOnly } from "@/components/cryohealth/AdminPlaceholder";
 import {
   Table,
@@ -87,9 +87,7 @@ function SyncAdmin() {
     queryKey: ["admin-sync"],
     enabled: isCryoHealthAdmin,
     queryFn: async (): Promise<SyncResponse> => {
-      const res = await authFetch("/api/admin/sync");
-      if (!res.ok) throw new Error(`sync fetch failed: ${res.status}`);
-      return res.json();
+      return await fetchSync();
     },
   });
 
