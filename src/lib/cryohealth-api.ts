@@ -89,7 +89,7 @@ export async function fetchApiHealth(): Promise<ApiHealth> {
 }
 
 /** Generic fetch helper for backend API calls */
-export async function apiFetch<T = any>(
+export async function apiFetch<T = unknown>(
   path: string,
   options: RequestInit = {},
   token?: string,

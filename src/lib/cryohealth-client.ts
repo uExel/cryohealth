@@ -1,13 +1,13 @@
 import { apiBaseUrl, apiFetch, fetchLakesFromApi } from "./cryohealth-api";
 import { getToken } from "./auth-client";
 
-type Json = Record<string, any>;
+type Json = Record<string, unknown>;
 
 function token(): string | undefined {
   return getToken() ?? undefined;
 }
 
-function asArray(value: unknown): any[] {
+function asArray(value: unknown): unknown[] {
   if (Array.isArray(value)) return value;
   if (value && typeof value === "object") {
     const obj = value as Json;
@@ -17,6 +17,16 @@ function asArray(value: unknown): any[] {
     if (Array.isArray(obj.facilities)) return obj.facilities;
   }
   return [];
+}
+
+function getProp<T>(obj: unknown, key: string): T | undefined {
+  if (obj && typeof obj === "object") {
+    const record = obj as Record<string, unknown>;
+    if (key in record) {
+      return record[key] as T;
+    }
+  }
+  return undefined;
 }
 
 /* ------------------------------------------------------------------ *
@@ -30,53 +40,59 @@ export async function fetchKpis(): Promise<Json> {
   return (await apiFetch("/kpis", { method: "GET" }, token())) as Json;
 }
 
-export async function fetchHotLakes(): Promise<{ lakes: any[] }> {
+export async function fetchHotLakes(): Promise<{ lakes: unknown[] }> {
   return { lakes: asArray(await apiFetch("/hot-lakes", { method: "GET" }, token())) };
 }
 
-export async function fetchOpenAlerts(): Promise<{ alerts: any[] }> {
-  const res = (await apiFetch("/alerts?pageSize=5", { method: "GET" }, token())) as any;
-  const alerts = res?.items || res?.alerts || asArray(res);
+export async function fetchOpenAlerts(): Promise<{ alerts: unknown[] }> {
+  const res = await apiFetch("/alerts?pageSize=5", { method: "GET" }, token());
+  const alerts =
+    getProp<unknown[]>(res, "items") || getProp<unknown[]>(res, "alerts") || asArray(res);
   return { alerts };
 }
 
-export async function fetchGlaciers(): Promise<{ glaciers: any[] }> {
+export async function fetchGlaciers(): Promise<{ glaciers: unknown[] }> {
   return { glaciers: asArray(await apiFetch("/glaciers", { method: "GET" }, token())) };
 }
 
-export async function fetchProtocols(): Promise<{ protocols: any[] }> {
+export async function fetchProtocols(): Promise<{ protocols: unknown[] }> {
   return { protocols: asArray(await apiFetch("/protocols", { method: "GET" }, token())) };
 }
 
-export async function fetchAlerts(): Promise<{ alerts: any[]; total: number; hasMore: boolean }> {
-  const res = (await apiFetch("/alerts?includeCleared=true", { method: "GET" }, token())) as any;
-  const alerts = res?.items || res?.alerts || asArray(res);
-  const total = res?.total ?? alerts.length;
+export async function fetchAlerts(): Promise<{
+  alerts: unknown[];
+  total: number;
+  hasMore: boolean;
+}> {
+  const res = await apiFetch("/alerts?includeCleared=true", { method: "GET" }, token());
+  const alerts =
+    getProp<unknown[]>(res, "items") || getProp<unknown[]>(res, "alerts") || asArray(res);
+  const total = getProp<number>(res, "total") ?? alerts.length;
   return { alerts, total, hasMore: alerts.length < total };
 }
 
-export async function fetchAlertAcks(): Promise<{ acks: any[] }> {
+export async function fetchAlertAcks(): Promise<{ acks: unknown[] }> {
   return { acks: asArray(await apiFetch("/alert-acks", { method: "GET" }, token())) };
 }
 
-export async function fetchDistricts(): Promise<{ districts: any[] }> {
+export async function fetchDistricts(): Promise<{ districts: unknown[] }> {
   return { districts: asArray(await apiFetch("/districts", { method: "GET" }, token())) };
 }
 
-export async function fetchChwProfiles(): Promise<{ profiles: any[] }> {
+export async function fetchChwProfiles(): Promise<{ profiles: unknown[] }> {
   return { profiles: asArray(await apiFetch("/chw-profiles", { method: "GET" }, token())) };
 }
 
-export async function fetchLakes(): Promise<{ lakes: any[] }> {
-  return { lakes: (await fetchLakesFromApi()) as any[] };
+export async function fetchLakes(): Promise<{ lakes: unknown[] }> {
+  return { lakes: (await fetchLakesFromApi()) as unknown[] };
 }
 
-export async function fetchLakesAdmin(): Promise<{ lakes: any[] }> {
-  const res = (await apiFetch("/lakes-admin", { method: "GET" }, token())) as any;
+export async function fetchLakesAdmin(): Promise<{ lakes: unknown[] }> {
+  const res = await apiFetch("/lakes-admin", { method: "GET" }, token());
   return { lakes: asArray(res) };
 }
 
-export async function fetchLakeDetail(lakeId: string): Promise<any | null> {
+export async function fetchLakeDetail(lakeId: string): Promise<unknown | null> {
   try {
     return await apiFetch(`/lakes/${lakeId}/detail`, { method: "GET" }, token());
   } catch {
@@ -84,22 +100,22 @@ export async function fetchLakeDetail(lakeId: string): Promise<any | null> {
   }
 }
 
-export async function fetchFacilities(): Promise<{ facilities: any[] }> {
+export async function fetchFacilities(): Promise<{ facilities: unknown[] }> {
   return { facilities: asArray(await apiFetch("/facilities", { method: "GET" }, token())) };
 }
 
 export async function fetchFacilitiesAdmin(): Promise<{
-  facilities: any[];
+  facilities: unknown[];
   total: number;
   hasMore: boolean;
 }> {
-  const res = (await apiFetch("/admin/facilities", { method: "GET" }, token())) as any;
+  const res = await apiFetch("/admin/facilities", { method: "GET" }, token());
   const facilities = asArray(res);
-  const total = res?.total ?? facilities.length;
-  return { facilities, total, hasMore: res?.hasMore ?? false };
+  const total = getProp<number>(res, "total") ?? facilities.length;
+  return { facilities, total, hasMore: getProp<boolean>(res, "hasMore") ?? false };
 }
 
-export async function fetchGlacierDetail(glacierId: string): Promise<any | null> {
+export async function fetchGlacierDetail(glacierId: string): Promise<unknown | null> {
   try {
     const glacier = await apiFetch(`/glaciers/${glacierId}`, { method: "GET" }, token());
     const observations = await apiFetch(
@@ -115,32 +131,32 @@ export async function fetchGlacierDetail(glacierId: string): Promise<any | null>
   }
 }
 
-export async function fetchHazardScores(lakeId: string): Promise<any> {
+export async function fetchHazardScores(lakeId: string): Promise<unknown> {
   return apiFetch(`/lakes/${lakeId}/hazard-scores`, { method: "GET" }, token());
 }
 
-export async function fetchCases(): Promise<{ cases: any[]; total: number; hasMore: boolean }> {
-  const res = (await apiFetch("/admin/cases", { method: "GET" }, token())) as any;
-  const cases = res?.cases ?? res?.rows ?? [];
-  const total = res?.total ?? cases.length;
-  const hasMore = res?.hasMore ?? false;
+export async function fetchCases(): Promise<{ cases: unknown[]; total: number; hasMore: boolean }> {
+  const res = await apiFetch("/admin/cases", { method: "GET" }, token());
+  const cases = getProp<unknown[]>(res, "cases") || getProp<unknown[]>(res, "rows") || [];
+  const total = getProp<number>(res, "total") ?? cases.length;
+  const hasMore = getProp<boolean>(res, "hasMore") ?? false;
   return { cases: asArray(cases), total, hasMore };
 }
 
-export async function fetchAdminUsers(): Promise<{ users: any[] }> {
-  const res = (await apiFetch("/users", { method: "GET" }, token())) as any;
+export async function fetchAdminUsers(): Promise<{ users: unknown[] }> {
+  const res = await apiFetch("/users", { method: "GET" }, token());
   return { users: asArray(res) };
 }
 
-export async function fetchSync(): Promise<any> {
+export async function fetchSync(): Promise<unknown> {
   return apiFetch("/admin/sync", { method: "GET" }, token());
 }
 
-export async function fetchSystemHealth(): Promise<any> {
+export async function fetchSystemHealth(): Promise<unknown> {
   return apiFetch("/admin/health", { method: "GET" }, token());
 }
 
-export async function fetchAudit(): Promise<any> {
+export async function fetchAudit(): Promise<unknown> {
   return apiFetch("/admin/audit", { method: "GET" }, token());
 }
 
@@ -150,7 +166,7 @@ export async function fetchAudit(): Promise<any> {
  * can keep their existing res.ok / body.error handling.              *
  * ------------------------------------------------------------------ */
 
-export type ApiResult = { ok: boolean; status: number; body: any };
+export type ApiResult = { ok: boolean; status: number; body: unknown };
 
 export async function adminRequest(path: string, init: RequestInit = {}): Promise<ApiResult> {
   const base = apiBaseUrl();
