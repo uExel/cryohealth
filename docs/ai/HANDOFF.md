@@ -47,6 +47,16 @@ by running the migration — confirm the column actually exists in your local DB
 `src/routeTree.gen.ts` is now regenerated and dirty in the working tree — **include it in the
 commit**. It is generated output, so never hand-edit it; if it looks wrong, rerun the build.
 
+## Backend API URL hardcoded (2026-08-30)
+
+`src/lib/cryohealth-api.ts:apiBaseUrl()` defaults to `http://api.cryohealth.io` when neither
+`VITE_CRYOHEALTH_API_URL` nor `CRYOHEALTH_API_URL` is set. This is intentional: server config
+is not accessible from this session, so the production backend URL is hardcoded as the fallback.
+
+If you need to point the frontend at a different backend (local, staging, etc.), set one of the
+environment variables above. The hardcoded default ensures the app works out of the box against
+the production API without any `.env` setup.
+
 ## Decisions taken this session
 
 - **Both admin roles** (`cryohealth_admin`, `facility_admin`) on every case handler. The existing
