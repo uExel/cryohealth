@@ -36,7 +36,7 @@ export type Lake = {
 
 export function apiBaseUrl(): string {
   const url = import.meta.env.VITE_CRYOHEALTH_API_URL || process.env.CRYOHEALTH_API_URL;
-  if (!url) return "http://localhost:3000";
+  if (!url) return "http://api.cryohealth.io";
   return url.replace(/\/+$/, "");
 }
 

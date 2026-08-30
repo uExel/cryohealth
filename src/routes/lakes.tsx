@@ -36,7 +36,10 @@ function LakesPage() {
     isError,
   } = useQuery({
     queryKey: ["lakes"],
-    queryFn: fetchLakes,
+    queryFn: async () => {
+      const { lakes } = await fetchLakes();
+      return lakes;
+    },
   });
   const { data: facilities } = useQuery({
     queryKey: ["facilities"],
