@@ -36,6 +36,19 @@ type HealthResponse = { api: Probe<ApiHealth>; geo: Probe<GeoHealth>; checkedAt:
 type StatusRow = { label: string; value: string };
 type RunAction = "run" | "run-hazard";
 
+// Response types for pipeline actions
+type PipelineResponse = {
+  success: boolean;
+  message: string;
+  jobId: string;
+};
+
+type AdminRequestResult<T> = {
+  ok: boolean;
+  status?: number;
+  body: T;
+};
+
 // The page polls its own server route; the browser never calls CryoHealth-geo directly (no CORS
 // on that service — the server route proxies). 10s is frequent enough to watch a triggered run
 // flip the scheduler/status without hammering two upstream services.
@@ -55,15 +68,30 @@ function SystemHealthAdmin() {
     enabled,
     refetchInterval: POLL_INTERVAL_MS,
     queryFn: async (): Promise<HealthResponse> => {
-      return await fetchSystemHealth();
+      const result = await fetchSystemHealth();
+      // Type guard: ensure result is HealthResponse
+      if (!result || typeof result !== "object") {
+        throw new Error("Invalid health response");
+      }
+      return result as HealthResponse;
     },
   });
 
   const runMutation = useMutation({
     mutationFn: async (action: RunAction) => {
       const result = await adminRequest(`/admin/health/${action}`, { method: "POST" });
-      if (!result.ok) throw new Error(result.body.error ?? `Request failed (${result.status})`);
-      return result.body;
+
+      // Type guard: cast result to AdminRequestResult<PipelineResponse>
+      const typedResult = result as AdminRequestResult<PipelineResponse>;
+
+      if (!typedResult.ok) {
+        const errorMessage =
+          typedResult.body && typeof typedResult.body === "object" && "error" in typedResult.body
+            ? (typedResult.body as { error?: string }).error
+            : `Request failed (${typedResult.status})`;
+        throw new Error(errorMessage || `Request failed`);
+      }
+      return typedResult.body;
     },
     onSuccess: (_body, action) => {
       toast.success(action === "run" ? "Pipeline run started" : "Hazard pass started");

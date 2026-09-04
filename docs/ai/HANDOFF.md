@@ -1,6 +1,7 @@
 # HANDOFF — cryohealth — written 2026-08-24, toolchain-verified 2026-08-25 PKT (pre-#27, pre-#28/#29/#31/#33/#35/#36)
 
 corrected backend url from http to https
+added default url of geo service
 Session: task-cases-crud Model: claude-opus-5 Branch: Shoaib
 Goal: #15 — CRUD for Cases with a soft delete. Parent: #3 (admin portal). Depends on: #9.
 Also in this branch, each with its own section below: the `Kpi` → `StatCard` consolidation
