@@ -85,7 +85,7 @@ function DistrictsAdmin() {
 
   const createMutation = useMutation({
     mutationFn: async (values: DistrictCreate) => {
-      const { ok, body } = await adminRequest("/admin/districts", {
+      const { ok, body } = await adminRequest("/districts", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
@@ -103,7 +103,7 @@ function DistrictsAdmin() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string; values: DistrictCreate }) => {
-      const { ok, body } = await adminRequest(`/admin/districts/${id}`, {
+      const { ok, body } = await adminRequest(`/districts/${id}`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
