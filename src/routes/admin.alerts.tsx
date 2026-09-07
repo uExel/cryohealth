@@ -70,13 +70,13 @@ type AlertRow = {
   title: string;
   body: string;
   tier: Tier;
-  estimated_window: string | null;
-  affected_population: number | null;
-  created_at: string;
+  estimatedWindow: string | null;
+  affectedPopulation: number | null;
+  createdAt: string;
   status: "active" | "cleared";
-  cleared_at: string | null;
-  lake_name: string | null;
-  district_name: string | null;
+  clearedAt: string | null;
+  lakeName: string | null;
+  districtName: string | null;
 };
 
 type AckRow = { alert_id: string; chw_id: string; acknowledged_at: string };
@@ -315,9 +315,9 @@ function AlertsAdmin() {
                       <span className="inline-flex w-fit rounded bg-secondary px-2 py-0.5 text-xs font-semibold text-foreground">
                         Cleared
                       </span>
-                      {a.cleared_at && (
+                      {a.clearedAt && (
                         <span className="text-[11px] text-muted-foreground">
-                          {new Date(a.cleared_at).toLocaleString()}
+                          {new Date(a.clearedAt).toLocaleString()}
                         </span>
                       )}
                     </span>
@@ -328,17 +328,17 @@ function AlertsAdmin() {
                   )}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {a.lake_name ?? a.district_name ?? "—"}
+                  {a.lakeName ?? a.districtName ?? "—"}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {a.estimated_window ?? "—"}
+                  {a.estimatedWindow ?? "—"}
                 </TableCell>
                 <TableCell className="text-foreground">
-                  {(a.affected_population ?? 0).toLocaleString()}
+                  {(a.affectedPopulation ?? 0).toLocaleString()}
                 </TableCell>
                 <TableCell className="text-foreground">{ackCount(a.id)}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {new Date(a.created_at).toLocaleString()}
+                  {new Date(a.createdAt).toLocaleString()}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
@@ -419,7 +419,7 @@ function AlertEditDialog({
     defaultValues: {
       body: alert.body,
       tier: alert.tier.toLowerCase() as AlertUpdate["tier"],
-      estimated_window: alert.estimated_window,
+      estimatedWindow: alert.estimatedWindow,
     },
   });
 
@@ -470,7 +470,7 @@ function AlertEditDialog({
             />
             <FormField
               control={form.control}
-              name="estimated_window"
+              name="estimatedWindow"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Estimated window (optional)</FormLabel>
