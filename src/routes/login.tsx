@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { login } from "@/lib/auth-client";
-import { useAuth } from "@/lib/auth";
+import { useAuth, ROLE_ROUTES } from "@/lib/auth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -37,10 +37,10 @@ function LoginPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      await login(identifier, password);
+      const user = await login(identifier, password);
       refresh();
       toast.success("Signed in.");
-      nav({ to: "/chw" });
+      nav({ to: ROLE_ROUTES[user.role] });
     } catch (err) {
       toast.error((err as Error).message);
     } finally {

@@ -2,6 +2,13 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { getToken, decodeUser, signOut as clearToken, type AuthUser } from "@/lib/auth-client";
 import type { Role } from "@/lib/jwt";
 
+export const ROLE_ROUTES: Record<Role, string> = {
+  cryohealth_admin: "/admin",
+  facility_admin: "/admin",
+  chw: "/chw",
+  viewer: "/chw",
+};
+
 type AuthCtx = {
   user: AuthUser | null;
   roles: Role[];

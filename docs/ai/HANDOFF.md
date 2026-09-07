@@ -849,3 +849,59 @@ private, no-store` confirmed on all three endpoints.
 **#36 is already complete** — All 8 admin DELETE handlers read `reason` from the `?reason=` query
 parameter. Verified live on :8080: created a district, deleted it with `?reason=cleanup+test`,
 confirmed `{"ok": true}`, and verified the audit log recorded the reason.
+
+---
+
+## HANDOFF — cryohealth — role-based routing & admin alerts (2026-09-07)
+
+Session: post-login role routing, admin-only topbar nav, and relocating alert
+broadcasting to the admin alerts page. Toolchain: `tsc --noEmit` (only pre-existing
+`unknown[]`/`body` errors remain, none in touched files) and `eslint` (0 errors in
+changed files). No commit made this session.
+
+### Done this session
+
+- `src/lib/auth.tsx` (modified): added a module-scope `ROLE_ROUTES: Record<Role, string>`
+  map — `cryohealth_admin`/`facility_admin` → `/admin`, `chw`/`viewer` → `/chw`. This
+  mirrors the existing `isAdmin` definition in the same file so the role-to-route
+  rule lives in one place and is reusable.
+- `src/routes/login.tsx` (modified): `submit()` now captures the `AuthUser` returned by
+  `login()` (which already carries `role`) and navigates with
+  `nav({ to: ROLE_ROUTES[user.role] })` instead of hard-coding `nav({ to: "/chw" })`.
+  After a successful sign-in, `cryohealth_admin` (and `facility_admin`) land on `/admin`;
+  CHWs land on `/chw`. The `refresh()` call is retained so the `useAuth` context is
+  synchronised before navigation.
+- `src/components/cryohealth/SiteHeader.tsx` (modified): the topbar navigation links
+  (Home / Dashboard / Hazard Map / Alerts / Open Data / About) are now rendered only
+  when the user is **signed out**. Once signed in the header keeps only the mode toggle,
+  language toggle and sign-out — authenticated navigation is handled by the workspace
+  itself (AdminShell sidebar on `/admin/*`, the `/chw` workspace, and the role-based
+  login redirect above). This is the explicit request: "no topbar navigations after
+  signing in, just keep the buttons of modes changing and language and signout".
+  The previous admin-on-hover topbar nav experiment is removed.
+- `src/routes/admin.alerts.tsx` (modified): added the `BroadcastForm` here behind a
+  "Broadcast new alert" toggle, so an admin creates and manages alerts in one place.
+  The form POSTs to `/alerts` (the creation endpoint) and invalidates both
+  `["admin-alerts"]` and `["alerts-all"]` on success. Added imports:
+  `useAuth`, `fetchLakesAdmin`, `fetchDistricts` (needed by the form's lake/district
+  pickers).
+- `src/routes/alerts.tsx` (modified): removed the `BroadcastForm` definition and its
+  inline rendering from the public alerts page (it previously appeared there for admins
+  via `{isAdmin && <BroadcastForm …/>}`). Removed now-unused imports
+  `useState`, `fetchLakesAdmin`, `fetchDistricts`. The public feed stays read-only.
+
+### Files touched
+
+`src/lib/auth.tsx`, `src/routes/login.tsx`, `src/components/cryohealth/SiteHeader.tsx`,
+`src/routes/admin.alerts.tsx`, `src/routes/alerts.tsx`. No generated files changed.
+
+### Verification
+
+- `tsc --noEmit`: no errors in any touched file. The remaining `unknown[]`/`body` errors
+  are pre-existing in `admin.alerts.tsx` (mutation `body` typing) and `alerts.tsx`
+  (query return typing) and were present before this session.
+- `eslint` on all five files: 0 errors (only the pre-existing
+  `react-refresh/only-export-components` warnings on the `useAuth` hook and the new
+  `ROLE_ROUTES` constant export, identical to the warning the file already carried for
+  `useAuth`).
+
