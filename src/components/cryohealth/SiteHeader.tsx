@@ -17,7 +17,7 @@ const NAV = [
 export function SiteHeader() {
   const { t, lang, setLang } = useI18n();
   const { theme, setTheme } = useTheme();
-  const { user, isAdmin, isCHW, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const loc = useLocation();
 
   return (
@@ -38,40 +38,27 @@ export function SiteHeader() {
             </div>
           </div>
         </Link>
-        <nav className="hidden items-center gap-1 md:flex">
-          {NAV.map((n) => {
-            const active = loc.pathname === n.to || (n.to !== "/" && loc.pathname.startsWith(n.to));
-            return (
-              <Link
-                key={n.to}
-                to={n.to}
-                className={`border-b-[3px] px-3 py-1.5 text-sm transition-colors ${
-                  active
-                    ? "border-[var(--color-accent)] text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {t(n.key)}
-              </Link>
-            );
-          })}
-          {isCHW && (
-            <Link
-              to="/chw"
-              className="border-b-[3px] border-transparent px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground"
-            >
-              {t("chw")}
-            </Link>
-          )}
-          {isAdmin && (
-            <Link
-              to="/admin"
-              className="border-b-[3px] border-transparent px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground"
-            >
-              {t("admin")}
-            </Link>
-          )}
-        </nav>
+        {!user && (
+          <nav className="hidden items-center gap-1 md:flex">
+            {NAV.map((n) => {
+              const active =
+                loc.pathname === n.to || (n.to !== "/" && loc.pathname.startsWith(n.to));
+              return (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  className={`border-b-[3px] px-3 py-1.5 text-sm transition-colors ${
+                    active
+                      ? "border-[var(--color-accent)] text-foreground"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {t(n.key)}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}

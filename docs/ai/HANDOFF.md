@@ -849,3 +849,126 @@ private, no-store` confirmed on all three endpoints.
 **#36 is already complete** — All 8 admin DELETE handlers read `reason` from the `?reason=` query
 parameter. Verified live on :8080: created a district, deleted it with `?reason=cleanup+test`,
 confirmed `{"ok": true}`, and verified the audit log recorded the reason.
+
+---
+
+## HANDOFF — cryohealth — role-based routing & admin alerts (2026-09-07)
+
+Session: post-login role routing, admin-only topbar nav, and relocating alert
+broadcasting to the admin alerts page. Toolchain: `tsc --noEmit` (only pre-existing
+`unknown[]`/`body` errors remain, none in touched files) and `eslint` (0 errors in
+changed files). No commit made this session.
+
+### Done this session
+
+- `src/lib/auth.tsx` (modified): added a module-scope `ROLE_ROUTES: Record<Role, string>`
+  map — `cryohealth_admin`/`facility_admin` → `/admin`, `chw`/`viewer` → `/chw`. This
+  mirrors the existing `isAdmin` definition in the same file so the role-to-route
+  rule lives in one place and is reusable.
+- `src/routes/login.tsx` (modified): `submit()` now captures the `AuthUser` returned by
+  `login()` (which already carries `role`) and navigates with
+  `nav({ to: ROLE_ROUTES[user.role] })` instead of hard-coding `nav({ to: "/chw" })`.
+  After a successful sign-in, `cryohealth_admin` (and `facility_admin`) land on `/admin`;
+  CHWs land on `/chw`. The `refresh()` call is retained so the `useAuth` context is
+  synchronised before navigation.
+- `src/components/cryohealth/SiteHeader.tsx` (modified): the topbar navigation links
+  (Home / Dashboard / Hazard Map / Alerts / Open Data / About) are now rendered only
+  when the user is **signed out**. Once signed in the header keeps only the mode toggle,
+  language toggle and sign-out — authenticated navigation is handled by the workspace
+  itself (AdminShell sidebar on `/admin/*`, the `/chw` workspace, and the role-based
+  login redirect above). This is the explicit request: "no topbar navigations after
+  signing in, just keep the buttons of modes changing and language and signout".
+  The previous admin-on-hover topbar nav experiment is removed.
+- `src/routes/admin.alerts.tsx` (modified): added the `BroadcastForm` here behind a
+  "Broadcast new alert" toggle, so an admin creates and manages alerts in one place.
+  The form POSTs to `/alerts` (the creation endpoint) and invalidates both
+  `["admin-alerts"]` and `["alerts-all"]` on success. Added imports:
+  `useAuth`, `fetchLakesAdmin`, `fetchDistricts` (needed by the form's lake/district
+  pickers).
+- `src/routes/alerts.tsx` (modified): removed the `BroadcastForm` definition and its
+  inline rendering from the public alerts page (it previously appeared there for admins
+  via `{isAdmin && <BroadcastForm …/>}`). Removed now-unused imports
+  `useState`, `fetchLakesAdmin`, `fetchDistricts`. The public feed stays read-only.
+
+### Files touched
+
+`src/lib/auth.tsx`, `src/routes/login.tsx`, `src/components/cryohealth/SiteHeader.tsx`,
+`src/routes/admin.alerts.tsx`, `src/routes/alerts.tsx`. No generated files changed.
+
+### Verification
+
+- `tsc --noEmit`: no errors in any touched file. The remaining `unknown[]`/`body` errors
+  are pre-existing in `admin.alerts.tsx` (mutation `body` typing) and `alerts.tsx`
+  (query return typing) and were present before this session.
+- `eslint` on all five files: 0 errors (only the pre-existing
+  `react-refresh/only-export-components` warnings on the `useAuth` hook and the new
+  `ROLE_ROUTES` constant export, identical to the warning the file already carried for
+  `useAuth`).
+
+### Verification
+
+- `tsc --noEmit`: 0 errors in `__root.tsx`, `login.tsx`, `auth.tsx`, `i18n.tsx`,
+  `SiteHeader.tsx`. The only remaining errors are the pre-existing `unknown[]`/`body` errors
+  in `admin.alerts.tsx`/`alerts.tsx` (present before this session; shifted only by the lines
+  added here).
+- `eslint` (no `--fix`): 0 errors across all changed files. Remaining warnings are the
+  pre-existing `react-refresh/only-export-components` pattern (the file already exported the
+  `useAuth` hook the same way; `ROLE_ROUTES`/`isPublicPath` follow it) and the pre-existing
+  `react-hooks/exhaustive-deps` notice on the `storage` listener effect.
+- `prettier --check`: all changed files pass.
+
+---
+
+## HANDOFF — cryohealth — auto sign-out & workspace confinement (2026-09-07, addendum)
+
+Appended to the 2026-09-07 session above. Two more asks from the same pass: auto logout
+after the session duration, and stopping an authenticated user from reaching public pages
+by editing the URL (the topbar already hides the links for them).
+
+### Done
+
+- `src/lib/auth.tsx` — `load()` now calls `scheduleSignout(token, signOut)`, which decodes
+  the JWT `exp` claim and schedules `signOut()` to fire exactly when the token expires (and
+  clears it immediately if already expired / undecodable). The timer is re-armed on every
+  `load()`, including the cross-tab `storage` listener and `refresh()`, so a token rotated
+  or a re-sign-in in another tab resets the timeout. This is the "log out automatically
+  after some duration" behaviour, driven by the token's own expiry (default 12h via
+  `JWT_EXPIRES`).
+- `src/routes/__root.tsx` — added a global `beforeLoad` guard: for an authenticated user
+  it redirects every public path (other than `/chw`, `/admin/*`, `/login`, and `/alerts`)
+  to `ROLE_ROUTES[user.role]` with `replace: true`. `/alerts` is intentionally allowed
+  through because CHW acknowledgment lives there.
+- `src/components/cryohealth/SiteHeader.tsx` — topbar nav links render only when signed
+  out (theme / language / sign-out remain). Authenticated navigation is the workspace
+  (AdminShell sidebar, `/chw`). (Note: the section above still reads "admin-only topbar
+  nav" in the header — the implemented behaviour is signed-out-only, as described here.)
+
+### Decisions
+
+- `/alerts` stays reachable when signed in so CHWs can still acknowledge; only static
+  public pages are blocked. If ack should move to `/chw`, do that as a separate step.
+- Auto sign-out is expiry-driven (JWT `exp`), not an idle timer; swap the arithmetic in
+  `scheduleSignout` for an inactivity deadline if an idle timeout is preferred.
+- Guard reads the token from `localStorage` directly (synchronous) so it needs no React
+  context and runs before components mount.
+- **Do not `eslint --fix` `login.tsx`** — it corrupted the `submit()` body during this
+  session (progressive-indentation mangle). The file was hand-rewritten and
+  `prettier --check`-clean; use `bun run format`, not `eslint --fix`, on it.
+
+### Files touched (this addendum)
+
+`src/lib/auth.tsx`, `src/routes/__root.tsx`. (`src/components/cryohealth/SiteHeader.tsx`
+already listed above; `login.tsx` already listed above.)
+
+### Verification
+
+- `tsc --noEmit`: no errors in `__root.tsx`, `auth.tsx`, `login.tsx`, `SiteHeader.tsx`,
+  `i18n.tsx` (only the pre-existing `unknown[]`/`body` errors in `admin.alerts.tsx`/
+  `alerts.tsx` remain).
+- `eslint` (no `--fix`): 0 errors. Remaining warnings are the pre-existing
+  `react-refresh/only-export-components` pattern (now also on the `ROLE_ROUTES`/`isPublicPath`
+  exports, same as the existing `useAuth` export) and the pre-existing
+  `react-hooks/exhaustive-deps` notice on the `storage` listener effect.
+- `prettier --check`: all changed files pass.
+
+

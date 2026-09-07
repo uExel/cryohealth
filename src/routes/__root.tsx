@@ -6,12 +6,14 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  redirect,
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider } from "@/lib/theme";
-import { AuthProvider } from "@/lib/auth";
+import { AuthProvider, ROLE_ROUTES, isPublicPath } from "@/lib/auth";
+import { getToken, decodeUser } from "@/lib/auth-client";
 import { SiteHeader } from "@/components/cryohealth/SiteHeader";
 import { DemoBanner } from "@/components/cryohealth/DemoBanner";
 import { Toaster } from "sonner";
@@ -120,6 +122,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
   }),
+  beforeLoad: async ({ location }) => {
+    const token = getToken();
+    const user = token ? decodeUser(token) : null;
+    if (user) {
+      const { pathname } = location;
+      // Let authenticated users into their role workspace, login, and the
+      // public alerts feed (where CHWs acknowledge alerts). For any other
+      // public/static page, send them to their role's entry point instead.
+      if (
+        pathname === "/admin" ||
+        pathname.startsWith("/admin/") ||
+        pathname === "/chw" ||
+        pathname === "/login" ||
+        pathname === "/alerts"
+      ) {
+        return;
+      }
+      if (isPublicPath(pathname)) {
+        throw redirect({ to: ROLE_ROUTES[user.role], replace: true });
+      }
+    }
+    return;
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
