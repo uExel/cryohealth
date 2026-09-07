@@ -905,3 +905,70 @@ changed files). No commit made this session.
   `ROLE_ROUTES` constant export, identical to the warning the file already carried for
   `useAuth`).
 
+### Verification
+
+- `tsc --noEmit`: 0 errors in `__root.tsx`, `login.tsx`, `auth.tsx`, `i18n.tsx`,
+  `SiteHeader.tsx`. The only remaining errors are the pre-existing `unknown[]`/`body` errors
+  in `admin.alerts.tsx`/`alerts.tsx` (present before this session; shifted only by the lines
+  added here).
+- `eslint` (no `--fix`): 0 errors across all changed files. Remaining warnings are the
+  pre-existing `react-refresh/only-export-components` pattern (the file already exported the
+  `useAuth` hook the same way; `ROLE_ROUTES`/`isPublicPath` follow it) and the pre-existing
+  `react-hooks/exhaustive-deps` notice on the `storage` listener effect.
+- `prettier --check`: all changed files pass.
+
+---
+
+## HANDOFF — cryohealth — auto sign-out & workspace confinement (2026-09-07, addendum)
+
+Appended to the 2026-09-07 session above. Two more asks from the same pass: auto logout
+after the session duration, and stopping an authenticated user from reaching public pages
+by editing the URL (the topbar already hides the links for them).
+
+### Done
+
+- `src/lib/auth.tsx` — `load()` now calls `scheduleSignout(token, signOut)`, which decodes
+  the JWT `exp` claim and schedules `signOut()` to fire exactly when the token expires (and
+  clears it immediately if already expired / undecodable). The timer is re-armed on every
+  `load()`, including the cross-tab `storage` listener and `refresh()`, so a token rotated
+  or a re-sign-in in another tab resets the timeout. This is the "log out automatically
+  after some duration" behaviour, driven by the token's own expiry (default 12h via
+  `JWT_EXPIRES`).
+- `src/routes/__root.tsx` — added a global `beforeLoad` guard: for an authenticated user
+  it redirects every public path (other than `/chw`, `/admin/*`, `/login`, and `/alerts`)
+  to `ROLE_ROUTES[user.role]` with `replace: true`. `/alerts` is intentionally allowed
+  through because CHW acknowledgment lives there.
+- `src/components/cryohealth/SiteHeader.tsx` — topbar nav links render only when signed
+  out (theme / language / sign-out remain). Authenticated navigation is the workspace
+  (AdminShell sidebar, `/chw`). (Note: the section above still reads "admin-only topbar
+  nav" in the header — the implemented behaviour is signed-out-only, as described here.)
+
+### Decisions
+
+- `/alerts` stays reachable when signed in so CHWs can still acknowledge; only static
+  public pages are blocked. If ack should move to `/chw`, do that as a separate step.
+- Auto sign-out is expiry-driven (JWT `exp`), not an idle timer; swap the arithmetic in
+  `scheduleSignout` for an inactivity deadline if an idle timeout is preferred.
+- Guard reads the token from `localStorage` directly (synchronous) so it needs no React
+  context and runs before components mount.
+- **Do not `eslint --fix` `login.tsx`** — it corrupted the `submit()` body during this
+  session (progressive-indentation mangle). The file was hand-rewritten and
+  `prettier --check`-clean; use `bun run format`, not `eslint --fix`, on it.
+
+### Files touched (this addendum)
+
+`src/lib/auth.tsx`, `src/routes/__root.tsx`. (`src/components/cryohealth/SiteHeader.tsx`
+already listed above; `login.tsx` already listed above.)
+
+### Verification
+
+- `tsc --noEmit`: no errors in `__root.tsx`, `auth.tsx`, `login.tsx`, `SiteHeader.tsx`,
+  `i18n.tsx` (only the pre-existing `unknown[]`/`body` errors in `admin.alerts.tsx`/
+  `alerts.tsx` remain).
+- `eslint` (no `--fix`): 0 errors. Remaining warnings are the pre-existing
+  `react-refresh/only-export-components` pattern (now also on the `ROLE_ROUTES`/`isPublicPath`
+  exports, same as the existing `useAuth` export) and the pre-existing
+  `react-hooks/exhaustive-deps` notice on the `storage` listener effect.
+- `prettier --check`: all changed files pass.
+
+
