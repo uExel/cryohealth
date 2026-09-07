@@ -971,4 +971,54 @@ already listed above; `login.tsx` already listed above.)
   `react-hooks/exhaustive-deps` notice on the `storage` listener effect.
 - `prettier --check`: all changed files pass.
 
+---
+
+## HANDOFF — cryohealth — broadcast form fixes (2026-09-07)
+
+Fixes two bugs in the alert broadcast form on `/admin/alerts` and a display bug in the
+alert table.
+
+### Done
+
+- **`BroadcastForm` payload matched to `IssueAlertDto`** (`src/routes/admin.alerts.tsx`):
+  The previous form sent a payload that the backend rejected with 400. Root causes:
+  - `bodyEn` / `bodyUr` / `affectedPopulation` / `districtId` are not in the backend
+    DTO at all — removed.
+  - `tier` was sent as uppercase (`"HIGH"`) but the backend enum is lowercase — the
+    form state stays uppercase (matching the `Tier` type), conversion happens at submit:
+    `tier: tier.toLowerCase()`.
+  - `estimatedWindow` doesn't exist on the backend DTO — renamed to `windowStart`.
+  - `reason` is required by the backend but missing entirely — added as a required input.
+  Also: removed the now-unused `fetchDistricts` import; improved the error toast to
+  surface backend validation messages (`"body should not be empty; tier must be one of…"`)
+  rather than a generic fallback.
+- **`AlertRow` field names corrected to match backend output** (`src/routes/admin.alerts.tsx`):
+  The backend TypeORM entity serialises as camelCase, but the frontend type and all
+  table references used snake_case. Since `a.created_at` was `undefined`,
+  `new Date(undefined)` rendered "Invalid Date" for every row. All 6 fields updated:
+
+  | Snake_case (was) | CamelCase (now) |
+  |---|---|
+  | `created_at` | `createdAt` |
+  | `cleared_at` | `clearedAt` |
+  | `estimated_window` | `estimatedWindow` |
+  | `affected_population` | `affectedPopulation` |
+  | `lake_name` | `lakeName` |
+  | `district_name` | `districtName` |
+- **`alertUpdateSchema` aligned with the form** (`src/lib/admin-schemas.ts`):
+  `estimated_window` renamed to `estimatedWindow` to match the form field name
+  referenced in the edit dialog's `defaultValues`.
+
+### Files touched
+
+`src/routes/admin.alerts.tsx`, `src/lib/admin-schemas.ts`.
+
+### Verification
+
+- `tsc --noEmit`: 0 new errors in `admin.alerts.tsx` / `admin-schemas.ts`. The only
+  remaining errors are the pre-existing `unknown[]`/`body` typing issues in
+  `admin.alerts.tsx` (mutation return types) — present before this session.
+- `eslint`: 0 errors in touched files.
+- `prettier --check`: all changed files pass.
+
 

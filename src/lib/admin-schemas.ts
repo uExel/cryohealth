@@ -141,7 +141,7 @@ export const alertUpdateSchema = z
   .object({
     body: z.string().trim().min(1, "Body is required").optional(),
     tier: z.enum(ALERT_TIERS).optional(),
-    estimated_window: z.string().trim().min(1).nullable().optional(),
+    estimatedWindow: z.string().trim().min(1).nullable().optional(),
   })
   .strict();
 export type AlertUpdate = z.infer<typeof alertUpdateSchema>;

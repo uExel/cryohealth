@@ -9,7 +9,6 @@ import {
   fetchAlerts,
   fetchAlertAcks,
   fetchLakesAdmin,
-  fetchDistricts,
   adminRequest,
 } from "@/lib/cryohealth-client";
 import { alertUpdateSchema, type AlertUpdate } from "@/lib/admin-schemas";
@@ -71,13 +70,13 @@ type AlertRow = {
   title: string;
   body: string;
   tier: Tier;
-  estimated_window: string | null;
-  affected_population: number | null;
-  created_at: string;
+  estimatedWindow: string | null;
+  affectedPopulation: number | null;
+  createdAt: string;
   status: "active" | "cleared";
-  cleared_at: string | null;
-  lake_name: string | null;
-  district_name: string | null;
+  clearedAt: string | null;
+  lakeName: string | null;
+  districtName: string | null;
 };
 
 type AckRow = { alert_id: string; chw_id: string; acknowledged_at: string };
@@ -316,9 +315,9 @@ function AlertsAdmin() {
                       <span className="inline-flex w-fit rounded bg-secondary px-2 py-0.5 text-xs font-semibold text-foreground">
                         Cleared
                       </span>
-                      {a.cleared_at && (
+                      {a.clearedAt && (
                         <span className="text-[11px] text-muted-foreground">
-                          {new Date(a.cleared_at).toLocaleString()}
+                          {new Date(a.clearedAt).toLocaleString()}
                         </span>
                       )}
                     </span>
@@ -329,17 +328,17 @@ function AlertsAdmin() {
                   )}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {a.lake_name ?? a.district_name ?? "—"}
+                  {a.lakeName ?? a.districtName ?? "—"}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {a.estimated_window ?? "—"}
+                  {a.estimatedWindow ?? "—"}
                 </TableCell>
                 <TableCell className="text-foreground">
-                  {(a.affected_population ?? 0).toLocaleString()}
+                  {(a.affectedPopulation ?? 0).toLocaleString()}
                 </TableCell>
                 <TableCell className="text-foreground">{ackCount(a.id)}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {new Date(a.created_at).toLocaleString()}
+                  {new Date(a.createdAt).toLocaleString()}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
@@ -420,7 +419,7 @@ function AlertEditDialog({
     defaultValues: {
       body: alert.body,
       tier: alert.tier.toLowerCase() as AlertUpdate["tier"],
-      estimated_window: alert.estimated_window,
+      estimatedWindow: alert.estimatedWindow,
     },
   });
 
@@ -471,7 +470,7 @@ function AlertEditDialog({
             />
             <FormField
               control={form.control}
-              name="estimated_window"
+              name="estimatedWindow"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Estimated window (optional)</FormLabel>
@@ -561,13 +560,11 @@ function AlertReasonDialog({
 function BroadcastForm({ onCreated }: { onCreated: () => void }) {
   const { user } = useAuth();
   const [title, setTitle] = useState("");
-  const [bodyEn, setBodyEn] = useState("");
-  const [bodyUr, setBodyUr] = useState("");
+  const [body, setBody] = useState("");
   const [tier, setTier] = useState<Tier>("WATCH");
   const [lakeId, setLakeId] = useState<string>("");
-  const [districtId, setDistrictId] = useState<string>("");
-  const [estimatedWindow, setEstimatedWindow] = useState("");
-  const [affected, setAffected] = useState<string>("");
+  const [windowStart, setWindowStart] = useState("");
+  const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const { data: lakes } = useQuery({
@@ -577,60 +574,45 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
       return (lakes ?? []) as { id: string; name: string; district_id: string | null }[];
     },
   });
-  const { data: districts } = useQuery({
-    queryKey: ["districts-min"],
-    queryFn: async () => {
-      const { districts } = await fetchDistricts();
-      return (districts ?? []) as { id: string; name: string }[];
-    },
-  });
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
-    if (!title.trim() || !bodyEn.trim()) {
-      toast.error("Title and English body are required");
+    if (!title.trim() || !body.trim()) {
+      toast.error("Title and message are required");
       return;
     }
-    if (!lakeId && !districtId) {
-      toast.error("Select a target lake or district");
-      return;
-    }
-    const lakeDistrict = lakes?.find((l) => l.id === lakeId)?.district_id ?? null;
-    if (lakeId && districtId && lakeDistrict && lakeDistrict !== districtId) {
-      toast.error(
-        "Selected lake belongs to a different district. Clear one to resolve the conflict.",
-      );
+    if (!reason.trim()) {
+      toast.error("A reason is required (for audit purposes)");
       return;
     }
     setSubmitting(true);
-    const resolvedDistrict = districtId || lakeDistrict || null;
     const result = await adminRequest("/alerts", {
       method: "POST",
       body: JSON.stringify({
         title: title.trim(),
-        bodyEn: bodyEn.trim(),
-        bodyUr: bodyUr.trim() || null,
-        tier,
+        body: body.trim(),
+        tier: tier.toLowerCase(),
         lakeId: lakeId || null,
-        districtId: resolvedDistrict,
-        estimatedWindow: estimatedWindow.trim() || null,
-        affectedPopulation: affected ? Number(affected) : 0,
+        windowStart: windowStart.trim() || null,
+        reason: reason.trim(),
       }),
     });
     setSubmitting(false);
     if (!result.ok) {
-      toast.error((result.body as { error?: string })?.error ?? "Failed to broadcast alert");
+      const err = result.body as { message?: string[]; error?: string };
+      const msg = Array.isArray(err.message)
+        ? err.message.join("; ")
+        : (err.error ?? "Failed to broadcast alert");
+      toast.error(msg);
       return;
     }
     toast.success("Alert broadcast");
     setTitle("");
-    setBodyEn("");
-    setBodyUr("");
+    setBody("");
     setLakeId("");
-    setDistrictId("");
-    setEstimatedWindow("");
-    setAffected("");
+    setWindowStart("");
+    setReason("");
     onCreated();
   }
 
@@ -660,17 +642,17 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
             onChange={(e) => setTier(e.target.value as Tier)}
             className="rounded-md border border-border bg-background px-3 py-2 text-sm"
           >
-            <option value="NORMAL">NORMAL</option>
-            <option value="WATCH">WATCH</option>
-            <option value="HIGH">HIGH</option>
-            <option value="CRITICAL">CRITICAL</option>
+            <option value="normal">NORMAL</option>
+            <option value="watch">WATCH</option>
+            <option value="high">HIGH</option>
+            <option value="critical">CRITICAL</option>
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs">
-          <span className="text-muted-foreground">Estimated window</span>
+          <span className="text-muted-foreground">Window start</span>
           <input
-            value={estimatedWindow}
-            onChange={(e) => setEstimatedWindow(e.target.value)}
+            value={windowStart}
+            onChange={(e) => setWindowStart(e.target.value)}
             placeholder="e.g. next 24h"
             className="rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
@@ -692,53 +674,25 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
             ))}
           </select>
         </label>
-        <label htmlFor="alert-district" className="flex flex-col gap-1 text-xs">
-          <span className="text-muted-foreground">Target district</span>
-          <select
-            id="alert-district"
-            aria-label="Target district"
-            value={districtId}
-            onChange={(e) => setDistrictId(e.target.value)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-          >
-            <option value="">— Auto from lake —</option>
-            {(districts ?? []).map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1 text-xs">
-          <span className="text-muted-foreground">Affected population</span>
-          <input
-            type="number"
-            min={0}
-            value={affected}
-            onChange={(e) => setAffected(e.target.value)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-          />
-        </label>
         <label className="flex flex-col gap-1 text-xs sm:col-span-2">
-          <span className="text-muted-foreground">Message (English)</span>
-          <textarea
-            value={bodyEn}
-            onChange={(e) => setBodyEn(e.target.value)}
-            rows={3}
-            maxLength={2000}
+          <span className="text-muted-foreground">Reason (required for audit)</span>
+          <input
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Why is this alert being issued?"
             className="rounded-md border border-border bg-background px-3 py-2 text-sm"
             required
           />
         </label>
         <label className="flex flex-col gap-1 text-xs sm:col-span-2">
-          <span className="text-muted-foreground">Message (Urdu, optional)</span>
+          <span className="text-muted-foreground">Message</span>
           <textarea
-            value={bodyUr}
-            onChange={(e) => setBodyUr(e.target.value)}
-            rows={2}
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={3}
             maxLength={2000}
-            dir="rtl"
             className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+            required
           />
         </label>
       </div>
