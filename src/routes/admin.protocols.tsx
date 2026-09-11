@@ -34,6 +34,21 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -59,8 +74,10 @@ type ProtocolRow = {
   category: string;
   body: string;
   source: string;
-  is_disaster: boolean;
-  created_at: string;
+  is_disaster?: boolean;
+  isDisaster?: boolean;
+  created_at?: string;
+  createdAt?: string;
 };
 
 function ProtocolsAdmin() {
@@ -87,8 +104,9 @@ function ProtocolsAdmin() {
         method: "POST",
         body: JSON.stringify(values),
       });
-      if (!result.ok) throw new Error(result.body.error ?? "Failed to create protocol");
-      return result.body.protocol;
+      const body = result.body as Record<string, any>;
+      if (!result.ok) throw new Error(body?.error ?? "Failed to create protocol");
+      return body?.protocol;
     },
     onSuccess: () => {
       toast.success("Protocol created");
@@ -104,8 +122,9 @@ function ProtocolsAdmin() {
         method: "PUT",
         body: JSON.stringify(values),
       });
-      if (!result.ok) throw new Error(result.body.error ?? "Failed to update protocol");
-      return result.body.protocol;
+      const body = result.body as Record<string, any>;
+      if (!result.ok) throw new Error(body?.error ?? "Failed to update protocol");
+      return body?.protocol;
     },
     onSuccess: () => {
       toast.success("Protocol updated");
@@ -123,8 +142,9 @@ function ProtocolsAdmin() {
           method: "DELETE",
         },
       );
-      if (!result.ok) throw new Error(result.body.error ?? "Failed to delete protocol");
-      return result.body;
+      const body = result.body as Record<string, any>;
+      if (!result.ok) throw new Error(body?.error ?? "Failed to delete protocol");
+      return body;
     },
     onSuccess: () => {
       toast.success("Protocol deleted");
@@ -196,7 +216,7 @@ function ProtocolsAdmin() {
                 <TableCell className="font-semibold text-foreground">{p.title}</TableCell>
                 <TableCell className="text-muted-foreground">{p.category}</TableCell>
                 <TableCell>
-                  {p.is_disaster ? (
+                  {(p.isDisaster ?? p.is_disaster) ? (
                     <span className="inline-flex w-fit rounded bg-[var(--color-accent-soft)] px-2 py-0.5 text-xs font-semibold text-[var(--color-accent-ink)]">
                       Disaster
                     </span>
@@ -217,7 +237,12 @@ function ProtocolsAdmin() {
                   </details>
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {new Date(p.created_at).toLocaleDateString()}
+                  {(() => {
+                    const dateStr = p.createdAt ?? p.created_at;
+                    if (!dateStr) return "—";
+                    const d = new Date(dateStr);
+                    return isNaN(d.getTime()) ? "—" : d.toLocaleDateString();
+                  })()}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
@@ -333,6 +358,137 @@ function NoAiAssistBanner() {
   );
 }
 
+function CategoryCombobox({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const { data: apiResults = [], isLoading } = useQuery({
+    queryKey: ["nlm-disease-search", search],
+    queryFn: async (): Promise<string[]> => {
+      const fallbackList = [
+        "Acute Respiratory Infection",
+        "Cholera",
+        "Dehydration",
+        "Dengue",
+        "Diarrhoea",
+        "Gastroenteritis",
+        "Heat Stroke",
+        "Hypothermia",
+        "Malaria",
+        "Pneumonia",
+        "Tuberculosis",
+        "Typhoid",
+        "Waterborne Disease",
+      ];
+
+      const queryTerm = search.trim();
+      if (!queryTerm) return fallbackList;
+
+      try {
+        const url = `https://clinicaltables.nlm.nih.gov/api/conditions/v3/search?terms=${encodeURIComponent(
+          queryTerm
+        )}&df=primary_name&maxList=100`;
+
+        const res = await fetch(url);
+        if (!res.ok) return fallbackList;
+
+        const data = await res.json();
+
+        if (Array.isArray(data) && Array.isArray(data[3])) {
+          const names: string[] = data[3]
+            .map((item: string[]) => item[0])
+            .filter(Boolean);
+
+          return Array.from(new Set([...fallbackList, ...names])).sort();
+        }
+
+        return fallbackList;
+      } catch {
+        return fallbackList;
+      }
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const options = Array.from(
+    new Set([...apiResults, ...(value ? [value] : []), ...(search.trim() ? [search.trim()] : [])]),
+  ).sort();
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <FormControl>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between font-normal"
+          >
+            {value ? value : "Select or search medical category..."}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </FormControl>
+      </PopoverTrigger>
+      <PopoverContent className="w-[380px] p-0" align="start">
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder="Search NLM diseases or type category..."
+            value={search}
+            onValueChange={setSearch}
+          />
+          <CommandList>
+            {isLoading && (
+              <div className="p-2 text-center text-xs text-muted-foreground">
+                Searching NLM database...
+              </div>
+            )}
+            {!isLoading && options.length === 0 && (
+              <CommandEmpty>No medical categories found.</CommandEmpty>
+            )}
+            {search.trim() && (
+              <div
+                className="cursor-pointer border-b px-3 py-2 text-sm text-primary hover:bg-accent font-medium"
+                onClick={() => {
+                  onChange(search.trim());
+                  setOpen(false);
+                }}
+              >
+                Use custom category: "{search.trim()}"
+              </div>
+            )}
+            <CommandGroup heading="Medical Categories & Diseases (NLM)">
+              {options.map((cat) => (
+                <CommandItem
+                  key={cat}
+                  value={cat}
+                  onSelect={() => {
+                    onChange(cat);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === cat ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                  {cat}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function ProtocolFormDialog({
   mode,
   protocol,
@@ -346,11 +502,6 @@ function ProtocolFormDialog({
   onSubmit: (values: ProtocolCreate | Omit<ProtocolCreate, "slug">) => void;
   isPending: boolean;
 }) {
-  // ONE stable schema for both modes (slug made optional rather than switching
-  // between two structurally different schemas) -- documented pitfall from
-  // LakeFormDialog: a ternary between two zod schemas doesn't reconcile into one
-  // stable react-hook-form generic, even with casts on the resolver alone. Cast
-  // happens only at the handleSubmit callback boundary below.
   const schema = protocolCreateSchema.partial({ slug: true });
 
   const form = useForm({
@@ -414,11 +565,12 @@ function ProtocolFormDialog({
               control={form.control}
               name="category"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value ?? ""} />
-                  </FormControl>
+                  <CategoryCombobox
+                    value={field.value ?? ""}
+                    onChange={(val) => field.onChange(val)}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
