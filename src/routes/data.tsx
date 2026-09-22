@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { apiBaseUrl } from "@/lib/cryohealth-api";
 
 export const Route = createFileRoute("/data")({
   head: () => ({
@@ -33,7 +34,7 @@ type Endpoint = {
 const ENDPOINTS: Endpoint[] = [
   {
     method: "GET",
-    path: "/api/public/lakes",
+    path: "/lakes",
     desc: "All monitored glacial lakes with current risk tier, location, and last update time.",
     example: `{
   "lakes": [
@@ -53,7 +54,7 @@ const ENDPOINTS: Endpoint[] = [
   },
   {
     method: "GET",
-    path: "/api/public/lakes/{lakeId}",
+    path: "/lakes/{lakeId}",
     desc: "A single lake's detail: current state, risk score history, alerts issued for it, and nearby glaciers.",
     example: `{
   "lake": { "id": "lk_shishper", "name": "Shishper glacial lake", "current_tier": "WATCH" },
@@ -64,13 +65,13 @@ const ENDPOINTS: Endpoint[] = [
   },
   {
     method: "GET",
-    path: "/api/public/hot-lakes",
+    path: "/hot-lakes",
     desc: "Lakes currently at HIGH or CRITICAL tier only, ordered by risk score.",
     example: `{ "lakes": [{ "id": "lk_shishper", "name": "Shishper glacial lake", "current_tier": "HIGH", "current_risk_score": 78, "downstream_population": 4200, "last_updated": "2026-08-09T04:12:00Z" }] }`,
   },
   {
     method: "GET",
-    path: "/api/public/alerts",
+    path: "/alerts",
     desc: "Every alert issued, newest first: dispatch tier, message text, target lake or district, and estimated impact window.",
     example: `{
   "alerts": [
@@ -93,37 +94,37 @@ const ENDPOINTS: Endpoint[] = [
   },
   {
     method: "GET",
-    path: "/api/public/glaciers",
+    path: "/glaciers",
     desc: "Glacier inventory (RGI v7 / GLIMS derived): area, length, elevation range, and observed status per glacier.",
     example: `{ "glaciers": [{ "id": "gl_101", "name": "Shishper Glacier", "rgi_id": "RGI60-14.07524", "district_id": "hunza", "area_km2": 15.4, "status": "surging" }] }`,
   },
   {
     method: "GET",
-    path: "/api/public/glaciers/{glacierId}",
+    path: "/glaciers/{glacierId}",
     desc: "A single glacier's detail: observation time series, associated lakes, and recent disaster-related cases in its district.",
     example: `{ "glacier": { "id": "gl_101", "name": "Shishper Glacier" }, "observations": [ ], "lakes": [ ], "cases": [ ] }`,
   },
   {
     method: "GET",
-    path: "/api/public/facilities",
+    path: "/facilities",
     desc: "Health facilities with a mapped location, type, and vulnerability rating, used to show downstream exposure.",
     example: `{ "facilities": [{ "id": "fac_12", "name": "Gilgit District Hospital", "lat": 35.92, "lng": 74.31, "type": "hospital", "vulnerability": "medium" }] }`,
   },
   {
     method: "GET",
-    path: "/api/public/districts",
+    path: "/districts",
     desc: "Reference list of districts and their province, used to filter every other endpoint.",
     example: `{ "districts": [{ "id": "hunza", "name": "Hunza", "province": "Gilgit-Baltistan", "population": null }] }`,
   },
   {
     method: "GET",
-    path: "/api/public/protocols",
+    path: "/protocols",
     desc: "The prevention and care protocols the offline app draws on, with disaster-related protocols flagged.",
     example: `{ "protocols": [{ "id": "pr_5", "title": "Safe drinking water after a flood", "is_disaster": true }] }`,
   },
   {
     method: "GET",
-    path: "/api/public/kpis",
+    path: "/kpis",
     desc: "Platform-wide indicators: lakes at HIGH or CRITICAL, alerts in the last 30 days, cases in the last 7 days, active community health workers.",
     example: `{ "highLakes": 2, "alerts30d": 14, "cases7d": 9, "chws": 11 }`,
   },
@@ -146,7 +147,7 @@ function DataPage() {
           Try it now
         </p>
         <pre className="mt-2 overflow-x-auto rounded-md bg-secondary/60 p-3 text-xs text-foreground">
-          <code>curl https://cryohealth.io/api/public/lakes</code>
+          <code>curl {apiBaseUrl()}/lakes</code>
         </pre>
         <p className="mt-2 text-xs text-muted-foreground">
           No API key, no headers required. Copy, paste, and the response comes back live.
@@ -158,7 +159,7 @@ function DataPage() {
         {ENDPOINTS.map((e) => (
           <li key={e.path} className="rounded-xl border border-border bg-card p-4">
             <a
-              href={e.path.replace(/\{[^}]+\}/, "")}
+              href={`${apiBaseUrl()}${e.path.replace(/\{[^}]+\}/, "")}`}
               target="_blank"
               rel="noreferrer"
               className="font-mono text-sm text-primary hover:underline"

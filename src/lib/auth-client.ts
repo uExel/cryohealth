@@ -1,5 +1,6 @@
 import { decodeJwt } from "jose";
 import type { JwtPayload, Role } from "@/lib/jwt";
+import { apiFetch } from "@/lib/cryohealth-api";
 
 const STORAGE_KEY = "cryohealth_token";
 
@@ -18,8 +19,6 @@ export function clearToken() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-/** Client-side only: reads the token's claims for display. The server always
- *  re-verifies the signature — this never needs the secret. */
 export function decodeUser(token: string): AuthUser | null {
   try {
     const payload = decodeJwt(token) as unknown as JwtPayload;
@@ -31,13 +30,10 @@ export function decodeUser(token: string): AuthUser | null {
 }
 
 export async function login(identifier: string, password: string): Promise<AuthUser> {
-  const res = await fetch("/api/auth/login", {
+  const body = await apiFetch("/auth/login", {
     method: "POST",
-    headers: { "content-type": "application/json" },
     body: JSON.stringify({ identifier, password }),
   });
-  const body = await res.json();
-  if (!res.ok) throw new Error(body.error ?? "Login failed");
   setToken(body.accessToken);
   return { id: decodeUser(body.accessToken)!.id, name: body.name, role: body.role };
 }
@@ -46,8 +42,6 @@ export function signOut() {
   clearToken();
 }
 
-/** Fetch wrapper that attaches the stored bearer token, for calls to routes
- *  guarded by `requireAuth`. */
 export async function authFetch(input: string, init: RequestInit = {}): Promise<Response> {
   const token = getToken();
   const headers = new Headers(init.headers);

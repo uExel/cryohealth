@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { authFetch } from "@/lib/auth-client";
+import { fetchDistricts, fetchGlaciers, adminRequest } from "@/lib/cryohealth-client";
 import { glacierCreateSchema, type GlacierCreate } from "@/lib/admin-schemas";
 import { StatusPill } from "@/components/cryohealth/StatCard";
 import {
@@ -104,9 +104,7 @@ function GlaciersAdmin() {
   const { data: districts, isError: districtsError } = useQuery({
     queryKey: ["admin-districts"],
     queryFn: async (): Promise<DistrictRow[]> => {
-      const res = await fetch("/api/public/districts");
-      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
-      return (await res.json()).districts ?? [];
+      return (await fetchDistricts()).districts ?? [];
     },
   });
   const {
@@ -116,9 +114,7 @@ function GlaciersAdmin() {
   } = useQuery({
     queryKey: ["admin-glaciers"],
     queryFn: async (): Promise<GlacierRow[]> => {
-      const res = await fetch("/api/public/glaciers");
-      if (!res.ok) throw new Error(`glaciers fetch failed: ${res.status}`);
-      return (await res.json()).glaciers ?? [];
+      return (await fetchGlaciers()).glaciers ?? [];
     },
   });
   const isError = districtsError || glaciersError;
@@ -137,13 +133,12 @@ function GlaciersAdmin() {
 
   const createMutation = useMutation({
     mutationFn: async (values: GlacierCreate) => {
-      const res = await authFetch("/api/admin/glaciers", {
+      const { ok, body } = await adminRequest("/admin/glaciers", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to create glacier");
+      if (!ok) throw new Error(body.error ?? "Failed to create glacier");
       return body.glacier;
     },
     onSuccess: () => {
@@ -156,13 +151,12 @@ function GlaciersAdmin() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string; values: GlacierCreate }) => {
-      const res = await authFetch(`/api/admin/glaciers/${id}`, {
+      const { ok, body } = await adminRequest(`/admin/glaciers/${id}`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to update glacier");
+      if (!ok) throw new Error(body.error ?? "Failed to update glacier");
       return body.glacier;
     },
     onSuccess: (_data, variables) => {
@@ -176,13 +170,11 @@ function GlaciersAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/glaciers/${id}`, {
-        method: "DELETE",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ reason }),
-      });
-      const body = await res.json();
-      if (!res.ok) {
+      const { ok, body } = await adminRequest(
+        `/admin/glaciers/${id}?reason=${encodeURIComponent(reason)}`,
+        { method: "DELETE" },
+      );
+      if (!ok) {
         throw new Error(
           body.dependents
             ? dependentsMessage(body.dependents)

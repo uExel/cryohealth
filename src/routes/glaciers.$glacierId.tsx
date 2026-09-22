@@ -14,6 +14,7 @@ import { TierBadge, type Tier } from "@/lib/tier";
 import { haversineKm, glacierLakeAssocScore } from "@/lib/geo";
 import { glacierStatusWeight } from "@/lib/geo";
 import { StatCard, StatusPill } from "@/components/cryohealth/StatCard";
+import { fetchGlacierDetail } from "@/lib/cryohealth-client";
 
 export const Route = createFileRoute("/glaciers/$glacierId")({
   head: ({ params }) => ({
@@ -74,9 +75,9 @@ function GlacierDetail() {
   const { data: bundle, isLoading } = useQuery({
     queryKey: ["glacier", glacierId],
     queryFn: async () => {
-      const res = await fetch(`/api/public/glaciers/${glacierId}`);
-      if (!res.ok) return null;
-      return res.json() as Promise<{
+      const data = await fetchGlacierDetail(glacierId);
+      if (!data) return null;
+      return data as {
         glacier: GlacierRow;
         observations: ObservationRow[];
         lakes: {
@@ -90,7 +91,7 @@ function GlacierDetail() {
           district_name: string | null;
         }[];
         cases: CaseRow[];
-      }>;
+      };
     },
   });
 

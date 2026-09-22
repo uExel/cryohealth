@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { fetchLakes } from "@/lib/cryohealth-api";
+import { fetchLakes, fetchFacilities } from "@/lib/cryohealth-client";
 import { HazardMap } from "@/components/cryohealth/HazardMap";
 import { TierBadge, type Tier } from "@/lib/tier";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
@@ -36,14 +36,16 @@ function LakesPage() {
     isError,
   } = useQuery({
     queryKey: ["lakes"],
-    queryFn: fetchLakes,
+    queryFn: async () => {
+      const { lakes } = await fetchLakes();
+      return lakes;
+    },
   });
   const { data: facilities } = useQuery({
     queryKey: ["facilities"],
     queryFn: async () => {
-      const res = await fetch("/api/public/facilities");
-      const body = await res.json();
-      return body.facilities ?? [];
+      const { facilities } = await fetchFacilities();
+      return facilities;
     },
   });
 

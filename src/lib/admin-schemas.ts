@@ -125,23 +125,229 @@ export type LakeCreate = z.infer<typeof lakeCreateSchema>;
 export const lakeUpdateSchema = lakeCreateSchema.omit({ slug: true }).partial();
 export type LakeUpdate = z.infer<typeof lakeUpdateSchema>;
 
-/** Issue #12 requires a mandatory `reason` field on clear/delete (human-auditable
- *  reason per the workspace's alert-policy rule) — enforce it here once this is
- *  filled in, not just at the call site. */
-export const alertSchema = z.object({}).strict();
-export type Alert = z.infer<typeof alertSchema>;
+/** Mirrors tier.tsx's Tier union, lowercased -- that's the DB representation
+ *  (insertAlert lowercases `tier` on write; listAllAlerts/listOpenAlerts read it
+ *  back with `upper(tier::text)` for display). Not imported from tier.tsx directly
+ *  since that file is UI-only (exports a component) and this schema must stay
+ *  importable from server route handlers. */
+const ALERT_TIERS = ["normal", "watch", "high", "critical"] as const;
 
-export const protocolSchema = z.object({}).strict();
-export type Protocol = z.infer<typeof protocolSchema>;
+/** Issue #12: PUT only edits body/tier/window -- title, lakeId, districtId,
+ *  affected_population, status, and clearedAt are all absent by design. status/
+ *  clearedAt are the clear-action's job (see updateAlert/clearAlert in queries.ts),
+ *  not a field an edit form should be able to set directly; `.strict()` 400s
+ *  instead of silently dropping them if a client ever sends them. */
+export const alertUpdateSchema = z
+  .object({
+    body: z.string().trim().min(1, "Body is required").optional(),
+    tier: z.enum(ALERT_TIERS).optional(),
+    estimatedWindow: z.string().trim().min(1).nullable().optional(),
+  })
+  .strict();
+export type AlertUpdate = z.infer<typeof alertUpdateSchema>;
 
-export const facilitySchema = z.object({}).strict();
-export type Facility = z.infer<typeof facilitySchema>;
+/** Mandatory `reason` on clear/delete (human-auditable reason per CLAUDE.md's
+ *  alert-policy rule) is enforced via the shared `deleteReasonSchema` above --
+ *  both actions take exactly `{ reason: string }`, so a second schema would just
+ *  duplicate it. */
 
-export const chwProfileSchema = z.object({}).strict();
-export type ChwProfile = z.infer<typeof chwProfileSchema>;
+/** Issue #13: dosing/diagnosis text is transcribed from a cited source, never
+ *  generated (CLAUDE.md's protocol rule) -- `source` is required here even though
+ *  it's already NOT NULL in the DB, so a missing citation 400s with a clear message
+ *  instead of a raw NOT NULL violation. `slug` is create-only, same rationale as
+ *  lakeCreateSchema.slug -- the public CHW app almost certainly looks protocols up
+ *  by slug, so renaming it here would desync that lookup. */
+export const protocolCreateSchema = z
+  .object({
+    slug: z.string().min(1, "Slug is required"),
+    title: z.string().min(1, "Title is required"),
+    category: z.string().min(1, "Category is required"),
+    body: z.string().trim().min(1, "Body is required"),
+    source: z
+      .string()
+      .trim()
+      .min(1, "Source is required — cite where this protocol's text comes from"),
+    is_disaster: z.boolean().optional(),
+  })
+  .strict();
+export type ProtocolCreate = z.infer<typeof protocolCreateSchema>;
 
-export const caseSchema = z.object({}).strict();
-export type Case = z.infer<typeof caseSchema>;
+/** slug is absent here — create-only, see protocolCreateSchema.slug's comment. */
+export const protocolUpdateSchema = protocolCreateSchema.omit({ slug: true }).partial();
+export type ProtocolUpdate = z.infer<typeof protocolUpdateSchema>;
 
-export const userSchema = z.object({}).strict();
-export type User = z.infer<typeof userSchema>;
+/** `type`/`vulnerability` are free text, not a DB enum -- data.tsx's own documented
+ *  payload example uses lowercase strings ("hospital", "medium") with no enum
+ *  constraint visible anywhere else in this repo, so this stays a non-empty string
+ *  rather than guessing at a closed list and rejecting a legitimate value. */
+export const facilityCreateSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    type: z.string().min(1, "Type is required"),
+    district: z.string().min(1, "District is required"),
+    vulnerability: z.string().min(1, "Vulnerability is required"),
+    contact: z.string().min(1).nullable().optional(),
+    // Plain z.number(), not .coerce -- same rationale as glacierCreateSchema.lat/lng:
+    // ST_Y/ST_X always return real JS numbers from postgres.js, never strings, so
+    // there's no round-trip case to coerce for, and .coerce would silently turn an
+    // explicit-clear null/""/[] into 0 instead of a 400. Both optional (facilities.geom
+    // is nullable, unlike lakes) -- provide neither to leave the facility unmapped.
+    lat: z.number().min(-90).max(90).optional(),
+    lng: z.number().min(-180).max(180).optional(),
+    lakeId: z.string().uuid().nullable().optional(),
+  })
+  .strict();
+export type FacilityCreate = z.infer<typeof facilityCreateSchema>;
+
+export const facilityUpdateSchema = facilityCreateSchema.partial();
+export type FacilityUpdate = z.infer<typeof facilityUpdateSchema>;
+
+/** Issue #14 scope: `user_id` is deliberately absent from both schemas. There is no
+ *  admin/users listing endpoint yet (Users & roles is still an `AdminPlaceholder`,
+ *  see admin.users.tsx) to populate a "link to an existing user" picker from, and the
+ *  chw_profiles roster has lived independently of `users` since #9 (see the comment on
+ *  GET /api/public/chw-profiles). Wiring `user_id` is a follow-up once a users-listing
+ *  endpoint exists, not a silent scope cut -- named here so it isn't mistaken for an
+ *  oversight. */
+export const chwProfileCreateSchema = z
+  .object({
+    full_name: z.string().min(1, "Name is required"),
+    district_id: z.string().uuid().nullable().optional(),
+    phone: z.string().min(1).nullable().optional(),
+    language: z.string().min(1, "Language is required"),
+  })
+  .strict();
+export type ChwProfileCreate = z.infer<typeof chwProfileCreateSchema>;
+
+export const chwProfileUpdateSchema = chwProfileCreateSchema.partial();
+export type ChwProfileUpdate = z.infer<typeof chwProfileUpdateSchema>;
+
+/** Issue #15. Field names are snake_case here, unlike the camelCase schemas above,
+ *  because they mirror the `cases` columns exactly (`chw_id`, `is_disaster_related`) --
+ *  that lets `CASE_WRITABLE_COLUMNS` + `sql(writable)` in queries.ts key straight off
+ *  the patch, and lets the edit dialog seed defaultValues straight from the GET payload
+ *  (which is the same snake_case row). The camelCase wire format of
+ *  `POST /api/public/cases` is CryoHealth-app's contract and is deliberately untouched;
+ *  the admin POST handler maps this shape onto insertCase()'s params at the boundary.
+ *
+ *  `deleted_at` is absent from BOTH schemas and must stay that way: it is set only by
+ *  softDeleteCase() and `.strict()` 400s if a client tries to set (or clear) it through
+ *  a normal write. Un-deleting is not an admin form field -- see the handoff. */
+export const caseCreateSchema = z
+  .object({
+    // NOT NULL REFERENCES users(id) ON DELETE RESTRICT -- a case must be attributable
+    // to the CHW who logged it, so this is required rather than nullable-optional.
+    chw_id: z.string().uuid("A CHW must be selected"),
+    district_id: z.string().uuid().nullable().optional(),
+    // Plain z.number(), not .coerce -- same rationale as districtCreateSchema.population:
+    // patient_age is `integer`, postgres.js returns a real JS number, and .coerce would
+    // turn an explicit-clear ""/null into 0, i.e. a fabricated patient age.
+    patient_age: z.number().int().nonnegative().max(130).nullable().optional(),
+    // Free text, not an enum: the column is plain `text` and nothing in this repo or
+    // CryoHealth-api constrains it, so guessing a closed list would reject legitimate
+    // values (same reasoning as facilityCreateSchema.type/vulnerability).
+    patient_sex: z.string().trim().min(1).nullable().optional(),
+    symptoms: z.string().trim().min(1, "Symptoms are required"),
+    diagnosis: z.string().trim().min(1).nullable().optional(),
+    treatment: z.string().trim().min(1).nullable().optional(),
+    outcome: z.string().trim().min(1).nullable().optional(),
+    is_disaster_related: z.boolean().optional(),
+  })
+  .strict();
+export type CaseCreate = z.infer<typeof caseCreateSchema>;
+
+/** `chw_id` is create-only, so it is omitted here (same mechanism as
+ *  lakeCreateSchema.slug, different reason): re-pointing an existing case at a
+ *  different CHW rewrites clinical provenance -- who saw this patient -- and there is
+ *  no legitimate admin reason to do it. A correction means soft-deleting the case and
+ *  logging it against the right CHW, which leaves both audit rows behind. */
+export const caseUpdateSchema = caseCreateSchema.omit({ chw_id: true }).partial();
+export type CaseUpdate = z.infer<typeof caseUpdateSchema>;
+
+/** Mirrors the `role` Postgres enum and jwt.ts's `Role` union. Not imported from
+ *  jwt.ts — that's a type-only union with no runtime value to build a z.enum from. */
+export const USER_ROLES = ["cryohealth_admin", "facility_admin", "chw", "viewer"] as const;
+
+/** Issue #16. `passwordHash` is never a field here — the API takes a plaintext `pin`
+ *  and hashes it server-side (mirroring CryoHealth-api/scripts/seed-users.ts), so a
+ *  client can never supply a hash of its own choosing. `active` is absent from create:
+ *  the DB default (true) owns it, and deactivation is an explicit later action. */
+export const userCreateSchema = z
+  .object({
+    name: z.string().trim().min(1, "Name is required"),
+    role: z.enum(USER_ROLES),
+    // Both nullable/optional individually, but .refine below requires at least one:
+    // api/auth/login.ts looks users up by `"lhwId" = $1 OR phone = $1`, so a user with
+    // neither is created unable to ever sign in.
+    lhwId: z.string().trim().min(1).nullable().optional(),
+    phone: z.string().trim().min(1).nullable().optional(),
+    facilityId: z.string().uuid().nullable().optional(),
+    // Max 72: bcrypt hashes at most 72 bytes and silently ignores the rest, which would
+    // make a longer PIN's tail meaningless rather than rejected. Min 4 matches the
+    // 4-digit dev PINs in seed-users.ts; not `.regex(/^\d+$/)` — nothing in the login
+    // path requires digits, so a longer passphrase is allowed for admin accounts.
+    pin: z.string().min(4, "PIN must be at least 4 characters").max(72, "PIN is too long"),
+  })
+  .strict()
+  .refine((u) => Boolean(u.lhwId) || Boolean(u.phone), {
+    message: "An LHW ID or a phone number is required — sign-in looks up users by one of these",
+    path: ["lhwId"],
+  });
+export type UserCreate = z.infer<typeof userCreateSchema>;
+
+/** Deliberately just `role` and `active` — issue #16 scopes writes on an existing user
+ *  to "deactivate" and "change role". name/lhwId/phone/facilityId are create-only here,
+ *  and `pin` is absent entirely: there is no PIN-reset action in this task, so allowing
+ *  it would be an unaudited credential-change path nothing in the UI drives. `.strict()`
+ *  400s on any of them instead of dropping them silently. */
+export const userUpdateSchema = z
+  .object({
+    role: z.enum(USER_ROLES).optional(),
+    active: z.boolean().optional(),
+  })
+  .strict();
+export type UserUpdate = z.infer<typeof userUpdateSchema>;
+
+/** Default and max page sizes for the audit log (issue #18). The max caps a hand-edited
+ *  `?pageSize=` so a single request can't ask for the whole (unbounded, append-only)
+ *  table at once. */
+export const AUDIT_PAGE_SIZE_DEFAULT = 50;
+export const AUDIT_PAGE_SIZE_MAX = 200;
+
+/** CSV export row cap. The audit table is append-only and grows without bound, so an
+ *  uncapped export would eventually exhaust the Worker's memory; a filtered export
+ *  streams at most this many rows, newest first. */
+export const AUDIT_EXPORT_MAX = 10_000;
+
+/** Issue #18 (audit log page). Unlike every other schema in this file, this one is
+ *  deliberately NOT `.strict()` — it validates URL *query* params, not a JSON body.
+ *  Query strings legitimately carry keys this endpoint doesn't own (the `format=csv`
+ *  switch the route reads separately, a cache-buster, a stray tracking param), and zod
+ *  strips unknown keys by default, so an extra param is ignored rather than a 400.
+ *  `.strict()` is the right failure direction for a write body (reject unknown keys → no
+ *  silent mass-assignment); it's the wrong one for a read filter, where a spurious 400
+ *  would break an otherwise-valid saved/export URL. Every filter is optional (no filter
+ *  = the whole table, newest first). `page`/`pageSize` are `.coerce`d because query
+ *  params always arrive as strings. */
+export const auditQuerySchema = z.object({
+  actorId: z.string().uuid().optional(),
+  entityType: z.string().min(1).optional(),
+  // YYYY-MM-DD only — the client sends native <input type="date"> values. Both bounds are
+  // inclusive: the route turns `to` into `< to::date + 1` so the whole day is covered.
+  from: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD")
+    .optional(),
+  to: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD")
+    .optional(),
+  page: z.coerce.number().int().positive().default(1),
+  pageSize: z.coerce
+    .number()
+    .int()
+    .positive()
+    .max(AUDIT_PAGE_SIZE_MAX)
+    .default(AUDIT_PAGE_SIZE_DEFAULT),
+});
+export type AuditQuery = z.infer<typeof auditQuerySchema>;

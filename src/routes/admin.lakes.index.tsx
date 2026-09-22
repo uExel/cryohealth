@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { TierBadge, type Tier } from "@/lib/tier";
-import { authFetch } from "@/lib/auth-client";
+import { fetchDistricts, fetchLakesAdmin, adminRequest } from "@/lib/cryohealth-client";
 import type { LakeCreate } from "@/lib/admin-schemas";
 import { LakeFormDialog } from "@/components/cryohealth/LakeFormDialog";
 import {
@@ -67,9 +67,8 @@ function LakesAdmin() {
   const { data: districts, isError: districtsError } = useQuery({
     queryKey: ["admin-districts"],
     queryFn: async (): Promise<DistrictRow[]> => {
-      const res = await fetch("/api/public/districts");
-      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
-      return (await res.json()).districts ?? [];
+      const { districts } = await fetchDistricts();
+      return districts as DistrictRow[];
     },
   });
   const {
@@ -79,23 +78,20 @@ function LakesAdmin() {
   } = useQuery({
     queryKey: ["admin-lakes"],
     queryFn: async (): Promise<LakeRow[]> => {
-      const res = await fetch("/api/public/lakes-admin");
-      if (!res.ok) throw new Error(`lakes fetch failed: ${res.status}`);
-      return (await res.json()).lakes ?? [];
+      const { lakes } = await fetchLakesAdmin();
+      return lakes as LakeRow[];
     },
   });
   const isError = districtsError || lakesError;
 
   const createMutation = useMutation({
     mutationFn: async (values: LakeCreate) => {
-      const res = await authFetch("/api/admin/lakes", {
+      const result = await adminRequest("/admin/lakes", {
         method: "POST",
-        headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to create lake");
-      return body.lake;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to create lake");
+      return result.body.lake;
     },
     onSuccess: () => {
       toast.success("Lake created");
@@ -107,20 +103,17 @@ function LakesAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/lakes/${id}`, {
+      const result = await adminRequest(`/admin/lakes/${id}?reason=${encodeURIComponent(reason)}`, {
         method: "DELETE",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ reason }),
       });
-      const body = await res.json();
-      if (!res.ok) {
+      if (!result.ok) {
         throw new Error(
-          body.dependents
-            ? dependentsMessage(body.dependents)
-            : (body.error ?? "Failed to delete lake"),
+          result.body.dependents
+            ? dependentsMessage(result.body.dependents)
+            : (result.body.error ?? "Failed to delete lake"),
         );
       }
-      return body;
+      return result.body;
     },
     onSuccess: () => {
       toast.success("Lake deleted");

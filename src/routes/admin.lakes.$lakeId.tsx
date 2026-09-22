@@ -6,7 +6,12 @@ import { AdminPlaceholder } from "@/components/cryohealth/AdminPlaceholder";
 import { StatCard } from "@/components/cryohealth/StatCard";
 import { LakeFormDialog } from "@/components/cryohealth/LakeFormDialog";
 import { TierBadge, type Tier } from "@/lib/tier";
-import { authFetch } from "@/lib/auth-client";
+import {
+  fetchLakeDetail,
+  fetchDistricts,
+  fetchHazardScores,
+  adminRequest,
+} from "@/lib/cryohealth-client";
 import type { LakeCreate } from "@/lib/admin-schemas";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -72,6 +77,14 @@ type HazardScoreRow = {
   computed_at: string;
 };
 
+/** `total` is every hazard_scores row for the lake; `hazardScores` is only the latest 120 the
+ *  endpoint will return. When they disagree the tab has to say so — see hazardTruncationNote. */
+type HazardScoresResponse = {
+  hazardScores: HazardScoreRow[];
+  total: number;
+  hasMore: boolean;
+};
+
 function LakeDetailAdmin() {
   const { lakeId } = Route.useParams();
   const qc = useQueryClient();
@@ -84,45 +97,41 @@ function LakeDetailAdmin() {
   } = useQuery({
     queryKey: ["admin-lake", lakeId],
     queryFn: async () => {
-      const res = await fetch(`/api/public/lakes/${lakeId}`);
-      if (res.status === 404) return null;
-      if (!res.ok) throw new Error(`lake fetch failed: ${res.status}`);
-      return res.json() as Promise<{ lake: LakeRow; history: RiskScoreRow[] }>;
+      return fetchLakeDetail(lakeId) as Promise<{ lake: LakeRow; history: RiskScoreRow[] } | null>;
     },
   });
 
   const { data: districts } = useQuery({
     queryKey: ["admin-districts"],
     queryFn: async (): Promise<DistrictRow[]> => {
-      const res = await fetch("/api/public/districts");
-      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
-      return (await res.json()).districts ?? [];
+      return (await fetchDistricts()).districts ?? [];
     },
   });
 
   const {
-    data: hazardScores,
+    data: hazard,
     isLoading: hazardLoading,
     isError: hazardError,
   } = useQuery({
     queryKey: ["admin-lake-hazard-scores", lakeId],
-    queryFn: async (): Promise<HazardScoreRow[]> => {
-      const res = await authFetch(`/api/public/hazard-scores/${lakeId}`);
-      if (!res.ok) throw new Error(`hazard-scores fetch failed: ${res.status}`);
-      return (await res.json()).hazardScores ?? [];
+    queryFn: async (): Promise<HazardScoresResponse> => {
+      const data = await fetchHazardScores(lakeId);
+      return {
+        hazardScores: (data as HazardScoresResponse).hazardScores ?? [],
+        total: (data as HazardScoresResponse).total ?? 0,
+        hasMore: (data as HazardScoresResponse).hasMore ?? false,
+      };
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: async (values: LakeCreate) => {
-      const res = await authFetch(`/api/admin/lakes/${lakeId}`, {
+      const result = await adminRequest(`/admin/lakes/${lakeId}`, {
         method: "PUT",
-        headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to update lake");
-      return body.lake;
+      if (!result.ok) throw new Error(result.body.error ?? "Failed to update lake");
+      return result.body.lake;
     },
     onSuccess: () => {
       toast.success("Lake updated");
@@ -135,6 +144,16 @@ function LakeDetailAdmin() {
 
   const lake = bundle?.lake;
   const riskScores = bundle?.history ?? [];
+  const hazardScores = hazard?.hazardScores ?? [];
+
+  // The Hazard scores tab exists to be audited, so a capped list has to admit that it is capped —
+  // otherwise 120 rows reads as "every pipeline run there has ever been". Rendered above the table
+  // rather than in a footer like admin.audit.tsx's pager line: with 120 rows a footer sits a screen
+  // and a half down, by which point the reader has already drawn the wrong conclusion.
+  const hazardTruncationNote = hazard?.hasMore
+    ? `Showing the latest ${hazardScores.length} of ${hazard.total.toLocaleString()} pipeline ` +
+      "runs. Older rows are kept in the database but are not listed here."
+    : null;
 
   if (isLoading) return <AdminPlaceholder title="Lake detail" subtitle="Loading…" />;
   if (isError)
@@ -278,6 +297,11 @@ function LakeDetailAdmin() {
 
         <TabsContent value="hazard-scores">
           <div className="rounded-xl border border-border bg-card">
+            {hazardTruncationNote && (
+              <p className="border-b border-border px-4 py-2.5 text-xs text-muted-foreground">
+                {hazardTruncationNote}
+              </p>
+            )}
             <Table>
               <TableHeader>
                 <TableRow className="border-border bg-secondary/50 hover:bg-secondary/50">
@@ -307,7 +331,7 @@ function LakeDetailAdmin() {
                     </TableCell>
                   </TableRow>
                 )}
-                {!hazardLoading && !hazardError && (hazardScores ?? []).length === 0 && (
+                {!hazardLoading && !hazardError && hazardScores.length === 0 && (
                   <TableRow className="border-border">
                     <TableCell colSpan={5} className="py-6 text-center text-muted-foreground">
                       No hazard scores yet — populated by CryoHealth-geo pipeline runs via{" "}
@@ -315,7 +339,7 @@ function LakeDetailAdmin() {
                     </TableCell>
                   </TableRow>
                 )}
-                {(hazardScores ?? []).map((h) => (
+                {hazardScores.map((h) => (
                   <TableRow key={h.run_id + h.computed_at} className="border-border">
                     <TableCell className="text-foreground">
                       {new Date(h.computed_at).toLocaleDateString()}

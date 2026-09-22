@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { TierBadge, type Tier } from "@/lib/tier";
+import { fetchKpis, fetchHotLakes, fetchOpenAlerts } from "@/lib/cryohealth-client";
 import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
+import { StatCard } from "@/components/cryohealth/StatCard";
 
 const GITHUB_REPO_URL = "https://github.com/uExel/cryohealth";
 const SITE_URL = "https://cryohealth.io";
@@ -50,8 +52,7 @@ function Index() {
   const { data: kpis } = useQuery({
     queryKey: ["kpis"],
     queryFn: async () => {
-      const res = await fetch("/api/public/kpis");
-      return res.json();
+      return fetchKpis();
     },
   });
 
@@ -67,9 +68,7 @@ function Index() {
         last_updated: string;
       }[]
     > => {
-      const res = await fetch("/api/public/hot-lakes");
-      const body = await res.json();
-      return body.lakes ?? [];
+      return (await fetchHotLakes()).lakes ?? [];
     },
   });
 
@@ -84,9 +83,7 @@ function Index() {
         estimated_window: string | null;
       }[]
     > => {
-      const res = await fetch("/api/public/open-alerts");
-      const body = await res.json();
-      return body.alerts ?? [];
+      return (await fetchOpenAlerts()).alerts ?? [];
     },
   });
 
@@ -127,10 +124,15 @@ function Index() {
       </section>
 
       <section className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Kpi icon={<Mountain />} label="Lakes in HIGH+" value={kpis?.highLakes ?? "—"} />
-        <Kpi icon={<Bell />} label="Alerts 30d" value={kpis?.alerts30d ?? "—"} />
-        <Kpi icon={<Activity />} label="Cases 7d" value={kpis?.cases7d ?? "—"} />
-        <Kpi icon={<Users />} label="Active CHWs" value={kpis?.chws ?? "—"} />
+        <StatCard
+          icon={<Mountain />}
+          label="Lakes in HIGH+"
+          value={kpis?.highLakes ?? "—"}
+          size="lg"
+        />
+        <StatCard icon={<Bell />} label="Alerts 30d" value={kpis?.alerts30d ?? "—"} size="lg" />
+        <StatCard icon={<Activity />} label="Cases 7d" value={kpis?.cases7d ?? "—"} size="lg" />
+        <StatCard icon={<Users />} label="Active CHWs" value={kpis?.chws ?? "—"} size="lg" />
       </section>
 
       <section className="mt-8 grid gap-6 md:grid-cols-2">
@@ -244,25 +246,5 @@ function Index() {
         </div>
       </section>
     </main>
-  );
-}
-
-function Kpi({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-4">
-      <div className="flex items-center justify-between text-muted-foreground">
-        <span className="text-xs">{label}</span>
-        <span className="[&_svg]:h-4 [&_svg]:w-4">{icon}</span>
-      </div>
-      <div className="mt-2 text-2xl font-semibold text-foreground">{value}</div>
-    </div>
   );
 }

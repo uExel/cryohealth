@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { authFetch } from "@/lib/auth-client";
+import { fetchDistricts, adminRequest } from "@/lib/cryohealth-client";
 import { districtCreateSchema, type DistrictCreate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -79,21 +79,18 @@ function DistrictsAdmin() {
   } = useQuery({
     queryKey: ["admin-districts"],
     queryFn: async (): Promise<DistrictRow[]> => {
-      const res = await fetch("/api/public/districts");
-      if (!res.ok) throw new Error(`districts fetch failed: ${res.status}`);
-      return (await res.json()).districts ?? [];
+      return (await fetchDistricts()).districts ?? [];
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (values: DistrictCreate) => {
-      const res = await authFetch("/api/admin/districts", {
+      const { ok, body } = await adminRequest("/districts", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to create district");
+      if (!ok) throw new Error(body.error ?? "Failed to create district");
       return body.district;
     },
     onSuccess: () => {
@@ -106,13 +103,12 @@ function DistrictsAdmin() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string; values: DistrictCreate }) => {
-      const res = await authFetch(`/api/admin/districts/${id}`, {
+      const { ok, body } = await adminRequest(`/districts/${id}`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Failed to update district");
+      if (!ok) throw new Error(body.error ?? "Failed to update district");
       return body.district;
     },
     onSuccess: () => {
@@ -125,13 +121,11 @@ function DistrictsAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const res = await authFetch(`/api/admin/districts/${id}`, {
-        method: "DELETE",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ reason }),
-      });
-      const body = await res.json();
-      if (!res.ok) {
+      const { ok, body } = await adminRequest(
+        `/admin/districts/${id}?reason=${encodeURIComponent(reason)}`,
+        { method: "DELETE" },
+      );
+      if (!ok) {
         throw new Error(
           body.dependents
             ? dependentsMessage(body.dependents)
@@ -177,6 +171,7 @@ function DistrictsAdmin() {
             <TableRow className="border-border bg-secondary/50 hover:bg-secondary/50">
               <TableHead className="text-xs uppercase text-muted-foreground">Name</TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground">Province</TableHead>
+              <TableHead className="text-xs uppercase text-muted-foreground">Population</TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground text-right">
                 Actions
               </TableHead>
@@ -185,14 +180,14 @@ function DistrictsAdmin() {
           <TableBody className="divide-y divide-border">
             {isLoading && (
               <TableRow className="border-border">
-                <TableCell colSpan={3} className="py-6 text-center text-muted-foreground">
+                <TableCell colSpan={4} className="py-6 text-center text-muted-foreground">
                   Loading…
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && !isError && (districts ?? []).length === 0 && (
               <TableRow className="border-border">
-                <TableCell colSpan={3} className="py-6 text-center text-muted-foreground">
+                <TableCell colSpan={4} className="py-6 text-center text-muted-foreground">
                   No districts yet.
                 </TableCell>
               </TableRow>
@@ -201,6 +196,9 @@ function DistrictsAdmin() {
               <TableRow key={d.id} className="border-border hover:bg-secondary/40">
                 <TableCell className="font-semibold text-foreground">{d.name}</TableCell>
                 <TableCell className="text-muted-foreground">{d.province}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {d.population?.toLocaleString() ?? "—"}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button

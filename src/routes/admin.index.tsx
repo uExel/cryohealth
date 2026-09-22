@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { HazardMap } from "@/components/cryohealth/HazardMap";
 import { StatCard } from "@/components/cryohealth/StatCard";
+import { fetchGlaciers, fetchLakesAdmin } from "@/lib/cryohealth-client";
 
 export const Route = createFileRoute("/admin/")({
   component: CryosphereInventory,
@@ -30,7 +31,7 @@ function CryosphereInventory() {
         last_observed: string | null;
         notes: string | null;
       }[]
-    > => (await (await fetch("/api/public/glaciers")).json()).glaciers ?? [],
+    > => (await fetchGlaciers()).glaciers ?? [],
   });
   const { data: lakes } = useQuery({
     queryKey: ["lakes-admin"],
@@ -46,7 +47,7 @@ function CryosphereInventory() {
         last_updated: string;
         district_id: string | null;
       }[]
-    > => (await (await fetch("/api/public/lakes-admin")).json()).lakes ?? [],
+    > => (await fetchLakesAdmin()).lakes ?? [],
   });
 
   const counts = useMemo(() => {

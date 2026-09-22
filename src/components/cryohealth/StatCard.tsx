@@ -3,11 +3,13 @@ export function StatCard({
   value,
   tone = "default",
   icon,
+  size = "sm",
 }: {
   label: string;
   value: React.ReactNode;
   tone?: "default" | "danger" | "warn" | "ok";
   icon?: React.ReactNode;
+  size?: "sm" | "lg";
 }) {
   const toneClass =
     tone === "danger"
@@ -17,13 +19,22 @@ export function StatCard({
         : tone === "ok"
           ? "text-[var(--color-normal)]"
           : "text-foreground";
+  // `lg` exists so the public dashboard's KPI row keeps the proportions it had as the local
+  // `Kpi` component it replaced: those four cards are the first figures under a text-5xl hero,
+  // so they are deliberately larger than the dense stat strips on the admin/detail pages.
+  // `sm` is the default and is byte-identical to what every pre-existing call site rendered.
+  const padClass = size === "lg" ? "p-4" : "p-3";
+  const valueClass = size === "lg" ? "mt-2 text-2xl" : "mt-1 text-xl";
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+    <div className={`rounded-xl border border-border bg-card ${padClass}`}>
+      {/* Icons are normalised to 16px here rather than at each call site: lucide-react defaults
+          to 24px, which would tower over this text-xs label. Safe to do centrally -- before this
+          change no call site passed `icon` at all, so nothing's explicit sizing is overridden. */}
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground [&_svg]:h-4 [&_svg]:w-4">
         {icon}
         {label}
       </div>
-      <div className={`mt-1 text-xl font-semibold ${toneClass}`}>{value}</div>
+      <div className={`${valueClass} font-semibold ${toneClass}`}>{value}</div>
     </div>
   );
 }

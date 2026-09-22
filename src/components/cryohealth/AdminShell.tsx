@@ -56,7 +56,10 @@ const NAV_GROUPS = [
   {
     label: "Platform",
     adminOnly: true,
-    items: [{ to: "/admin/system-health", label: "System health", exact: false }],
+    items: [
+      { to: "/admin/system-health", label: "System health", exact: false },
+      { to: "/admin/sync", label: "Sync activity", exact: false },
+    ],
   },
 ] as const;
 
