@@ -15,7 +15,11 @@ not reviewed or committed by this pass, left for a human to decide on.
 
 - Archived the previous HANDOFF.md (142 lines) to
   `docs/ai/sessions/2026-08-17-task11-build-handoff.md` and replaced it with this
-  template-sized version, per `skills/handoff/SKILL.md` step 1.
+  template-sized version, per `skills/handoff/SKILL.md` step 1 (`1c47f71`).
+- Reset `docs/ai/PLAN.md` (297 lines) and `docs/ai/TODO.md` (74 lines) to a no-active-task
+  state now that #11 is closed — both were still "current" and fully re-read by
+  `/uexel:orient` every session. Full history preserved in git log (`683ea49` and earlier
+  plan commits) and `docs/ai/planning/task-11-findings.md`, nothing lost (`5ad6da4`).
 
 ## Not done / deferred
 
@@ -55,7 +59,8 @@ Issue **#30** (p1, safety-relevant): fix cleared HIGH/CRITICAL alerts rendering 
 
 ## Files touched
 
-docs/ai/HANDOFF.md, docs/ai/sessions/2026-08-17-task11-build-handoff.md (new)
+docs/ai/HANDOFF.md, docs/ai/PLAN.md, docs/ai/TODO.md,
+docs/ai/sessions/2026-08-17-task11-build-handoff.md (new)
 
 ## Verification status
 
