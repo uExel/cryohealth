@@ -8,6 +8,7 @@ import {
   type Column,
   type Table,
 } from "@/lib/docs/schema";
+import { REPO_LINKS, REPOS } from "@/lib/docs/repos";
 
 const URL = "https://cryohealth.io/documentation/schema";
 
@@ -147,12 +148,28 @@ function SchemaPage() {
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
           CryoHealth runs on a single PostgreSQL 16 database with the PostGIS extension. Every
           service reads and writes the same {TABLES.length} tables, and every change to them is a
-          TypeORM migration in <code className="text-foreground">CryoHealth-api</code>. Nothing else
-          alters the schema.
+          TypeORM migration in{" "}
+          <a
+            href={REPOS.api.url}
+            target="_blank"
+            rel="noopener"
+            className="font-semibold text-primary hover:underline"
+          >
+            <code>CryoHealth-api</code>
+          </a>
+          . Nothing else alters the schema.
         </p>
         <p className="mt-3 text-xs text-muted-foreground">
           Current as of migration <code>{SCHEMA_AS_OF.migration}</code> ({SCHEMA_AS_OF.count}{" "}
-          migrations).
+          migrations).{" "}
+          <a
+            href={REPO_LINKS.migrations}
+            target="_blank"
+            rel="noopener"
+            className="font-semibold text-primary hover:underline"
+          >
+            Browse the migrations on GitHub ↗
+          </a>
         </p>
 
         <h2 className="mt-10 text-lg font-semibold text-foreground">Conventions</h2>

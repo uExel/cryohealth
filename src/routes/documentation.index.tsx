@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { REPOS } from "@/lib/docs/repos";
 import { TABLES } from "@/lib/docs/schema";
 
 const URL = "https://cryohealth.io/documentation";
@@ -24,29 +25,6 @@ export const Route = createFileRoute("/documentation/")({
   }),
   component: DocumentationOverview,
 });
-
-const REPOS = [
-  {
-    name: "CryoHealth-api",
-    stack: "NestJS 11 · TypeORM · PostgreSQL + PostGIS",
-    role: "Product logic: authentication and roles, alert policy, offline sync, admin, and the public Open Data API. Owns every schema migration.",
-  },
-  {
-    name: "CryoHealth-geo",
-    stack: "Python 3.12 · FastAPI",
-    role: "Sentinel-2 earth-observation pipeline: NDWI water-extent monitoring and hazard scoring. Pure computation, no policy decisions.",
-  },
-  {
-    name: "CryoHealth-app",
-    stack: "Expo · React Native",
-    role: "Offline-first field app: GLOF alerts for the public and IMCI triage for community health workers.",
-  },
-  {
-    name: "cryohealth",
-    stack: "TanStack Start · Cloudflare Workers",
-    role: "This website: hazard map, alerts, CHW and admin views, and the Open Data explorer.",
-  },
-];
 
 function DocumentationOverview() {
   return (
@@ -82,14 +60,25 @@ function DocumentationOverview() {
       </div>
 
       <h2 className="mt-10 text-lg font-semibold text-foreground">Repositories</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        All four repositories are public on GitHub.
+      </p>
       <ul className="mt-4 space-y-3">
-        {REPOS.map((r) => (
-          <li key={r.name} className="rounded-xl border border-border bg-card p-4">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <code className="text-sm font-semibold text-foreground">{r.name}</code>
-              <span className="text-xs text-muted-foreground">{r.stack}</span>
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">{r.role}</p>
+        {Object.values(REPOS).map((r) => (
+          <li key={r.name}>
+            <a
+              href={r.url}
+              target="_blank"
+              rel="noopener"
+              className="block rounded-xl border border-border bg-card p-4 hover:border-[var(--color-accent)]"
+            >
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <code className="text-sm font-semibold text-foreground">{r.name} ↗</code>
+                <span className="text-xs text-muted-foreground">{r.stack}</span>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">{r.role}</p>
+              <p className="mt-2 text-xs text-primary">{r.url.replace("https://", "")}</p>
+            </a>
           </li>
         ))}
       </ul>

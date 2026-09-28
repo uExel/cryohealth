@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { REPO_LINKS, REPOS } from "@/lib/docs/repos";
 import { useTheme } from "@/lib/theme";
 
 const URL = "https://cryohealth.io/documentation/architecture";
@@ -27,9 +28,10 @@ export const Route = createFileRoute("/documentation/architecture")({
   component: ArchitecturePage,
 });
 
-const COMPONENTS = [
+const COMPONENTS: { name: string; detail: string; href?: string }[] = [
   {
     name: "CryoHealth-api",
+    href: REPOS.api.url,
     detail:
       "NestJS service that owns product logic: authentication and roles, alert policy, offline sync, admin, and the unauthenticated Open Data API. It is the only place schema migrations are written.",
   },
@@ -40,16 +42,19 @@ const COMPONENTS = [
   },
   {
     name: "CryoHealth-geo",
+    href: REPOS.geo.url,
     detail:
       "Python / FastAPI pipeline on a schedule. It fetches Sentinel-2 scenes, measures lake water extent with NDWI, writes observations and hazard scores, and hands scores to the API.",
   },
   {
     name: "CryoHealth-app",
+    href: REPOS.app.url,
     detail:
       "Expo / React Native field app. Works offline and syncs through the API's /sync endpoint when a connection is available.",
   },
   {
     name: "cryohealth dashboard",
+    href: REPOS.web.url,
     detail:
       "This website, server-rendered with TanStack Start on Cloudflare Workers, for the public, administrators, and CHW leads.",
   },
@@ -88,6 +93,24 @@ const RULES = [
   {
     title: "Reproducible",
     body: "Every observation and hazard score carries the run ID that produced it, and scores keep their inputs so any tier can be recomputed later.",
+  },
+];
+
+const SOURCES = [
+  {
+    label: "CryoHealth-api/ARCHITECTURE.md",
+    href: REPO_LINKS.apiArchitecture,
+    detail: "the API's module layout and the decisions summarised on this page.",
+  },
+  {
+    label: "CryoHealth-geo/docs/HAZARD_METHODOLOGY.md",
+    href: REPO_LINKS.hazardMethodology,
+    detail: "how hazard scores are computed: inputs, weights, and tier thresholds.",
+  },
+  {
+    label: "cryohealth/docs/architecture",
+    href: REPO_LINKS.diagramSource,
+    detail: "source for the diagram above.",
   },
 ];
 
@@ -132,7 +155,15 @@ function ArchitecturePage() {
         <dl className="mt-4 space-y-4">
           {COMPONENTS.map((c) => (
             <div key={c.name} className="rounded-xl border border-border bg-card p-4">
-              <dt className="text-sm font-semibold text-foreground">{c.name}</dt>
+              <dt className="text-sm font-semibold text-foreground">
+                {c.href ? (
+                  <a href={c.href} target="_blank" rel="noopener" className="hover:underline">
+                    {c.name} ↗
+                  </a>
+                ) : (
+                  c.name
+                )}
+              </dt>
               <dd className="mt-1 text-sm text-muted-foreground">{c.detail}</dd>
             </div>
           ))}
@@ -153,6 +184,23 @@ function ArchitecturePage() {
             <li key={r.title}>
               <div className="text-sm font-semibold text-foreground">{r.title}</div>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{r.body}</p>
+            </li>
+          ))}
+        </ul>
+
+        <h2 className="mt-12 text-lg font-semibold text-foreground">Source documents</h2>
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+          {SOURCES.map((s) => (
+            <li key={s.href}>
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener"
+                className="font-semibold text-primary hover:underline"
+              >
+                {s.label} ↗
+              </a>{" "}
+              — {s.detail}
             </li>
           ))}
         </ul>
