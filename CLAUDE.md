@@ -28,11 +28,12 @@ No test script defined in this repo. Deploys as a Cloudflare Worker (`wrangler.j
 - `src/routes/` — file-based TanStack routes: `dashboard.tsx`/`lakes.tsx`/`lakes.$lakeId.tsx`
   (public hazard map), `alerts.tsx` (feed + broadcast), `chw.tsx` (CHW workspace),
   `admin.tsx`, `data.tsx` (Open Data page), `login.tsx`, `documentation.*` (public docs:
-  architecture + schema design at /documentation).
+  architecture, EO pipeline + schema design at /documentation).
 - `src/lib/docs/schema.ts` — hand-transcribed schema reference behind
   `/documentation/schema`; replay each new CryoHealth-api migration into it and bump
-  `SCHEMA_AS_OF`. The architecture diagram is `public/docs/system-architecture.html`, an
-  Archify export whose source JSON is in `docs/architecture/`.
+  `SCHEMA_AS_OF`. The architecture diagrams (`public/docs/system-architecture.html`,
+  `geo-architecture.html`, `geo-pipeline.html`) are Archify exports whose source JSON is
+  in `docs/architecture/`.
 - `src/routes/api/` — server route handlers backing the above: `api/auth/login.ts` is
   this dashboard's _own_ login endpoint (see Gotchas); `api/public/*` are the JSON/CSV
   endpoints behind `data.tsx`, almost all reading the shared DB directly via

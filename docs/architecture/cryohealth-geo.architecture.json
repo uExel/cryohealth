@@ -1,0 +1,356 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "CryoHealth-geo Service Architecture",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/uExel/CryoHealth-geo",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "a8a210c1e0d72d5af93f2601380c76e252e37c9a"
+    },
+    "viewBox": [
+      1370,
+      820
+    ]
+  },
+  "components": [
+    {
+      "id": "backfill_cli",
+      "type": "frontend",
+      "label": "backfill CLI",
+      "sublabel": "operator-run date range",
+      "tag": "one-shot",
+      "sources": [
+        {
+          "path": "pipeline/backfill.py"
+        }
+      ],
+      "pos": [
+        40,
+        150
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "service",
+      "type": "backend",
+      "label": "FastAPI service",
+      "sublabel": "APScheduler 24h · /run · /run-hazard",
+      "tag": ":8000",
+      "sources": [
+        {
+          "path": "pipeline/service.py"
+        }
+      ],
+      "pos": [
+        40,
+        440
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "obs_batch",
+      "type": "backend",
+      "label": "Observation batch",
+      "sublabel": "batch.py · NDWI + cloud mask",
+      "tag": "per lake",
+      "sources": [
+        {
+          "path": "pipeline/batch.py"
+        },
+        {
+          "path": "pipeline/ndwi.py"
+        }
+      ],
+      "pos": [
+        400,
+        150
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "hazard_pass",
+      "type": "backend",
+      "label": "Hazard pass",
+      "sublabel": "hazard_batch.py · hazard.py",
+      "tag": "per lake",
+      "sources": [
+        {
+          "path": "pipeline/hazard_batch.py"
+        },
+        {
+          "path": "pipeline/hazard.py"
+        }
+      ],
+      "pos": [
+        400,
+        560
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "scene_source",
+      "type": "backend",
+      "label": "SceneSource",
+      "sublabel": "CdseSource · PlanetaryComputer",
+      "tag": "aligned bands",
+      "sources": [
+        {
+          "path": "pipeline/cdse_source.py"
+        },
+        {
+          "path": "pipeline/stac_source.py"
+        }
+      ],
+      "pos": [
+        760,
+        40
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "db_adapter",
+      "type": "backend",
+      "label": "db.py",
+      "sublabel": "psycopg · no migrations",
+      "tag": "idempotent",
+      "sources": [
+        {
+          "path": "pipeline/db.py"
+        }
+      ],
+      "pos": [
+        760,
+        330
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "inputs",
+      "type": "backend",
+      "label": "Terrain + exposure",
+      "sublabel": "dem.py · exposure.py",
+      "tag": "cached",
+      "sources": [
+        {
+          "path": "pipeline/dem.py"
+        },
+        {
+          "path": "pipeline/exposure.py"
+        }
+      ],
+      "pos": [
+        760,
+        560
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "sentinel",
+      "type": "external",
+      "label": "Sentinel-2 L2A",
+      "sublabel": "CDSE Process API · PC fallback",
+      "pos": [
+        1120,
+        40
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "postgis",
+      "type": "database",
+      "label": "PostgreSQL + PostGIS",
+      "sublabel": "lakes · observations",
+      "brand": "postgresql",
+      "pos": [
+        1120,
+        330
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "dem",
+      "type": "external",
+      "label": "Copernicus GLO-30 DEM",
+      "sublabel": "Planetary Computer STAC",
+      "pos": [
+        1120,
+        480
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "worldpop",
+      "type": "external",
+      "label": "WorldPop PAK 2025",
+      "sublabel": "100 m constrained raster",
+      "pos": [
+        1120,
+        620
+      ],
+      "size": [
+        210,
+        68
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "CryoHealth-api",
+      "sublabel": "tier + alert policy",
+      "tag": ":3000",
+      "pos": [
+        760,
+        730
+      ],
+      "size": [
+        210,
+        68
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "CryoHealth-geo container · uvicorn",
+      "wraps": [
+        "backfill_cli",
+        "service",
+        "obs_batch",
+        "hazard_pass",
+        "scene_source",
+        "db_adapter",
+        "inputs"
+      ],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    {
+      "from": "backfill_cli",
+      "to": "obs_batch",
+      "label": "run_backfill"
+    },
+    {
+      "from": "service",
+      "to": "obs_batch",
+      "label": "1 · run_latest",
+      "variant": "emphasis"
+    },
+    {
+      "from": "service",
+      "to": "hazard_pass",
+      "label": "2 · run_hazard_pass",
+      "variant": "emphasis"
+    },
+    {
+      "from": "obs_batch",
+      "to": "scene_source",
+      "label": "B03 · B08 · SCL",
+      "variant": "emphasis"
+    },
+    {
+      "from": "scene_source",
+      "to": "sentinel",
+      "label": "STAC + OAuth2"
+    },
+    {
+      "from": "obs_batch",
+      "to": "db_adapter",
+      "label": "upsert observation",
+      "variant": "emphasis"
+    },
+    {
+      "from": "hazard_pass",
+      "to": "db_adapter",
+      "label": "read 548-day series",
+      "fromSide": "top",
+      "toSide": "left"
+    },
+    {
+      "from": "db_adapter",
+      "to": "postgis",
+      "label": "ON CONFLICT DO NOTHING"
+    },
+    {
+      "from": "hazard_pass",
+      "to": "inputs",
+      "label": "slope + population"
+    },
+    {
+      "from": "inputs",
+      "to": "dem",
+      "label": "mean slope"
+    },
+    {
+      "from": "inputs",
+      "to": "worldpop",
+      "label": "5 km buffer"
+    },
+    {
+      "from": "hazard_pass",
+      "to": "api",
+      "label": "POST /alerts/hazard-scores",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Two write paths",
+      "items": [
+        "Observations: direct psycopg insert, deduped per lake/day/source",
+        "Hazard scores: POST to CryoHealth-api with x-api-key, so tier and alert policy stay there"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Failure isolation",
+      "items": [
+        "One lake's error is recorded and the batch moves on",
+        "Hazard pass closes its DB connection before slow DEM, WorldPop and API calls"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Swappable scene source",
+      "items": [
+        "CdseSource when CDSE_CLIENT_ID is set, else Planetary Computer",
+        "read_bands always returns pixel-aligned 10 m bands"
+      ]
+    }
+  ]
+}

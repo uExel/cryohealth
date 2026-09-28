@@ -48,6 +48,15 @@ function DocumentationOverview() {
           </p>
         </Link>
         <Link
+          to="/documentation/eo-pipeline"
+          className="rounded-xl border border-border bg-card p-5 hover:border-[var(--color-accent)]"
+        >
+          <div className="text-sm font-semibold text-foreground">EO pipeline →</div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            How CryoHealth-geo turns Sentinel-2 scenes into lake observations and hazard scores.
+          </p>
+        </Link>
+        <Link
           to="/documentation/schema"
           className="rounded-xl border border-border bg-card p-5 hover:border-[var(--color-accent)]"
         >

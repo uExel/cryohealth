@@ -34,6 +34,7 @@ export const REPOS = {
 export const REPO_LINKS = {
   migrations: `${REPOS.api.url}/tree/main/src/database/migrations`,
   apiArchitecture: `${REPOS.api.url}/blob/main/ARCHITECTURE.md`,
+  geoPipeline: `${REPOS.geo.url}/tree/main/pipeline`,
   hazardMethodology: `${REPOS.geo.url}/blob/main/docs/HAZARD_METHODOLOGY.md`,
   diagramSource: `${REPOS.web.url}/tree/main/docs/architecture`,
 };
