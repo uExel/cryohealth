@@ -310,8 +310,8 @@
     "semantic_hash": "d9837f38cc05303254571985e3164050"
   },
   "src/routeTree.gen.ts": {
-    "mtime": 1790578493.1724064,
-    "ast_hash": "2bd6910bfcaaea0ce953740249132263",
+    "mtime": 1790584392.0130196,
+    "ast_hash": "3187f24bcd4a88e9f2a1d988cd24c3d0",
     "semantic_hash": ""
   },
   "src/router.tsx": {
@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "src/routes/sitemap[.]xml.ts": {
-    "mtime": 1790578493.173157,
-    "ast_hash": "4afe42e25bc7e2de5d4de3cc40607717",
+    "mtime": 1790584390.9187396,
+    "ast_hash": "66a112b5dab720f0a4600cca3abb5c2e",
     "semantic_hash": ""
   },
   "src/server.ts": {
@@ -520,13 +520,13 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1790578493.1622424,
-    "ast_hash": "10bf5f0a0537b520826fe7a9909acbb4",
+    "mtime": 1790584390.9193952,
+    "ast_hash": "ad98249fc6362bdd39228ced8dc0edf3",
     "semantic_hash": ""
   },
   "docs/ai/HANDOFF.md": {
-    "mtime": 1790578493.1624851,
-    "ast_hash": "80ff2e226395654dd587a7d412fe4aa3",
+    "mtime": 1790583561.0847883,
+    "ast_hash": "90341f60596ad64a70db4b9228550795",
     "semantic_hash": ""
   },
   "docs/ai/LEARNINGS.md": {
@@ -550,8 +550,8 @@
     "semantic_hash": ""
   },
   "public/llms.txt": {
-    "mtime": 1790578493.1718452,
-    "ast_hash": "93dced9cfca352f013302a00b167b805",
+    "mtime": 1790584390.9189208,
+    "ast_hash": "b882870461210d9f3951baf2d18de053",
     "semantic_hash": ""
   },
   "public/robots.txt": {
@@ -885,13 +885,13 @@
     "semantic_hash": ""
   },
   "docs/architecture/cryohealth-system.architecture.json": {
-    "mtime": 1790578493.1628025,
-    "ast_hash": "745fddae1c0f4027866267e507677157",
+    "mtime": 1790584592.2778063,
+    "ast_hash": "2dec6daaa2fe6c5ebb20f0bdcc5b5771",
     "semantic_hash": ""
   },
   "docs/architecture/cryohealth-system.visual-check.json": {
-    "mtime": 1790578493.1647232,
-    "ast_hash": "983e8e0f6d06a90f1a4d255781b1d649",
+    "mtime": 1790584625.8552504,
+    "ast_hash": "b753a38726f3c48d16b4ead3e6219791",
     "semantic_hash": ""
   },
   "src/lib/cryohealth-client.ts": {
@@ -915,13 +915,13 @@
     "semantic_hash": ""
   },
   "src/routes/documentation.architecture.tsx": {
-    "mtime": 1790583464.4684863,
-    "ast_hash": "89040e1d8138fcfab6672c2790648124",
+    "mtime": 1790584592.2775548,
+    "ast_hash": "200f55a829f61a7e054fb24e47217628",
     "semantic_hash": ""
   },
   "src/routes/documentation.index.tsx": {
-    "mtime": 1790583474.1533003,
-    "ast_hash": "e7dbb96df6d876adeba125fe787c9bed",
+    "mtime": 1790584390.9190383,
+    "ast_hash": "72a6fc70182ec923b3761af9219a61bb",
     "semantic_hash": ""
   },
   "src/routes/documentation.schema.tsx": {
@@ -930,8 +930,8 @@
     "semantic_hash": ""
   },
   "src/routes/documentation.tsx": {
-    "mtime": 1790578493.1730568,
-    "ast_hash": "747794dd477865517970721688ee23d6",
+    "mtime": 1790584390.918621,
+    "ast_hash": "858bd3f9c0a4ea1da5c6e45c136db654",
     "semantic_hash": ""
   },
   "docs/ai/sessions/2026-08-16-task11-plan-handoff.md": {
@@ -955,43 +955,128 @@
     "semantic_hash": ""
   },
   "docs/architecture/cryohealth-system.visual-check.html": {
-    "mtime": 1790578493.164641,
-    "ast_hash": "2c7404b4f2b85b8d635b35df1b2961e3",
+    "mtime": 1790584625.8550348,
+    "ast_hash": "ae1f095141b71c20c9c94012a6501c32",
     "semantic_hash": ""
   },
   "public/docs/system-architecture.html": {
-    "mtime": 1790578493.1714122,
-    "ast_hash": "e99d3c3255d00d0157168094cdf60965",
+    "mtime": 1790584616.9732862,
+    "ast_hash": "610faf715189d8e18bb2ed3ba5db290a",
     "semantic_hash": ""
   },
   "docs/architecture/cryohealth-system.visual-check.1440x900.dark.png": {
-    "mtime": 1790578493.163179,
-    "ast_hash": "a8dd383b173d38cd233c586c38f3550d",
+    "mtime": 1790584625.412561,
+    "ast_hash": "e9bb3bd49cb6e4e8bb5901d868a1098c",
     "semantic_hash": ""
   },
   "docs/architecture/cryohealth-system.visual-check.1440x900.light.png": {
-    "mtime": 1790578493.1635592,
-    "ast_hash": "70d5b93279927e08300d7d1cfc05fc2e",
+    "mtime": 1790584623.84579,
+    "ast_hash": "a5c421bf8589d999f5900c476de8ca02",
     "semantic_hash": ""
   },
   "docs/architecture/cryohealth-system.visual-check.2048x1320.dark.png": {
-    "mtime": 1790578493.1640303,
-    "ast_hash": "9d3def4641629c0607ad963b43511a40",
+    "mtime": 1790584625.8540785,
+    "ast_hash": "dcb010cb6dd04cb70acfa1f01c2fc8c1",
     "semantic_hash": ""
   },
   "docs/architecture/cryohealth-system.visual-check.2048x1320.light.png": {
-    "mtime": 1790578493.1645393,
-    "ast_hash": "76922dd15a0db3cfb8ab92126ae6586c",
+    "mtime": 1790584624.9922693,
+    "ast_hash": "1941e32659a185377a3275cf16c74ee2",
     "semantic_hash": ""
   },
   "src/lib/docs/repos.ts": {
-    "mtime": 1790583431.0256405,
-    "ast_hash": "7d72dc8ba4b552c4c4810072e88a322e",
+    "mtime": 1790584390.9184325,
+    "ast_hash": "21d8c8a1ceea4a292e5ef6405d76b8b8",
     "semantic_hash": ""
   },
   "docs/ai/sessions/2026-09-27-alert-broadcast-fix-handoff.md": {
     "mtime": 1790578493.162678,
     "ast_hash": "1b826c6df3f139691216783ff7b36d5b",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-architecture.visual-check.json": {
+    "mtime": 1790584619.9675279,
+    "ast_hash": "48004e230d06860ae78dda2513290766",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-pipeline.dataflow.json": {
+    "mtime": 1790584606.4982433,
+    "ast_hash": "fb29fb7e72b954c764149d7cad3e7205",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-pipeline.visual-check.json": {
+    "mtime": 1790584622.9247386,
+    "ast_hash": "62700e33b28f5b479d8daa34960ddb5d",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo.architecture.json": {
+    "mtime": 1790584606.4985468,
+    "ast_hash": "6380ad4d53277b4b98e9a9a6adb88eeb",
+    "semantic_hash": ""
+  },
+  "src/routes/documentation.eo-pipeline.tsx": {
+    "mtime": 1790584390.9181516,
+    "ast_hash": "75819502c7b8f8248eda9d1dbe5873aa",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-architecture.visual-check.html": {
+    "mtime": 1790584619.9670846,
+    "ast_hash": "b548775ec1874c3da233d9d263c4c00e",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-pipeline.visual-check.html": {
+    "mtime": 1790584622.9245386,
+    "ast_hash": "822837e4c61991c6bb2042272572add3",
+    "semantic_hash": ""
+  },
+  "public/docs/geo-architecture.html": {
+    "mtime": 1790584616.6953716,
+    "ast_hash": "3021ad50e7829c4c3a4f45314213f87c",
+    "semantic_hash": ""
+  },
+  "public/docs/geo-pipeline.html": {
+    "mtime": 1790584616.8279424,
+    "ast_hash": "cf5b464a3f38c7d0a1bdd137260888be",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-architecture.visual-check.1440x900.dark.png": {
+    "mtime": 1790584619.5409226,
+    "ast_hash": "0eab7823b785d001b1dcc88fa73281d4",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-architecture.visual-check.1440x900.light.png": {
+    "mtime": 1790584617.9611108,
+    "ast_hash": "0965a62a389233f8b01f7eb3c25c732b",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-architecture.visual-check.2048x1320.dark.png": {
+    "mtime": 1790584619.9658508,
+    "ast_hash": "0fcd0187b22e6b372145c7bedbb67d03",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-architecture.visual-check.2048x1320.light.png": {
+    "mtime": 1790584619.1277838,
+    "ast_hash": "ee7c364382cb7975e1e96b224355007e",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-pipeline.visual-check.1440x900.dark.png": {
+    "mtime": 1790584622.4743927,
+    "ast_hash": "3f44eff09254c49a8e79e2b35040ca53",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-pipeline.visual-check.1440x900.light.png": {
+    "mtime": 1790584620.8848839,
+    "ast_hash": "6d01395ba26aa18cb32eb5ef9b86a294",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-pipeline.visual-check.2048x1320.dark.png": {
+    "mtime": 1790584622.9235256,
+    "ast_hash": "f048b93e694777015f95370ada286a2f",
+    "semantic_hash": ""
+  },
+  "docs/architecture/cryohealth-geo-pipeline.visual-check.2048x1320.light.png": {
+    "mtime": 1790584622.04969,
+    "ast_hash": "abe68bad0ff436cb974dc07d45851637",
     "semantic_hash": ""
   }
 }

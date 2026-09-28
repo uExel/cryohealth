@@ -8,7 +8,14 @@
     "viewBox": [
       1080,
       604
-    ]
+    ],
+    "legend": {
+      "entries": {
+        "dashed": {
+          "label": "prioritisation only"
+        }
+      }
+    }
   },
   "stages": [
     {
@@ -39,7 +46,7 @@
     },
     {
       "id": "mask",
-      "type": "security",
+      "type": "backend",
       "label": "Cloud gate",
       "sublabel": "SCL-masked",
       "stage": 1,

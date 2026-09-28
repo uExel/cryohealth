@@ -6,9 +6,9 @@
   "status": "pass",
   "visualReview": "pending",
   "artifact": {
-    "path": "/Users/m5/Projects/uexel/cryo/docs/cryohealth-system.html",
-    "sha256": "5a182d1a83515cccd91b6eebbb986c3db1eb7be2e2ec2ecb4a1c473543b89b49",
-    "bytes": 817228
+    "path": "/Users/m5/Projects/uexel/cryo/cryohealth/public/docs/system-architecture.html",
+    "sha256": "778061338ec465d5a9a6ed583c385c09d558ee8336a71016aa22a0bacb5d7f84",
+    "bytes": 817182
   },
   "state": {
     "detail": "read",
@@ -440,7 +440,7 @@
         "viewerChromeActive": true,
         "viewerChromeOk": true,
         "resolvedTheme": "light",
-        "file": "cryohealth-system.visual-check.1440x900.light.png"
+        "file": "system-architecture.visual-check.1440x900.light.png"
       },
       {
         "width": 1440,
@@ -472,7 +472,7 @@
         "viewerChromeActive": true,
         "viewerChromeOk": true,
         "resolvedTheme": "dark",
-        "file": "cryohealth-system.visual-check.1440x900.dark.png"
+        "file": "system-architecture.visual-check.1440x900.dark.png"
       },
       {
         "width": 2048,
@@ -504,7 +504,7 @@
         "viewerChromeActive": true,
         "viewerChromeOk": true,
         "resolvedTheme": "light",
-        "file": "cryohealth-system.visual-check.2048x1320.light.png"
+        "file": "system-architecture.visual-check.2048x1320.light.png"
       },
       {
         "width": 2048,
@@ -536,13 +536,13 @@
         "viewerChromeActive": true,
         "viewerChromeOk": true,
         "resolvedTheme": "dark",
-        "file": "cryohealth-system.visual-check.2048x1320.dark.png"
+        "file": "system-architecture.visual-check.2048x1320.dark.png"
       }
     ],
-    "contactSheet": "cryohealth-system.visual-check.html"
+    "contactSheet": "system-architecture.visual-check.html"
   },
   "sidecars": {
-    "receipt": "cryohealth-system.visual-check.json",
-    "contactSheet": "cryohealth-system.visual-check.html"
+    "receipt": "system-architecture.visual-check.json",
+    "contactSheet": "system-architecture.visual-check.html"
   }
 }

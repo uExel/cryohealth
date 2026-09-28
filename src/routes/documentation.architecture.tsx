@@ -44,7 +44,7 @@ const COMPONENTS: { name: string; detail: string; href?: string }[] = [
     name: "CryoHealth-geo",
     href: REPOS.geo.url,
     detail:
-      "Python / FastAPI pipeline on a schedule. It fetches Sentinel-2 scenes, measures lake water extent with NDWI, writes observations and hazard scores, and hands scores to the API.",
+      "Python / FastAPI pipeline on a schedule. It fetches Sentinel-2 scenes, measures lake water extent with NDWI, writes observations, and posts hazard scores to the API, which stores them.",
   },
   {
     name: "CryoHealth-app",
@@ -68,7 +68,7 @@ const COMPONENTS: { name: string; detail: string; href?: string }[] = [
 const FLOW = [
   "CryoHealth-geo fetches new Sentinel-2 scenes for each monitored lake.",
   "It measures water extent with NDWI and writes a row to observations, tagged with the pipeline run ID.",
-  "It computes a hazard score and tier, stores the score with every input in hazard_scores.components, and posts it to the API.",
+  "It computes a hazard score and tier and posts it, with every input, to the API, which stores it in hazard_scores (inputs in components).",
   "CryoHealth-api applies alert policy. Creating or overriding an alert requires a human-readable reason, recorded in the audit table.",
   "The field app and this website read the alert. CHWs acknowledge it, and the app syncs field cases back when online.",
 ];

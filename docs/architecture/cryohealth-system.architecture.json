@@ -196,7 +196,7 @@
     {
       "from": "geo",
       "to": "db",
-      "label": "observations, hazard_scores"
+      "label": "observations"
     },
     {
       "from": "geo",

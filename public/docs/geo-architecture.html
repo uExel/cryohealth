@@ -5169,7 +5169,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <path data-edge-from="db_adapter" data-edge-to="postgis" data-edge-label="ON CONFLICT DO NOTHING" data-edge-key="7" data-composition-points="970,364;1120,364" d="M 970 364 L 1120 364" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         <path data-edge-from="hazard_pass" data-edge-to="inputs" data-edge-label="slope + population" data-edge-key="8" data-composition-points="610,587;760,587" d="M 610 587 L 760 587" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         <path data-edge-from="inputs" data-edge-to="dem" data-edge-label="mean slope" data-edge-key="9" data-composition-points="970,587;1045,587;1045,514;1120,514" d="M 970 587 L 1037 587 Q 1045 587 1045 579 L 1045 522 Q 1045 514 1053 514 L 1120 514" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="inputs" data-edge-to="worldpop" data-edge-label="5 km buffer" data-edge-key="10" data-composition-points="970,601;1045,601;1045,654;1120,654" d="M 970 601 L 1037 601 Q 1045 601 1045 609 L 1045 646 Q 1045 654 1053 654 L 1120 654" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="inputs" data-edge-to="worldpop" data-edge-label="5 km buffer" data-edge-key="10" data-composition-points="970,601;1045,601;1045,654;1120,654" d="M 970 601 L 1037 601 Q 1045 601 1045 609 L 1045 646 Q 1045 654 1053 654 L 1120 654" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         <path data-edge-from="hazard_pass" data-edge-to="api" data-edge-label="POST /alerts/hazard-scores" data-edge-key="11" data-composition-points="610,601;685,601;685,764;760,764" d="M 610 601 L 677 601 Q 685 601 685 609 L 685 756 Q 685 764 693 764 L 760 764" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
 
         <!-- Components -->
@@ -5368,7 +5368,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         </g>
         <g data-detail="context" data-edge-from="inputs" data-edge-to="worldpop" data-edge-label="5 km buffer" data-edge-key="10">
           <rect x="1013.6" y="607.5" width="62.8" height="14" rx="3" class="c-mask"/>
-          <text x="1045" y="617.5" class="t-messagebus" font-size="8" text-anchor="middle">5 km buffer</text>
+          <text x="1045" y="617.5" class="t-muted" font-size="8" text-anchor="middle">5 km buffer</text>
         </g>
         <g data-detail="context" data-edge-from="hazard_pass" data-edge-to="api" data-edge-label="POST /alerts/hazard-scores" data-edge-key="11">
           <rect x="617.6" y="662.5" width="134.8" height="14" rx="3" class="c-mask"/>

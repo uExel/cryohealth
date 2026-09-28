@@ -318,8 +318,7 @@
     {
       "from": "inputs",
       "to": "worldpop",
-      "label": "5 km buffer",
-      "variant": "dashed"
+      "label": "5 km buffer"
     },
     {
       "from": "hazard_pass",
