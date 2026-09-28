@@ -7,6 +7,7 @@ export const Route = createFileRoute("/documentation")({
 const SECTIONS = [
   { to: "/documentation", label: "Overview", exact: true },
   { to: "/documentation/architecture", label: "System architecture", exact: false },
+  { to: "/documentation/eo-pipeline", label: "EO pipeline", exact: false },
   { to: "/documentation/schema", label: "Schema design", exact: false },
 ] as const;
 

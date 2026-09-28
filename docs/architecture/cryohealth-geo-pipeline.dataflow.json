@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "CryoHealth-geo Pipeline: Scene to Hazard Score",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      604
+    ]
+  },
+  "stages": [
+    {
+      "label": "Acquire"
+    },
+    {
+      "label": "Measure"
+    },
+    {
+      "label": "Store"
+    },
+    {
+      "label": "Score"
+    },
+    {
+      "label": "Report"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "scene",
+      "type": "external",
+      "label": "Sentinel-2 L2A",
+      "sublabel": "newest per AOI",
+      "stage": 0,
+      "row": 0,
+      "tag": "STAC"
+    },
+    {
+      "id": "mask",
+      "type": "security",
+      "label": "Cloud gate",
+      "sublabel": "SCL-masked",
+      "stage": 1,
+      "row": 0,
+      "tag": "≤ 50%"
+    },
+    {
+      "id": "ndwi",
+      "type": "backend",
+      "label": "NDWI area",
+      "sublabel": "water px × 100 m²",
+      "stage": 1,
+      "row": 1,
+      "tag": "10 m"
+    },
+    {
+      "id": "lakes",
+      "type": "database",
+      "label": "lakes",
+      "sublabel": "static fields",
+      "stage": 3,
+      "row": 0,
+      "tag": "seeded"
+    },
+    {
+      "id": "observations",
+      "type": "database",
+      "label": "observations",
+      "sublabel": "area · cloud",
+      "stage": 2,
+      "row": 1,
+      "tag": "run_id"
+    },
+    {
+      "id": "dem",
+      "type": "external",
+      "label": "GLO-30 DEM",
+      "sublabel": "terrain slope",
+      "stage": 3,
+      "row": 3,
+      "tag": "cached"
+    },
+    {
+      "id": "worldpop",
+      "type": "external",
+      "label": "WorldPop",
+      "sublabel": "5 km pop.",
+      "stage": 2,
+      "row": 2,
+      "tag": "cached"
+    },
+    {
+      "id": "hazard",
+      "type": "backend",
+      "label": "Hazard index",
+      "sublabel": "v1.0 · 6 inputs",
+      "stage": 3,
+      "row": 1,
+      "tag": "pure",
+      "yOffset": 40
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "CryoHealth-api",
+      "sublabel": "tier + alert policy",
+      "stage": 4,
+      "row": 1,
+      "tag": "x-api-key",
+      "yOffset": 40
+    }
+  ],
+  "flows": [
+    {
+      "from": "scene",
+      "to": "mask",
+      "label": "B03·B08·SCL",
+      "variant": "emphasis"
+    },
+    {
+      "from": "mask",
+      "to": "ndwi",
+      "label": "usable px",
+      "variant": "emphasis",
+      "labelDy": 24
+    },
+    {
+      "from": "ndwi",
+      "to": "observations",
+      "label": "upsert",
+      "variant": "emphasis"
+    },
+    {
+      "from": "observations",
+      "to": "hazard",
+      "label": "548 days",
+      "variant": "emphasis"
+    },
+    {
+      "from": "lakes",
+      "to": "hazard",
+      "label": "dam · glacier",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight",
+      "labelDy": 24
+    },
+    {
+      "from": "dem",
+      "to": "hazard",
+      "label": "slope",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "route": "straight"
+    },
+    {
+      "from": "worldpop",
+      "to": "hazard",
+      "label": "exposure",
+      "variant": "dashed"
+    },
+    {
+      "from": "hazard",
+      "to": "api",
+      "label": "score · tier",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Measure",
+      "items": [
+        "Scenes over 50% cloud at the AOI are skipped; the next candidate is tried",
+        "Snow/ice (SCL 11) stays unmasked so lake edges are not clipped",
+        "A lake with no observation in 60 days is flagged stale"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Score",
+      "items": [
+        "Weights: growth 0.30 · dam 0.20 · GLOF history 0.15 · seasonal 0.15 · slope 0.10 · glacier 0.10",
+        "Tiers: critical ≥ 0.65 · high ≥ 0.45 · watch ≥ 0.25",
+        "Missing signals score zero risk, never re-weighted"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Report",
+      "items": [
+        "Population exposure is stored for prioritisation and never changes the tier",
+        "The API, not this service, decides whether a tier change raises an alert"
+      ]
+    }
+  ]
+}

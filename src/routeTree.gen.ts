@@ -25,6 +25,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as LakesLakeIdRouteImport } from './routes/lakes.$lakeId'
 import { Route as GlaciersGlacierIdRouteImport } from './routes/glaciers.$glacierId'
 import { Route as DocumentationSchemaRouteImport } from './routes/documentation.schema'
+import { Route as DocumentationEoPipelineRouteImport } from './routes/documentation.eo-pipeline'
 import { Route as DocumentationArchitectureRouteImport } from './routes/documentation.architecture'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSystemHealthRouteImport } from './routes/admin.system-health'
@@ -121,6 +122,11 @@ const GlaciersGlacierIdRoute = GlaciersGlacierIdRouteImport.update({
 const DocumentationSchemaRoute = DocumentationSchemaRouteImport.update({
   id: '/schema',
   path: '/schema',
+  getParentRoute: () => DocumentationRoute,
+} as any)
+const DocumentationEoPipelineRoute = DocumentationEoPipelineRouteImport.update({
+  id: '/eo-pipeline',
+  path: '/eo-pipeline',
   getParentRoute: () => DocumentationRoute,
 } as any)
 const DocumentationArchitectureRoute =
@@ -235,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRoute
   '/documentation/architecture': typeof DocumentationArchitectureRoute
+  '/documentation/eo-pipeline': typeof DocumentationEoPipelineRoute
   '/documentation/schema': typeof DocumentationSchemaRoute
   '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
@@ -266,6 +273,7 @@ export interface FileRoutesByTo {
   '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRoute
   '/documentation/architecture': typeof DocumentationArchitectureRoute
+  '/documentation/eo-pipeline': typeof DocumentationEoPipelineRoute
   '/documentation/schema': typeof DocumentationSchemaRoute
   '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRoute
   '/documentation/architecture': typeof DocumentationArchitectureRoute
+  '/documentation/eo-pipeline': typeof DocumentationEoPipelineRoute
   '/documentation/schema': typeof DocumentationSchemaRoute
   '/glaciers/$glacierId': typeof GlaciersGlacierIdRoute
   '/lakes/$lakeId': typeof LakesLakeIdRoute
@@ -339,6 +348,7 @@ export interface FileRouteTypes {
     | '/admin/system-health'
     | '/admin/users'
     | '/documentation/architecture'
+    | '/documentation/eo-pipeline'
     | '/documentation/schema'
     | '/glaciers/$glacierId'
     | '/lakes/$lakeId'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/admin/system-health'
     | '/admin/users'
     | '/documentation/architecture'
+    | '/documentation/eo-pipeline'
     | '/documentation/schema'
     | '/glaciers/$glacierId'
     | '/lakes/$lakeId'
@@ -405,6 +416,7 @@ export interface FileRouteTypes {
     | '/admin/system-health'
     | '/admin/users'
     | '/documentation/architecture'
+    | '/documentation/eo-pipeline'
     | '/documentation/schema'
     | '/glaciers/$glacierId'
     | '/lakes/$lakeId'
@@ -543,6 +555,13 @@ declare module '@tanstack/react-router' {
       path: '/schema'
       fullPath: '/documentation/schema'
       preLoaderRoute: typeof DocumentationSchemaRouteImport
+      parentRoute: typeof DocumentationRoute
+    }
+    '/documentation/eo-pipeline': {
+      id: '/documentation/eo-pipeline'
+      path: '/eo-pipeline'
+      fullPath: '/documentation/eo-pipeline'
+      preLoaderRoute: typeof DocumentationEoPipelineRouteImport
       parentRoute: typeof DocumentationRoute
     }
     '/documentation/architecture': {
@@ -731,12 +750,14 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface DocumentationRouteChildren {
   DocumentationArchitectureRoute: typeof DocumentationArchitectureRoute
+  DocumentationEoPipelineRoute: typeof DocumentationEoPipelineRoute
   DocumentationSchemaRoute: typeof DocumentationSchemaRoute
   DocumentationIndexRoute: typeof DocumentationIndexRoute
 }
 
 const DocumentationRouteChildren: DocumentationRouteChildren = {
   DocumentationArchitectureRoute: DocumentationArchitectureRoute,
+  DocumentationEoPipelineRoute: DocumentationEoPipelineRoute,
   DocumentationSchemaRoute: DocumentationSchemaRoute,
   DocumentationIndexRoute: DocumentationIndexRoute,
 }
