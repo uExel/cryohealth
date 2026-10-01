@@ -145,8 +145,11 @@ function Index() {
           </div>
           <ul className="mt-4 divide-y divide-border">
             {(hotLakes ?? []).map((l) => (
-              <li key={l.id} className="flex items-center justify-between py-3">
-                <div>
+              <li
+                key={l.id}
+                className="flex min-w-0 flex-wrap items-center justify-between gap-2 py-3"
+              >
+                <div className="min-w-0">
                   <Link
                     to="/lakes/$lakeId"
                     params={{ lakeId: l.id }}
@@ -178,8 +181,11 @@ function Index() {
           </div>
           <ul className="mt-4 divide-y divide-border">
             {(recentAlerts ?? []).map((a) => (
-              <li key={a.id} className="flex items-center justify-between py-3">
-                <div>
+              <li
+                key={a.id}
+                className="flex min-w-0 flex-wrap items-center justify-between gap-2 py-3"
+              >
+                <div className="min-w-0">
                   <div className="text-sm font-semibold text-foreground">{a.title}</div>
                   <div className="text-xs text-muted-foreground">
                     {new Date(a.created_at).toLocaleString()} · window {a.estimated_window ?? "—"}

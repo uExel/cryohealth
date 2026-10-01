@@ -94,16 +94,16 @@ function AlertsPage() {
       />
       <ul className="mt-4 space-y-3">
         {(data ?? []).map((a) => (
-          <li key={a.id} className="flex rounded-xl border border-border bg-card">
+          <li key={a.id} className="flex min-w-0 rounded-xl border border-border bg-card">
             <span
               className="w-2 flex-none self-stretch"
               style={{
                 background: `var(--color-${a.tier.toLowerCase()})`,
               }}
             />
-            <div className="flex-1 p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div>
+            <div className="min-w-0 flex-1 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
                   <div className="text-sm font-semibold text-foreground">{a.title}</div>
                   <div className="text-xs text-muted-foreground">
                     {new Date(a.created_at).toLocaleString()} · {a.district_name ?? "—"} · window{" "}
@@ -119,7 +119,7 @@ function AlertsPage() {
                   {a.body_ur}
                 </p>
               )}
-              <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-2">
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-2">
                 {isAdmin ? (
                   <span className="text-xs text-muted-foreground">
                     {ackCount(a.id)} CHW acknowledgement{ackCount(a.id) === 1 ? "" : "s"}

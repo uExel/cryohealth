@@ -67,7 +67,7 @@ function LakesPage() {
           </p>
           <FreshnessStamp lastUpdated={latestUpdate} className="mt-1 text-muted-foreground" />
         </div>
-        <div className="flex flex-wrap gap-1 rounded-md border border-border bg-card p-1">
+        <div className="flex w-full shrink-0 gap-1 overflow-x-auto rounded-md border border-border bg-card p-1 sm:w-auto">
           {(["ALL", "CRITICAL", "HIGH", "WATCH", "NORMAL"] as const).map((t) => (
             <button
               key={t}
@@ -105,8 +105,8 @@ function LakesPage() {
         <HazardMap lakes={filtered} facilities={facilities ?? []} />
       )}
 
-      <div className="mt-6 overflow-hidden rounded-xl border border-border bg-card">
-        <table className="w-full text-sm">
+      <div className="mt-6 overflow-x-auto rounded-xl border border-border bg-card">
+        <table className="min-w-[600px] w-full text-sm">
           <thead className="bg-secondary/50 text-left text-xs uppercase text-muted-foreground">
             <tr>
               <th className="px-4 py-2">Lake</th>
