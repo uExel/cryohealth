@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 const URL = "https://cryohealth.io/privacy-policy";
 
@@ -147,6 +147,15 @@ function PrivacyPolicyPage() {
                     {paragraph}
                   </p>
                 ))}
+                {section.title === "9. Account and Data Deletion" && (
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    To submit a deletion request, visit our{" "}
+                    <Link to="/account-deletion" className="text-primary underline">
+                      Account &amp; Data Deletion page
+                    </Link>
+                    .
+                  </p>
+                )}
               </div>
             </section>
           ))}
