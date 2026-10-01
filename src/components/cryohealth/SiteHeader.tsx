@@ -62,22 +62,6 @@ export function SiteHeader() {
           </nav>
         )}
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label="Toggle dark mode"
-            className="inline-flex h-8 w-8 items-center justify-center border-2 border-border bg-background text-foreground hover:bg-secondary"
-          >
-            {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-          </button>
-          <button
-            onClick={() => setLang(lang === "en" ? "ur" : "en")}
-            aria-label="Switch language"
-            className="inline-flex h-11 items-center gap-1 border-2 border-border bg-background px-2 py-1 text-xs text-foreground hover:bg-secondary"
-          >
-            <Languages className="h-3 w-3" />
-            <span className="hidden sm:inline">{lang === "en" ? "اردو" : "EN"}</span>
-          </button>
-
           {!user && (
             <button
               type="button"
@@ -90,6 +74,21 @@ export function SiteHeader() {
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           )}
+          <button
+            onClick={() => setLang(lang === "en" ? "ur" : "en")}
+            aria-label="Switch language"
+            className="inline-flex h-11 items-center gap-1 border-2 border-border bg-background px-2 py-1 text-xs text-foreground hover:bg-secondary"
+          >
+            <Languages className="h-3 w-3" />
+            <span className="hidden sm:inline">{lang === "en" ? "اردو" : "EN"}</span>
+          </button>
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label="Toggle dark mode"
+            className="inline-flex h-11 w-11 items-center justify-center border-2 border-border bg-background text-foreground hover:bg-secondary"
+          >
+            {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+          </button>
           {user ? (
             <button
               onClick={() => signOut()}
