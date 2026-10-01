@@ -75,6 +75,15 @@ function DocumentationOverview() {
             How CRYO Health handles account, workforce, and patient case information.
           </p>
         </Link>
+        <Link
+          to="/account-deletion"
+          className="rounded-xl border border-border bg-card p-5 hover:border-[var(--color-accent)]"
+        >
+          <div className="text-sm font-semibold text-foreground">Account &amp; Data Deletion</div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            How to request deletion of a CRYO Health account and associated personal data.
+          </p>
+        </Link>
       </div>
 
       <h2 className="mt-10 text-lg font-semibold text-foreground">Repositories</h2>

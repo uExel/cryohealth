@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AccountDeletionRouteImport } from './routes/account-deletion'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as ChwRouteImport } from './routes/chw'
@@ -53,6 +54,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountDeletionRoute = AccountDeletionRouteImport.update({
+  id: '/account-deletion',
+  path: '/account-deletion',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -225,6 +231,7 @@ const AdminLakesLakeIdRoute = AdminLakesLakeIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account-deletion': typeof AccountDeletionRoute
   '/admin': typeof AdminRouteWithChildren
   '/alerts': typeof AlertsRoute
   '/chw': typeof ChwRoute
@@ -262,6 +269,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account-deletion': typeof AccountDeletionRoute
   '/alerts': typeof AlertsRoute
   '/chw': typeof ChwRoute
   '/dashboard': typeof DashboardRoute
@@ -296,6 +304,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account-deletion': typeof AccountDeletionRoute
   '/admin': typeof AdminRouteWithChildren
   '/alerts': typeof AlertsRoute
   '/chw': typeof ChwRoute
@@ -335,6 +344,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/account-deletion'
     | '/admin'
     | '/alerts'
     | '/chw'
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/account-deletion'
     | '/alerts'
     | '/chw'
     | '/dashboard'
@@ -405,6 +416,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/account-deletion'
     | '/admin'
     | '/alerts'
     | '/chw'
@@ -443,6 +455,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AccountDeletionRoute: typeof AccountDeletionRoute
   AdminRoute: typeof AdminRouteWithChildren
   AlertsRoute: typeof AlertsRoute
   ChwRoute: typeof ChwRoute
@@ -470,6 +483,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account-deletion': {
+      id: '/account-deletion'
+      path: '/account-deletion'
+      fullPath: '/account-deletion'
+      preLoaderRoute: typeof AccountDeletionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -799,6 +819,7 @@ const LakesRouteWithChildren = LakesRoute._addFileChildren(LakesRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AccountDeletionRoute: AccountDeletionRoute,
   AdminRoute: AdminRouteWithChildren,
   AlertsRoute: AlertsRoute,
   ChwRoute: ChwRoute,
