@@ -5,6 +5,7 @@ import { apiFetch } from "@/lib/cryohealth-api";
 const STORAGE_KEY = "cryohealth_token";
 
 export type AuthUser = { id: string; name: string; role: Role };
+type LoginResponse = { accessToken: string; name: string; role: Role };
 
 export function getToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -30,7 +31,7 @@ export function decodeUser(token: string): AuthUser | null {
 }
 
 export async function login(identifier: string, password: string): Promise<AuthUser> {
-  const body = await apiFetch("/auth/login", {
+  const body = await apiFetch<LoginResponse>("/auth/login", {
     method: "POST",
     body: JSON.stringify({ identifier, password }),
   });
