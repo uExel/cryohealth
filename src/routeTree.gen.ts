@@ -9,84 +9,45 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as LakesRouteImport } from './routes/lakes'
-import { Route as DocumentationRouteImport } from './routes/documentation'
-import { Route as DataRouteImport } from './routes/data'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as ChwRouteImport } from './routes/chw'
-import { Route as AlertsRouteImport } from './routes/alerts'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DocumentationIndexRouteImport } from './routes/documentation.index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as ChwRouteImport } from './routes/chw'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DataRouteImport } from './routes/data'
+import { Route as DocumentationRouteImport } from './routes/documentation'
+import { Route as LakesRouteImport } from './routes/lakes'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as LakesLakeIdRouteImport } from './routes/lakes.$lakeId'
-import { Route as GlaciersGlacierIdRouteImport } from './routes/glaciers.$glacierId'
-import { Route as DocumentationSchemaRouteImport } from './routes/documentation.schema'
-import { Route as DocumentationEoPipelineRouteImport } from './routes/documentation.eo-pipeline'
-import { Route as DocumentationArchitectureRouteImport } from './routes/documentation.architecture'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminSystemHealthRouteImport } from './routes/admin.system-health'
-import { Route as AdminSyncRouteImport } from './routes/admin.sync'
-import { Route as AdminProtocolsRouteImport } from './routes/admin.protocols'
-import { Route as AdminLakesRouteImport } from './routes/admin.lakes'
-import { Route as AdminGlaciersRouteImport } from './routes/admin.glaciers'
-import { Route as AdminFacilitiesRouteImport } from './routes/admin.facilities'
-import { Route as AdminDistrictsRouteImport } from './routes/admin.districts'
-import { Route as AdminChwProfilesRouteImport } from './routes/admin.chw-profiles'
-import { Route as AdminCasesRouteImport } from './routes/admin.cases'
-import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminAlertsRouteImport } from './routes/admin.alerts'
-import { Route as AdminLakesIndexRouteImport } from './routes/admin.lakes.index'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminCasesRouteImport } from './routes/admin.cases'
+import { Route as AdminChwProfilesRouteImport } from './routes/admin.chw-profiles'
+import { Route as AdminDistrictsRouteImport } from './routes/admin.districts'
+import { Route as AdminFacilitiesRouteImport } from './routes/admin.facilities'
+import { Route as AdminGlaciersRouteImport } from './routes/admin.glaciers'
+import { Route as AdminLakesRouteImport } from './routes/admin.lakes'
+import { Route as AdminProtocolsRouteImport } from './routes/admin.protocols'
+import { Route as AdminSyncRouteImport } from './routes/admin.sync'
+import { Route as AdminSystemHealthRouteImport } from './routes/admin.system-health'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as DocumentationIndexRouteImport } from './routes/documentation.index'
+import { Route as DocumentationArchitectureRouteImport } from './routes/documentation.architecture'
+import { Route as DocumentationEoPipelineRouteImport } from './routes/documentation.eo-pipeline'
+import { Route as DocumentationSchemaRouteImport } from './routes/documentation.schema'
+import { Route as GlaciersGlacierIdRouteImport } from './routes/glaciers.$glacierId'
+import { Route as LakesLakeIdRouteImport } from './routes/lakes.$lakeId'
 import { Route as AdminGlaciersIndexRouteImport } from './routes/admin.glaciers.index'
-import { Route as AdminLakesLakeIdRouteImport } from './routes/admin.lakes.$lakeId'
 import { Route as AdminGlaciersGlacierIdRouteImport } from './routes/admin.glaciers.$glacierId'
+import { Route as AdminLakesIndexRouteImport } from './routes/admin.lakes.index'
+import { Route as AdminLakesLakeIdRouteImport } from './routes/admin.lakes.$lakeId'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LakesRoute = LakesRouteImport.update({
-  id: '/lakes',
-  path: '/lakes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocumentationRoute = DocumentationRouteImport.update({
-  id: '/documentation',
-  path: '/documentation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DataRoute = DataRouteImport.update({
-  id: '/data',
-  path: '/data',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChwRoute = ChwRouteImport.update({
-  id: '/chw',
-  path: '/chw',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AlertsRoute = AlertsRouteImport.update({
-  id: '/alerts',
-  path: '/alerts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -94,39 +55,124 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DocumentationIndexRoute = DocumentationIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DocumentationRoute,
+const AlertsRoute = AlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChwRoute = ChwRouteImport.update({
+  id: '/chw',
+  path: '/chw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataRoute = DataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentationRoute = DocumentationRouteImport.update({
+  id: '/documentation',
+  path: '/documentation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LakesRoute = LakesRouteImport.update({
+  id: '/lakes',
+  path: '/lakes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
-const LakesLakeIdRoute = LakesLakeIdRouteImport.update({
-  id: '/$lakeId',
-  path: '/$lakeId',
-  getParentRoute: () => LakesRoute,
+const AdminAlertsRoute = AdminAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => AdminRoute,
 } as any)
-const GlaciersGlacierIdRoute = GlaciersGlacierIdRouteImport.update({
-  id: '/glaciers/$glacierId',
-  path: '/glaciers/$glacierId',
-  getParentRoute: () => rootRouteImport,
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
 } as any)
-const DocumentationSchemaRoute = DocumentationSchemaRouteImport.update({
-  id: '/schema',
-  path: '/schema',
-  getParentRoute: () => DocumentationRoute,
+const AdminCasesRoute = AdminCasesRouteImport.update({
+  id: '/cases',
+  path: '/cases',
+  getParentRoute: () => AdminRoute,
 } as any)
-const DocumentationEoPipelineRoute = DocumentationEoPipelineRouteImport.update({
-  id: '/eo-pipeline',
-  path: '/eo-pipeline',
+const AdminChwProfilesRoute = AdminChwProfilesRouteImport.update({
+  id: '/chw-profiles',
+  path: '/chw-profiles',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDistrictsRoute = AdminDistrictsRouteImport.update({
+  id: '/districts',
+  path: '/districts',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFacilitiesRoute = AdminFacilitiesRouteImport.update({
+  id: '/facilities',
+  path: '/facilities',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminGlaciersRoute = AdminGlaciersRouteImport.update({
+  id: '/glaciers',
+  path: '/glaciers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLakesRoute = AdminLakesRouteImport.update({
+  id: '/lakes',
+  path: '/lakes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProtocolsRoute = AdminProtocolsRouteImport.update({
+  id: '/protocols',
+  path: '/protocols',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSyncRoute = AdminSyncRouteImport.update({
+  id: '/sync',
+  path: '/sync',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSystemHealthRoute = AdminSystemHealthRouteImport.update({
+  id: '/system-health',
+  path: '/system-health',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const DocumentationIndexRoute = DocumentationIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => DocumentationRoute,
 } as any)
 const DocumentationArchitectureRoute =
@@ -135,85 +181,45 @@ const DocumentationArchitectureRoute =
     path: '/architecture',
     getParentRoute: () => DocumentationRoute,
   } as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
+const DocumentationEoPipelineRoute = DocumentationEoPipelineRouteImport.update({
+  id: '/eo-pipeline',
+  path: '/eo-pipeline',
+  getParentRoute: () => DocumentationRoute,
 } as any)
-const AdminSystemHealthRoute = AdminSystemHealthRouteImport.update({
-  id: '/system-health',
-  path: '/system-health',
-  getParentRoute: () => AdminRoute,
+const DocumentationSchemaRoute = DocumentationSchemaRouteImport.update({
+  id: '/schema',
+  path: '/schema',
+  getParentRoute: () => DocumentationRoute,
 } as any)
-const AdminSyncRoute = AdminSyncRouteImport.update({
-  id: '/sync',
-  path: '/sync',
-  getParentRoute: () => AdminRoute,
+const GlaciersGlacierIdRoute = GlaciersGlacierIdRouteImport.update({
+  id: '/glaciers/$glacierId',
+  path: '/glaciers/$glacierId',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminProtocolsRoute = AdminProtocolsRouteImport.update({
-  id: '/protocols',
-  path: '/protocols',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminLakesRoute = AdminLakesRouteImport.update({
-  id: '/lakes',
-  path: '/lakes',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminGlaciersRoute = AdminGlaciersRouteImport.update({
-  id: '/glaciers',
-  path: '/glaciers',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminFacilitiesRoute = AdminFacilitiesRouteImport.update({
-  id: '/facilities',
-  path: '/facilities',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminDistrictsRoute = AdminDistrictsRouteImport.update({
-  id: '/districts',
-  path: '/districts',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminChwProfilesRoute = AdminChwProfilesRouteImport.update({
-  id: '/chw-profiles',
-  path: '/chw-profiles',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCasesRoute = AdminCasesRouteImport.update({
-  id: '/cases',
-  path: '/cases',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminAuditRoute = AdminAuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminAlertsRoute = AdminAlertsRouteImport.update({
-  id: '/alerts',
-  path: '/alerts',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminLakesIndexRoute = AdminLakesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminLakesRoute,
+const LakesLakeIdRoute = LakesLakeIdRouteImport.update({
+  id: '/$lakeId',
+  path: '/$lakeId',
+  getParentRoute: () => LakesRoute,
 } as any)
 const AdminGlaciersIndexRoute = AdminGlaciersIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminGlaciersRoute,
 } as any)
-const AdminLakesLakeIdRoute = AdminLakesLakeIdRouteImport.update({
-  id: '/$lakeId',
-  path: '/$lakeId',
-  getParentRoute: () => AdminLakesRoute,
-} as any)
 const AdminGlaciersGlacierIdRoute = AdminGlaciersGlacierIdRouteImport.update({
   id: '/$glacierId',
   path: '/$glacierId',
   getParentRoute: () => AdminGlaciersRoute,
+} as any)
+const AdminLakesIndexRoute = AdminLakesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminLakesRoute,
+} as any)
+const AdminLakesLakeIdRoute = AdminLakesLakeIdRouteImport.update({
+  id: '/$lakeId',
+  path: '/$lakeId',
+  getParentRoute: () => AdminLakesRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/documentation': typeof DocumentationRouteWithChildren
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -261,6 +268,7 @@ export interface FileRoutesByTo {
   '/data': typeof DataRoute
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -296,6 +304,7 @@ export interface FileRoutesById {
   '/documentation': typeof DocumentationRouteWithChildren
   '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -334,6 +343,7 @@ export interface FileRouteTypes {
     | '/documentation'
     | '/lakes'
     | '/login'
+    | '/privacy-policy'
     | '/sitemap.xml'
     | '/admin/alerts'
     | '/admin/audit'
@@ -368,6 +378,7 @@ export interface FileRouteTypes {
     | '/data'
     | '/lakes'
     | '/login'
+    | '/privacy-policy'
     | '/sitemap.xml'
     | '/admin/alerts'
     | '/admin/audit'
@@ -402,6 +413,7 @@ export interface FileRouteTypes {
     | '/documentation'
     | '/lakes'
     | '/login'
+    | '/privacy-policy'
     | '/sitemap.xml'
     | '/admin/alerts'
     | '/admin/audit'
@@ -439,73 +451,18 @@ export interface RootRouteChildren {
   DocumentationRoute: typeof DocumentationRouteWithChildren
   LakesRoute: typeof LakesRouteWithChildren
   LoginRoute: typeof LoginRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   GlaciersGlacierIdRoute: typeof GlaciersGlacierIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lakes': {
-      id: '/lakes'
-      path: '/lakes'
-      fullPath: '/lakes'
-      preLoaderRoute: typeof LakesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/documentation': {
-      id: '/documentation'
-      path: '/documentation'
-      fullPath: '/documentation'
-      preLoaderRoute: typeof DocumentationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/data': {
-      id: '/data'
-      path: '/data'
-      fullPath: '/data'
-      preLoaderRoute: typeof DataRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/chw': {
-      id: '/chw'
-      path: '/chw'
-      fullPath: '/chw'
-      preLoaderRoute: typeof ChwRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/alerts': {
-      id: '/alerts'
-      path: '/alerts'
-      fullPath: '/alerts'
-      preLoaderRoute: typeof AlertsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -515,137 +472,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/documentation/': {
-      id: '/documentation/'
-      path: '/'
-      fullPath: '/documentation/'
-      preLoaderRoute: typeof DocumentationIndexRouteImport
-      parentRoute: typeof DocumentationRoute
+    '/alerts': {
+      id: '/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chw': {
+      id: '/chw'
+      path: '/chw'
+      fullPath: '/chw'
+      preLoaderRoute: typeof ChwRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data': {
+      id: '/data'
+      path: '/data'
+      fullPath: '/data'
+      preLoaderRoute: typeof DataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documentation': {
+      id: '/documentation'
+      path: '/documentation'
+      fullPath: '/documentation'
+      preLoaderRoute: typeof DocumentationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lakes': {
+      id: '/lakes'
+      path: '/lakes'
+      fullPath: '/lakes'
+      preLoaderRoute: typeof LakesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/': {
       id: '/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/lakes/$lakeId': {
-      id: '/lakes/$lakeId'
-      path: '/$lakeId'
-      fullPath: '/lakes/$lakeId'
-      preLoaderRoute: typeof LakesLakeIdRouteImport
-      parentRoute: typeof LakesRoute
-    }
-    '/glaciers/$glacierId': {
-      id: '/glaciers/$glacierId'
-      path: '/glaciers/$glacierId'
-      fullPath: '/glaciers/$glacierId'
-      preLoaderRoute: typeof GlaciersGlacierIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/documentation/schema': {
-      id: '/documentation/schema'
-      path: '/schema'
-      fullPath: '/documentation/schema'
-      preLoaderRoute: typeof DocumentationSchemaRouteImport
-      parentRoute: typeof DocumentationRoute
-    }
-    '/documentation/eo-pipeline': {
-      id: '/documentation/eo-pipeline'
-      path: '/eo-pipeline'
-      fullPath: '/documentation/eo-pipeline'
-      preLoaderRoute: typeof DocumentationEoPipelineRouteImport
-      parentRoute: typeof DocumentationRoute
-    }
-    '/documentation/architecture': {
-      id: '/documentation/architecture'
-      path: '/architecture'
-      fullPath: '/documentation/architecture'
-      preLoaderRoute: typeof DocumentationArchitectureRouteImport
-      parentRoute: typeof DocumentationRoute
-    }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/system-health': {
-      id: '/admin/system-health'
-      path: '/system-health'
-      fullPath: '/admin/system-health'
-      preLoaderRoute: typeof AdminSystemHealthRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/sync': {
-      id: '/admin/sync'
-      path: '/sync'
-      fullPath: '/admin/sync'
-      preLoaderRoute: typeof AdminSyncRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/protocols': {
-      id: '/admin/protocols'
-      path: '/protocols'
-      fullPath: '/admin/protocols'
-      preLoaderRoute: typeof AdminProtocolsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/lakes': {
-      id: '/admin/lakes'
-      path: '/lakes'
-      fullPath: '/admin/lakes'
-      preLoaderRoute: typeof AdminLakesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/glaciers': {
-      id: '/admin/glaciers'
-      path: '/glaciers'
-      fullPath: '/admin/glaciers'
-      preLoaderRoute: typeof AdminGlaciersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/facilities': {
-      id: '/admin/facilities'
-      path: '/facilities'
-      fullPath: '/admin/facilities'
-      preLoaderRoute: typeof AdminFacilitiesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/districts': {
-      id: '/admin/districts'
-      path: '/districts'
-      fullPath: '/admin/districts'
-      preLoaderRoute: typeof AdminDistrictsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/chw-profiles': {
-      id: '/admin/chw-profiles'
-      path: '/chw-profiles'
-      fullPath: '/admin/chw-profiles'
-      preLoaderRoute: typeof AdminChwProfilesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/cases': {
-      id: '/admin/cases'
-      path: '/cases'
-      fullPath: '/admin/cases'
-      preLoaderRoute: typeof AdminCasesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/audit': {
-      id: '/admin/audit'
-      path: '/audit'
-      fullPath: '/admin/audit'
-      preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/alerts': {
@@ -655,12 +556,124 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAlertsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/lakes/': {
-      id: '/admin/lakes/'
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cases': {
+      id: '/admin/cases'
+      path: '/cases'
+      fullPath: '/admin/cases'
+      preLoaderRoute: typeof AdminCasesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/chw-profiles': {
+      id: '/admin/chw-profiles'
+      path: '/chw-profiles'
+      fullPath: '/admin/chw-profiles'
+      preLoaderRoute: typeof AdminChwProfilesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/districts': {
+      id: '/admin/districts'
+      path: '/districts'
+      fullPath: '/admin/districts'
+      preLoaderRoute: typeof AdminDistrictsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/facilities': {
+      id: '/admin/facilities'
+      path: '/facilities'
+      fullPath: '/admin/facilities'
+      preLoaderRoute: typeof AdminFacilitiesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/glaciers': {
+      id: '/admin/glaciers'
+      path: '/glaciers'
+      fullPath: '/admin/glaciers'
+      preLoaderRoute: typeof AdminGlaciersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/lakes': {
+      id: '/admin/lakes'
+      path: '/lakes'
+      fullPath: '/admin/lakes'
+      preLoaderRoute: typeof AdminLakesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/protocols': {
+      id: '/admin/protocols'
+      path: '/protocols'
+      fullPath: '/admin/protocols'
+      preLoaderRoute: typeof AdminProtocolsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sync': {
+      id: '/admin/sync'
+      path: '/sync'
+      fullPath: '/admin/sync'
+      preLoaderRoute: typeof AdminSyncRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/system-health': {
+      id: '/admin/system-health'
+      path: '/system-health'
+      fullPath: '/admin/system-health'
+      preLoaderRoute: typeof AdminSystemHealthRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/documentation/': {
+      id: '/documentation/'
       path: '/'
-      fullPath: '/admin/lakes/'
-      preLoaderRoute: typeof AdminLakesIndexRouteImport
-      parentRoute: typeof AdminLakesRoute
+      fullPath: '/documentation/'
+      preLoaderRoute: typeof DocumentationIndexRouteImport
+      parentRoute: typeof DocumentationRoute
+    }
+    '/documentation/architecture': {
+      id: '/documentation/architecture'
+      path: '/architecture'
+      fullPath: '/documentation/architecture'
+      preLoaderRoute: typeof DocumentationArchitectureRouteImport
+      parentRoute: typeof DocumentationRoute
+    }
+    '/documentation/eo-pipeline': {
+      id: '/documentation/eo-pipeline'
+      path: '/eo-pipeline'
+      fullPath: '/documentation/eo-pipeline'
+      preLoaderRoute: typeof DocumentationEoPipelineRouteImport
+      parentRoute: typeof DocumentationRoute
+    }
+    '/documentation/schema': {
+      id: '/documentation/schema'
+      path: '/schema'
+      fullPath: '/documentation/schema'
+      preLoaderRoute: typeof DocumentationSchemaRouteImport
+      parentRoute: typeof DocumentationRoute
+    }
+    '/glaciers/$glacierId': {
+      id: '/glaciers/$glacierId'
+      path: '/glaciers/$glacierId'
+      fullPath: '/glaciers/$glacierId'
+      preLoaderRoute: typeof GlaciersGlacierIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lakes/$lakeId': {
+      id: '/lakes/$lakeId'
+      path: '/$lakeId'
+      fullPath: '/lakes/$lakeId'
+      preLoaderRoute: typeof LakesLakeIdRouteImport
+      parentRoute: typeof LakesRoute
     }
     '/admin/glaciers/': {
       id: '/admin/glaciers/'
@@ -669,19 +682,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGlaciersIndexRouteImport
       parentRoute: typeof AdminGlaciersRoute
     }
-    '/admin/lakes/$lakeId': {
-      id: '/admin/lakes/$lakeId'
-      path: '/$lakeId'
-      fullPath: '/admin/lakes/$lakeId'
-      preLoaderRoute: typeof AdminLakesLakeIdRouteImport
-      parentRoute: typeof AdminLakesRoute
-    }
     '/admin/glaciers/$glacierId': {
       id: '/admin/glaciers/$glacierId'
       path: '/$glacierId'
       fullPath: '/admin/glaciers/$glacierId'
       preLoaderRoute: typeof AdminGlaciersGlacierIdRouteImport
       parentRoute: typeof AdminGlaciersRoute
+    }
+    '/admin/lakes/': {
+      id: '/admin/lakes/'
+      path: '/'
+      fullPath: '/admin/lakes/'
+      preLoaderRoute: typeof AdminLakesIndexRouteImport
+      parentRoute: typeof AdminLakesRoute
+    }
+    '/admin/lakes/$lakeId': {
+      id: '/admin/lakes/$lakeId'
+      path: '/$lakeId'
+      fullPath: '/admin/lakes/$lakeId'
+      preLoaderRoute: typeof AdminLakesLakeIdRouteImport
+      parentRoute: typeof AdminLakesRoute
     }
   }
 }
@@ -787,6 +807,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocumentationRoute: DocumentationRouteWithChildren,
   LakesRoute: LakesRouteWithChildren,
   LoginRoute: LoginRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   GlaciersGlacierIdRoute: GlaciersGlacierIdRoute,
 }

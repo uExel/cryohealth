@@ -66,6 +66,15 @@ function DocumentationOverview() {
             relationships, and enums.
           </p>
         </Link>
+        <Link
+          to="/privacy-policy"
+          className="rounded-xl border border-border bg-card p-5 hover:border-(--color-accent)"
+        >
+          <div className="text-sm font-semibold text-foreground">Privacy policy →</div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            How CRYO Health handles account, workforce, and patient case information.
+          </p>
+        </Link>
       </div>
 
       <h2 className="mt-10 text-lg font-semibold text-foreground">Repositories</h2>
