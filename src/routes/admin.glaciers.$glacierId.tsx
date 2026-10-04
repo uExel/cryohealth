@@ -23,7 +23,7 @@ export const Route = createFileRoute("/admin/glaciers/$glacierId")({
   component: GlacierDetailAdmin,
 });
 
-type GlacierRow = {
+type  GlacierRow = {
   id: string;
   name: string;
   rgi_id: string | null;
