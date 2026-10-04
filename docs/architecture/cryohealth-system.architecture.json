@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "CryoHealth System Architecture",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1330,
+      800
+    ]
+  },
+  "components": [
+    {
+      "id": "web_users",
+      "type": "external",
+      "label": "Web users",
+      "sublabel": "public \u00b7 admins \u00b7 CHW leads",
+      "pos": [
+        30,
+        170
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "field_app",
+      "type": "frontend",
+      "label": "CryoHealth-app",
+      "sublabel": "Expo RN \u00b7 WatermelonDB offline",
+      "tag": "Android",
+      "pos": [
+        30,
+        470
+      ],
+      "size": [
+        190,
+        68
+      ]
+    },
+    {
+      "id": "dashboard",
+      "type": "frontend",
+      "label": "cryohealth dashboard",
+      "sublabel": "TanStack Start SSR",
+      "tag": "CF Worker",
+      "brand": "cloudflare",
+      "pos": [
+        250,
+        168
+      ],
+      "size": [
+        200,
+        68
+      ]
+    },
+    {
+      "id": "tunnel",
+      "type": "security",
+      "label": "cloudflared tunnel",
+      "sublabel": "api.cryohealth.io",
+      "tag": "outbound only",
+      "pos": [
+        500,
+        320
+      ],
+      "size": [
+        170,
+        68
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "CryoHealth-api",
+      "sublabel": "NestJS 11 \u00b7 auth \u00b7 alert policy",
+      "tag": ":3000",
+      "pos": [
+        790,
+        320
+      ],
+      "size": [
+        200,
+        68
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "PostgreSQL 16 + PostGIS",
+      "sublabel": "schema owned by api migrations",
+      "brand": "postgresql",
+      "pos": [
+        1070,
+        320
+      ],
+      "size": [
+        200,
+        68
+      ]
+    },
+    {
+      "id": "geo",
+      "type": "backend",
+      "label": "CryoHealth-geo",
+      "sublabel": "FastAPI \u00b7 NDWI \u00b7 hazard index",
+      "tag": "APScheduler",
+      "pos": [
+        790,
+        560
+      ],
+      "size": [
+        200,
+        68
+      ]
+    },
+    {
+      "id": "eo",
+      "type": "external",
+      "label": "Sentinel-2 \u00b7 WorldPop",
+      "sublabel": "STAC / CDSE imagery",
+      "pos": [
+        1070,
+        700
+      ],
+      "size": [
+        200,
+        68
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Cloudflare Workers",
+      "wraps": [
+        "dashboard"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "Hetzner CPX22 \u00b7 Docker Compose",
+      "wraps": [
+        "tunnel",
+        "api",
+        "db",
+        "geo"
+      ],
+      "pad": 30
+    },
+    {
+      "kind": "security-group",
+      "label": "internal bridge \u00b7 no inbound ports",
+      "wraps": [
+        "api",
+        "db",
+        "geo"
+      ],
+      "pad": 16
+    }
+  ],
+  "connections": [
+    {
+      "from": "web_users",
+      "to": "dashboard",
+      "label": "HTTPS"
+    },
+    {
+      "from": "dashboard",
+      "to": "tunnel",
+      "label": "REST + Bearer JWT",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "from": "field_app",
+      "to": "tunnel",
+      "label": "REST + /sync",
+      "variant": "emphasis"
+    },
+    {
+      "from": "tunnel",
+      "to": "api",
+      "label": "http://api:3000",
+      "variant": "security"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "TypeORM"
+    },
+    {
+      "from": "geo",
+      "to": "db",
+      "label": "observations"
+    },
+    {
+      "from": "geo",
+      "to": "api",
+      "label": "POST /alerts/hazard-scores"
+    },
+    {
+      "from": "geo",
+      "to": "eo",
+      "label": "fetch scenes"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Policy stays in the API",
+      "items": [
+        "geo computes NDWI + hazard scores only",
+        "api decides tiers with an audited human reason",
+        "Open Data routes unauthenticated; the rest go through JWT + RolesGuard"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Shared secrets",
+      "items": [
+        "JWT_SECRET byte-identical in api and dashboard",
+        "geo CRYOHEALTH_API_KEY = api GEO_SERVICE_API_KEY"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Docs vs code drift",
+      "items": [
+        "Dashboard db.ts / queries.ts are deprecated stubs: all data via api",
+        "Hyperdrive binding still in wrangler.jsonc but unused"
+      ]
+    }
+  ]
+}

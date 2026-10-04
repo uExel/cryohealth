@@ -11,6 +11,11 @@ CryoHealth is built in the open under the MIT License. It fuses near-real-time h
 - [Hazard Map](/lakes): Interactive map of monitored glacial lakes with current risk tiers.
 - [Alerts](/alerts): Chronological feed of issued GLOF alerts with impact windows.
 - [Open Data](/data): Public read-only API endpoints (lakes, alerts, KPIs).
+- [Documentation](/documentation): How CryoHealth is built.
+- [Privacy Policy](/privacy-policy): How CRYO Health handles account, workforce, and patient case information.
+- [System architecture](/documentation/architecture): Services, data flow from satellite scene to alert, and design rules.
+- [EO pipeline](/documentation/eo-pipeline): How CryoHealth-geo turns Sentinel-2 scenes into lake observations and hazard scores.
+- [Schema design](/documentation/schema): Every table, column, relationship, and enum in the shared PostgreSQL + PostGIS database.
 
 ## Optional
 

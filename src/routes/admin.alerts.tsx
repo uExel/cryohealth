@@ -563,7 +563,7 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
   const [body, setBody] = useState("");
   const [tier, setTier] = useState<Tier>("WATCH");
   const [lakeId, setLakeId] = useState<string>("");
-  const [windowStart, setWindowStart] = useState("");
+  const [estimatedWindow, setEstimatedWindow] = useState("");
   const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -594,16 +594,16 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
         body: body.trim(),
         tier: tier.toLowerCase(),
         lakeId: lakeId || null,
-        windowStart: windowStart.trim() || null,
+        estimatedWindow: estimatedWindow.trim() || undefined,
         reason: reason.trim(),
       }),
     });
     setSubmitting(false);
     if (!result.ok) {
-      const err = result.body as { message?: string[]; error?: string };
+      const err = result.body as { message?: string | string[]; error?: string };
       const msg = Array.isArray(err.message)
         ? err.message.join("; ")
-        : (err.error ?? "Failed to broadcast alert");
+        : (err.message ?? err.error ?? `Failed to broadcast alert (HTTP ${result.status})`);
       toast.error(msg);
       return;
     }
@@ -611,7 +611,7 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
     setTitle("");
     setBody("");
     setLakeId("");
-    setWindowStart("");
+    setEstimatedWindow("");
     setReason("");
     onCreated();
   }
@@ -642,17 +642,17 @@ function BroadcastForm({ onCreated }: { onCreated: () => void }) {
             onChange={(e) => setTier(e.target.value as Tier)}
             className="rounded-md border border-border bg-background px-3 py-2 text-sm"
           >
-            <option value="normal">NORMAL</option>
-            <option value="watch">WATCH</option>
-            <option value="high">HIGH</option>
-            <option value="critical">CRITICAL</option>
+            <option value="NORMAL">NORMAL</option>
+            <option value="WATCH">WATCH</option>
+            <option value="HIGH">HIGH</option>
+            <option value="CRITICAL">CRITICAL</option>
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs">
-          <span className="text-muted-foreground">Window start</span>
+          <span className="text-muted-foreground">Estimated window</span>
           <input
-            value={windowStart}
-            onChange={(e) => setWindowStart(e.target.value)}
+            value={estimatedWindow}
+            onChange={(e) => setEstimatedWindow(e.target.value)}
             placeholder="e.g. next 24h"
             className="rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
