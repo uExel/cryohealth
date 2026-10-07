@@ -36,6 +36,7 @@ function CHWHome() {
         id: string;
         title: string;
         tier: string;
+        status: string;
         created_at: string;
         estimated_window: string | null;
       }[]
