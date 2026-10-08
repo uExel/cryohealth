@@ -185,7 +185,9 @@ function AlertsAdmin() {
   });
   const isError = alertsError || acksError;
 
-  const ackCount = (alertId: string) => (acks ?? []).filter((a) => a.alert_id === alertId).length;
+  // `acks` is undefined while loading or after a failed fetch; show "—" then, not a false 0.
+  const ackCount = (alertId: string) =>
+    acks === undefined ? "—" : acks.filter((a) => a.alert_id === alertId).length;
 
   const filteredAlerts = (alerts ?? []).filter((a) => {
     if (tierFilter !== "ALL" && a.tier !== tierFilter) return false;
