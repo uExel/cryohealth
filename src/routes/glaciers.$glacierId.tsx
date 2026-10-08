@@ -406,8 +406,11 @@ function Meta({ k, v }: { k: string; v: React.ReactNode }) {
 }
 
 const driverMeta: Record<string, { label: string; cls: string }> = {
-  distance: { label: "Distance-driven", cls: "bg-blue-100 text-blue-800 ring-blue-200" },
-  status: { label: "Status-driven", cls: "bg-purple-100 text-purple-800 ring-purple-200" },
+  distance: {
+    label: "Distance-driven",
+    cls: "bg-[var(--color-accent-soft)] text-[var(--color-accent-ink)] ring-[var(--color-accent)]/30",
+  },
+  status: { label: "Status-driven", cls: "bg-secondary text-foreground ring-border" },
   // Deliberately not red — this labels a contributing factor in the lake/glacier
   // association algorithm, not an active hazard tier, and red is reserved for CRITICAL.
   risk: {
