@@ -62,7 +62,7 @@ export async function fetchProtocols(): Promise<{ protocols: unknown[] }> {
 /** CryoHealth-api sends alerts in camelCase (createdAt, bodyEn, estimatedWindow, ...), but
  *  the public alert feed reads snake_case (created_at, body_en, ...). Add the snake_case keys
  *  and keep the originals, so admin.alerts.tsx, which reads camelCase, is unaffected. */
-function withFeedFieldNames(alert: unknown): unknown {
+export function withFeedFieldNames(alert: unknown): unknown {
   const a = alert as Record<string, unknown>;
   return {
     ...a,
