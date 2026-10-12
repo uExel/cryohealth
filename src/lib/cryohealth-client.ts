@@ -180,3 +180,10 @@ export async function adminRequest(path: string, init: RequestInit = {}): Promis
   const body = contentType.includes("application/json") ? await res.json() : await res.text();
   return { ok: res.ok, status: res.status, body };
 }
+
+/** DELETE with the audit reason in the JSON body. CryoHealth-api reads it from the body
+ *  (DeleteReasonDto) for districts, glaciers, protocols, facilities, CHW profiles and
+ *  cases; a ?reason= query string is ignored there and the API answers 400. */
+export function adminDelete(path: string, reason: string): Promise<ApiResult> {
+  return adminRequest(path, { method: "DELETE", body: JSON.stringify({ reason }) });
+}

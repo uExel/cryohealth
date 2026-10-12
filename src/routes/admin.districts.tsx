@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { fetchDistricts, adminRequest } from "@/lib/cryohealth-client";
+import { fetchDistricts, adminRequest, adminDelete } from "@/lib/cryohealth-client";
 import { districtCreateSchema, type DistrictCreate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -121,10 +121,7 @@ function DistrictsAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const { ok, body } = await adminRequest(
-        `/admin/districts/${id}?reason=${encodeURIComponent(reason)}`,
-        { method: "DELETE" },
-      );
+      const { ok, body } = await adminDelete(`/districts/${id}`, reason);
       if (!ok) {
         throw new Error(
           body.dependents
