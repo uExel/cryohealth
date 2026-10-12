@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
 import { TierBadge, type Tier } from "@/lib/tier";
-import { fetchOpenAlerts, fetchProtocols } from "@/lib/cryohealth-client";
+import { fetchOpenAlerts, fetchProtocols, withFeedFieldNames } from "@/lib/cryohealth-client";
 
 export const Route = createFileRoute("/chw")({
   head: () => ({
@@ -40,7 +40,8 @@ function CHWHome() {
         estimated_window: string | null;
       }[]
     > => {
-      return (await fetchOpenAlerts()).alerts ?? [];
+      // The API sends camelCase; this list reads snake_case (created_at, estimated_window).
+      return ((await fetchOpenAlerts()).alerts ?? []).map(withFeedFieldNames);
     },
   });
   const { data: protocols } = useQuery({
