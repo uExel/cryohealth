@@ -20,7 +20,7 @@ PR #66 renames the raw `--color-muted` primitive in `src/styles.css` to `--color
 
 ## Next action
 
-Commit and push this HANDOFF.md update to `fix/issue-21-muted-color-naming`, then confirm `uexel-handoff-check / handoff-fresh` passes on PR #66. After that, wait for review.
+PR #66 is open and its checks (`build`, `handoff-fresh`) pass. Wait for review. This PR only touches `src/styles.css`, so merge order does not matter for the code; expect a `docs/ai/HANDOFF.md` conflict with the other open PRs, and merge `main` into whichever merges later.
 
 ## Verification status
 
