@@ -19,7 +19,7 @@ What the issue was: `ackCount()` did `(acks ?? []).filter(...).length`. `acks` i
 - This file will conflict with other open PRs that also rewrite it (#65, #66, #67, #68). Whichever merges first, the others need `main` merged in and this file resolved.
 
 ## Next action
-Open the PR: `gh pr create --repo uExel/cryohealth --base main --head fix/issue-32-acks-column-loading-state` (description: `Closes #32`).
+Review PR #69 (`Closes #32`). Expect a `docs/ai/HANDOFF.md` conflict with the other open PRs; merge `main` into whichever merges later.
 
 ## Open questions for a human
 - Should the same "—" treatment be applied to the public feed `src/routes/alerts.tsx`? — blocking: no
@@ -38,4 +38,4 @@ src/routes/admin.alerts.tsx, docs/ai/HANDOFF.md
 tests: n/a (no test script)  build: pass  prettier 3.8.3 on the changed file: pass  review: none  qa: manual, headless Chrome with the acks endpoint forced to fail: main `0` x8 rows vs branch `—` x8 rows, banner still shown
 
 ## Resume with
-`git log --oneline origin/main..fix/issue-32-acks-column-loading-state` then open the PR (see Next action)
+`git log --oneline origin/main..fix/issue-32-acks-column-loading-state` to list the commits; the PR is #69 (see Next action)
