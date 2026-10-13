@@ -4,6 +4,7 @@ import { fetchAlerts, fetchAlertAcks, adminRequest } from "@/lib/cryohealth-clie
 import { TierBadge, type Tier } from "@/lib/tier";
 import { useAuth } from "@/lib/auth";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
+import { ClearedLabel, isClearedAlert } from "@/components/cryohealth/ClearedLabel";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/alerts")({
@@ -38,6 +39,8 @@ function AlertsPage() {
         body_en: string;
         body_ur: string | null;
         tier: string;
+        status?: string;
+        clearedAt?: string | null;
         estimated_window: string | null;
         affected_population: number | null;
         created_at: string;
@@ -93,60 +96,66 @@ function AlertsPage() {
         className="mt-1 text-muted-foreground"
       />
       <ul className="mt-4 space-y-3">
-        {(data ?? []).map((a) => (
-          <li key={a.id} className="flex rounded-xl border border-border bg-card">
-            <span
-              className="w-2 flex-none self-stretch"
-              style={{
-                background: `var(--color-${a.tier.toLowerCase()})`,
-              }}
-            />
-            <div className="flex-1 p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="text-sm font-semibold text-foreground">{a.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {new Date(a.created_at).toLocaleString()} · {a.district_name ?? "—"} · window{" "}
-                    {a.estimated_window ?? "—"} · ~{a.affected_population?.toLocaleString() ?? 0}{" "}
-                    affected
+        {(data ?? []).map((a) => {
+          const cleared = isClearedAlert(a.status);
+          return (
+            <li
+              key={a.id}
+              className={`flex rounded-xl border border-border bg-card ${cleared ? "opacity-70" : ""}`}
+            >
+              <span
+                className={`w-2 flex-none self-stretch ${cleared ? "bg-muted-foreground/40" : ""}`}
+                style={cleared ? undefined : { background: `var(--color-${a.tier.toLowerCase()})` }}
+              />
+              <div className="flex-1 p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="text-sm font-semibold text-foreground">{a.title}</div>
+                    {cleared && <ClearedLabel clearedAt={a.clearedAt} />}
+                    <div className="text-xs text-muted-foreground">
+                      {new Date(a.created_at).toLocaleString()} · {a.district_name ?? "—"} · window{" "}
+                      {a.estimated_window ?? "—"} · ~{a.affected_population?.toLocaleString() ?? 0}{" "}
+                      affected
+                    </div>
                   </div>
+                  <TierBadge tier={a.tier as Tier} solid={a.tier === "CRITICAL"} />
                 </div>
-                <TierBadge tier={a.tier as Tier} solid={a.tier === "CRITICAL"} />
-              </div>
-              <p className="mt-2 text-sm text-foreground">{a.body_en}</p>
-              {a.body_ur && (
-                <p dir="rtl" className="mt-1 text-sm text-muted-foreground">
-                  {a.body_ur}
-                </p>
-              )}
-              <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-2">
-                {isAdmin ? (
-                  <span className="text-xs text-muted-foreground">
-                    {ackCount(a.id)} CHW acknowledgement{ackCount(a.id) === 1 ? "" : "s"}
-                  </span>
-                ) : (
-                  <span className="text-xs text-muted-foreground">
-                    {ackCount(a.id)} acknowledged
-                  </span>
+                <p className="mt-2 text-sm text-foreground">{a.body_en}</p>
+                {a.body_ur && (
+                  <p dir="rtl" className="mt-1 text-sm text-muted-foreground">
+                    {a.body_ur}
+                  </p>
                 )}
-                {isCHW &&
-                  (myAckSet.has(a.id) ? (
-                    <span className="text-xs font-semibold text-[var(--color-normal)]">
-                      ✓ You acknowledged
+                <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-2">
+                  {isAdmin ? (
+                    <span className="text-xs text-muted-foreground">
+                      {ackCount(a.id)} CHW acknowledgement{ackCount(a.id) === 1 ? "" : "s"}
                     </span>
                   ) : (
-                    <button
-                      onClick={() => ackMutation.mutate(a.id)}
-                      disabled={ackMutation.isPending}
-                      className="rounded-md border border-border bg-background px-3 py-1 text-xs hover:bg-accent"
-                    >
-                      Acknowledge
-                    </button>
-                  ))}
+                    <span className="text-xs text-muted-foreground">
+                      {ackCount(a.id)} acknowledged
+                    </span>
+                  )}
+                  {isCHW &&
+                    !cleared &&
+                    (myAckSet.has(a.id) ? (
+                      <span className="text-xs font-semibold text-[var(--color-normal)]">
+                        ✓ You acknowledged
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => ackMutation.mutate(a.id)}
+                        disabled={ackMutation.isPending}
+                        className="rounded-md border border-border bg-background px-3 py-1 text-xs hover:bg-accent"
+                      >
+                        Acknowledge
+                      </button>
+                    ))}
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
         {data && data.length === 0 && (
           <li className="text-sm text-muted-foreground">No alerts yet.</li>
         )}
