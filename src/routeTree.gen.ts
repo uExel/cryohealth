@@ -40,6 +40,7 @@ import { Route as DocumentationArchitectureRouteImport } from './routes/document
 import { Route as DocumentationEoPipelineRouteImport } from './routes/documentation.eo-pipeline'
 import { Route as DocumentationSchemaRouteImport } from './routes/documentation.schema'
 import { Route as GlaciersGlacierIdRouteImport } from './routes/glaciers.$glacierId'
+import { Route as LakesIndexRouteImport } from './routes/lakes.index'
 import { Route as LakesLakeIdRouteImport } from './routes/lakes.$lakeId'
 import { Route as AdminGlaciersIndexRouteImport } from './routes/admin.glaciers.index'
 import { Route as AdminGlaciersGlacierIdRouteImport } from './routes/admin.glaciers.$glacierId'
@@ -202,6 +203,11 @@ const GlaciersGlacierIdRoute = GlaciersGlacierIdRouteImport.update({
   path: '/glaciers/$glacierId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LakesIndexRoute = LakesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LakesRoute,
+} as any)
 const LakesLakeIdRoute = LakesLakeIdRouteImport.update({
   id: '/$lakeId',
   path: '/$lakeId',
@@ -261,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/lakes/$lakeId': typeof LakesLakeIdRoute
   '/admin/': typeof AdminIndexRoute
   '/documentation/': typeof DocumentationIndexRoute
+  '/lakes/': typeof LakesIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
   '/admin/glaciers/': typeof AdminGlaciersIndexRoute
@@ -274,7 +281,6 @@ export interface FileRoutesByTo {
   '/chw': typeof ChwRoute
   '/dashboard': typeof DashboardRoute
   '/data': typeof DataRoute
-  '/lakes': typeof LakesRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -295,6 +301,7 @@ export interface FileRoutesByTo {
   '/lakes/$lakeId': typeof LakesLakeIdRoute
   '/admin': typeof AdminIndexRoute
   '/documentation': typeof DocumentationIndexRoute
+  '/lakes': typeof LakesIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
   '/admin/glaciers': typeof AdminGlaciersIndexRoute
@@ -334,6 +341,7 @@ export interface FileRoutesById {
   '/lakes/$lakeId': typeof LakesLakeIdRoute
   '/admin/': typeof AdminIndexRoute
   '/documentation/': typeof DocumentationIndexRoute
+  '/lakes/': typeof LakesIndexRoute
   '/admin/glaciers/$glacierId': typeof AdminGlaciersGlacierIdRoute
   '/admin/lakes/$lakeId': typeof AdminLakesLakeIdRoute
   '/admin/glaciers/': typeof AdminGlaciersIndexRoute
@@ -374,6 +382,7 @@ export interface FileRouteTypes {
     | '/lakes/$lakeId'
     | '/admin/'
     | '/documentation/'
+    | '/lakes/'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
     | '/admin/glaciers/'
@@ -387,7 +396,6 @@ export interface FileRouteTypes {
     | '/chw'
     | '/dashboard'
     | '/data'
-    | '/lakes'
     | '/login'
     | '/privacy-policy'
     | '/sitemap.xml'
@@ -408,6 +416,7 @@ export interface FileRouteTypes {
     | '/lakes/$lakeId'
     | '/admin'
     | '/documentation'
+    | '/lakes'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
     | '/admin/glaciers'
@@ -446,6 +455,7 @@ export interface FileRouteTypes {
     | '/lakes/$lakeId'
     | '/admin/'
     | '/documentation/'
+    | '/lakes/'
     | '/admin/glaciers/$glacierId'
     | '/admin/lakes/$lakeId'
     | '/admin/glaciers/'
@@ -688,6 +698,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GlaciersGlacierIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lakes/': {
+      id: '/lakes/'
+      path: '/'
+      fullPath: '/lakes/'
+      preLoaderRoute: typeof LakesIndexRouteImport
+      parentRoute: typeof LakesRoute
+    }
     '/lakes/$lakeId': {
       id: '/lakes/$lakeId'
       path: '/$lakeId'
@@ -808,10 +825,12 @@ const DocumentationRouteWithChildren = DocumentationRoute._addFileChildren(
 
 interface LakesRouteChildren {
   LakesLakeIdRoute: typeof LakesLakeIdRoute
+  LakesIndexRoute: typeof LakesIndexRoute
 }
 
 const LakesRouteChildren: LakesRouteChildren = {
   LakesLakeIdRoute: LakesLakeIdRoute,
+  LakesIndexRoute: LakesIndexRoute,
 }
 
 const LakesRouteWithChildren = LakesRoute._addFileChildren(LakesRouteChildren)
