@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { fetchFacilitiesAdmin, adminRequest } from "@/lib/cryohealth-client";
+import { fetchFacilitiesAdmin, adminRequest, adminDelete } from "@/lib/cryohealth-client";
 import { facilityCreateSchema, type FacilityCreate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -122,12 +122,7 @@ function FacilitiesAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const result = await adminRequest(
-        `/admin/facilities/${id}?reason=${encodeURIComponent(reason)}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const result = await adminDelete(`/admin/facilities/${id}`, reason);
       if (!result.ok) throw new Error(result.body.error ?? "Failed to delete facility");
       return result.body;
     },
