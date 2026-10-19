@@ -1,49 +1,59 @@
-# HANDOFF — cryohealth — 2026-10-07
-Session: issue-30-cleared-alerts  Model: claude-sonnet-5-5  Branch: fix/issue-30-cleared-alerts-look-active  Goal: none  Task: cryohealth#30 (cleared alerts render as active)
+# HANDOFF — cryohealth — 2026-10-18
+Session: open-frontend-prs-handoff-consolidation  Model: claude-sonnet-5-5  Branch: (shared by PRs #65 to #73)  Goal: none  Task: land the nine open frontend PRs without `HANDOFF.md` conflicts
 
 ## State
-Fix for cryohealth#30 is on this branch (commit fee892a plus this handoff). PR #67 is open and nothing is deployed. It has a companion change in CryoHealth-api (branch `fix/issue-30-lake-alerts-include-status`); the lake page needs that API change deployed first.
+`main` is at fdbd9d9. Nine PRs are open against it, all cut from that commit. None is merged or deployed. This file is identical on all nine branches on purpose, so they can be merged in any order without conflicting on it (see "Why this file looks the same on every branch").
 
-What the issue was, after the API migration:
-- B1 (CHW page): the old "cleared alert shows as active" bug is gone, because `GET /alerts` returns only active alerts by default. A different bug remained: `fetchOpenAlerts()` had no tier filter and a page size of 5, so any active WATCH alert switched on "Disaster mode" and five newer WATCH alerts could push a CRITICAL one off the list.
-- B2 (public feed `/alerts`): `fetchAlerts()` asks for `includeCleared=true`, and the API sends `status` and `clearedAt`, but the page ignored them.
-- B2 (lake page): the API's lake-detail alerts query did not select `status`, so the page could not tell cleared from active.
+| PR | Branch | What it does | Session note |
+|---|---|---|---|
+| #65 | `fix/issue-20-lake-detail-route` | `/lakes/$lakeId` renders the detail page instead of the list (#20) | `sessions/2026-10-05-issue-20-lake-detail-route-handoff.md` |
+| #66 | `fix/issue-21-muted-color-naming` | Renames the `--color-muted` primitive to `--color-text-muted` (#21) | `sessions/2026-10-06-issue-21-muted-color-naming-handoff.md` |
+| #67 | `fix/issue-30-cleared-alerts-look-active` | Cleared alerts no longer look active; CHW "Disaster mode" only for active HIGH/CRITICAL (#30) | `sessions/2026-10-07-issue-30-cleared-alerts-handoff.md` |
+| #68 | `fix/issue-22-glacier-badge-dark-mode` | Glacier driver badges use theme tokens so dark mode works (#22) | `sessions/2026-10-08-issue-22-driver-badge-tokens-handoff.md` |
+| #69 | `fix/issue-32-acks-column-loading-state` | Acks column shows "—", not 0, while acks load or fail (#32) | `sessions/2026-10-08-issue-32-acks-loading-state-handoff.md` |
+| #70 | `fix/issue-1-alert-feed-field-names` | Alert feed maps the API's camelCase fields to the names it reads (Refs #1) | `sessions/2026-10-09-issue-1-alert-feed-field-names-handoff.md` |
+| #71 | `fix/issue-1-glacier-page-crash` | Glacier detail page no longer crashes on the API's lake fields (Refs #1) | `sessions/2026-10-09-issue-1-glacier-page-crash-handoff.md` |
+| #72 | `fix/issue-1-dashboard-chw-lake-detail` | `/dashboard`, `/chw` and the lake detail page read the API's real field names (Refs #1) | `sessions/2026-10-12-issue-1-dashboard-chw-lake-detail-handoff.md` |
+| #73 | `fix/issue-3-admin-delete-and-optional-fields` | Delete works from the admin portal; optional contact/phone can be left blank (Refs #3) | `sessions/2026-10-12-issue-3-admin-delete-and-optional-fields-handoff.md` |
+
+Each session's full handoff (what was done, how it was checked, what is left) is kept unedited in the file named in the table. The handoff that was on `main` before this one (account data deletion, 2026-10-01) is `sessions/2026-10-01-account-data-deletion-handoff.md`.
 
 ## Done this session
-- `src/lib/cryohealth-client.ts`: `fetchOpenAlerts()` fetches `pageSize=50` and keeps only `status === "active"` with tier `high` or `critical` (lowercase compare).
-- `src/routes/chw.tsx`: added `status` to the alert type; `disasterMode` is unchanged because the list is now filtered at the source.
-- `src/routes/alerts.tsx`: cleared rows get a neutral grey stripe, a "Cleared on <date>" label, `opacity-70`, and no Acknowledge button. Active rows are unchanged.
-- `src/routes/lakes.$lakeId.tsx`: same label and `opacity-70` for cleared rows; safe when `status` is missing (treated as active).
-- `src/components/cryohealth/ClearedLabel.tsx` (new): shared `isClearedAlert()` and `ClearedLabel`.
-- Archived the previous handoff to `docs/ai/sessions/2026-10-01-account-data-deletion-handoff.md` (the same file name the other open PRs use, so it merges cleanly).
+- Replaced every PR's `docs/ai/HANDOFF.md` with this shared text and saved each PR's own handoff as its own file under `docs/ai/sessions/`, so nothing was lost. No source file changed.
+- Merged all nine PRs into a scratch copy of `main` in order: the code merges with no conflict, `bun run build` passes, and eslint reports 0 errors (14 warnings; `main` has 13).
+- Tried every ordered pair of the nine PRs: no conflict.
 
 ## Not done / deferred
-- The lake page will not show "Cleared" until the CryoHealth-api change (lake-detail alerts return `status` and `cleared_at`) is merged and deployed. Until then every lake-page row looks active, as before. Nothing breaks.
-- `/lakes/<id>` still renders the lakes list instead of the lake (issue #20), so the lake-page part was verified through the endpoint response, not in a browser.
-- Not tested live: "no Disaster mode when only WATCH alerts are active". The local database already has 4 active HIGH/CRITICAL alerts, so the banner correctly stayed on; the seeded WATCH row was confirmed absent from the list.
-- Separate bugs found, not fixed in this PR (outside #30; the camelCase "Invalid Date" one is now fixed by PR #70, and the same mismatch on `/dashboard` and `/chw` by PR #72): every row on `/alerts` shows "Invalid Date" because the API sends camelCase (`createdAt`, `estimatedWindow`, `affectedPopulation`) while the page reads snake_case; `alerts.tsx` compares `a.tier === "CRITICAL"` but the API sends lowercase, so the solid CRITICAL badge never applies; `district_name` is not in the feed at all.
-- An unstaged `src/routeTree.gen.ts` change exists (line endings only, regenerated by `bun run build`); it is not part of this work. Also an unstaged `package-lock.json` change in the API repo.
+Found by reading the merged code, not by running it against a live API:
+- **`/dashboard` will crash once API PR #26 is deployed.** The hot-lakes list in `src/routes/dashboard.tsx` calls `l.downstream_population.toLocaleString()` on the raw `/hot-lakes` rows. API #26 now returns `null` there for a lake with no known population (today every lake is 0, so every row becomes `null`), and calling `.toLocaleString()` on `null` throws. It also prints `Number(null)` as "0" for a lake with no score. Needs a null check (show "—"). Not changed here.
+- **The fake zeros come back on the glacier page.** `src/lib/cryohealth-api.ts` (from #71) maps a missing risk score or population to `0` (`?? 0`), which re-creates "0 downstream · score 0" that API #26 removes. `LakeFormDialog.tsx` also prefills population as `0`. Not changed here.
+- **Merge order:** #70 before #72 (#72 reuses its helper, and its diff includes #70's commits until then), and #65 before #72 (the lake detail page needs the route fix).
+- **Needs an API PR to be merged and deployed first** (CryoHealth-api, same session): #67 needs API #22 (alert `status` and `cleared_at`, otherwise the lake page still shows cleared alerts as active); the admin "New case" button needs API #25; the district/glacier delete message needs API #24 for the new 409 `dependents` answer.
+- **Before deploying API #26:** the API now reads `CORS_ORIGINS` (it used to ignore it). If the server's `.env` has an old value without `https://cryohealth.io`, browsers will be blocked. Check the server value first.
+- `facility_admin` still sees Edit/Delete/New buttons the API answers 403 for; a human has to decide whether to widen the API roles or hide the buttons (see #73's note).
 
 ## Next action
-Review PR #67. Merge and deploy API PR uExel/CryoHealth-api#22 first, or together with this one; without it the lake page cannot show "Cleared". The lake page itself only opens once PR #65 (issue #20) is merged.
+Review and merge #65 to #73 (respecting the order above). After the first one merges, GitHub should show the others as mergeable.
 
 ## Open questions for a human
-- Should a cleared HIGH/CRITICAL row keep its (dimmed) red/orange tier badge, or show a neutral badge? Currently kept, per the task spec — blocking: no (but "red means CRITICAL only" argues for neutral)
-- Fix the "Invalid Date" / camelCase mismatch on `/alerts` here or in its own issue? — blocking: no
+- The `uexel-handoff-check` workflow fails any PR that does not change `docs/ai/HANDOFF.md`, so every parallel PR rewrites the same single-state file and they all conflict. Should the check also accept a new file under `docs/ai/sessions/` as proof of a handoff, and `HANDOFF.md` be refreshed on `main` only? The workflow is copied in by `bin/uexel-onboard` from uExel/cryo-harness, so the real fix belongs there. — blocking: no
+- Should the `/dashboard` and glacier-page null handling be fixed inside one of these PRs or in a new one? — blocking: yes for deploying API #26 together with the frontend
+
+## Why this file looks the same on every branch
+Git only reports a conflict when two branches change the same lines in different ways. If both sides make the identical change, the merge is clean. So the nine branches carry exactly this text, and each session's own handoff lives in its own, uniquely named file under `docs/ai/sessions/` (a new file with a new name can never conflict). When you add a session of your own, add a new file there; only touch this file when the branch you are on is the only one open.
 
 ## Failed approaches (do not retry)
-- Repo-wide `bun run lint` on Windows: about 17,500 errors, nearly all `Delete ␍` (CRLF vs prettier). Lint only the changed files with `npx eslint <files>`.
-- Reading `/lakes/:id` on the API for alert rows: the detail with alerts is `GET /lakes/:id/detail`.
-- Browser test against a local API: its CORS allows only `http://localhost:8080` (`CORS_ORIGINS` is ignored), so another port is blocked unless Chrome runs with `--disable-web-security`.
+- Resolving each PR's `HANDOFF.md` separately by keeping that PR's own text: it works for one merge, but after the first PR lands every other PR conflicts again.
+- `bun run lint` on a Windows checkout reports about 18,000 "Delete `␍`" errors because of CRLF line endings; `main` has the same. Lint with `--rule '{"prettier/prettier":["error",{"endOfLine":"auto"}]}'` to see real problems.
 
 ## Loops run
 - none
 
 ## Files touched
-src/lib/cryohealth-client.ts, src/routes/chw.tsx, src/routes/alerts.tsx, src/routes/lakes.$lakeId.tsx, src/components/cryohealth/ClearedLabel.tsx (new), docs/ai/HANDOFF.md, docs/ai/sessions/2026-10-01-account-data-deletion-handoff.md
+docs/ai/HANDOFF.md, docs/ai/sessions/2026-10-01-account-data-deletion-handoff.md, and one `docs/ai/sessions/*-handoff.md` per PR (named in the table above). No source files changed.
 
 ## Verification status
-tests: n/a (no test script)  build: pass  lint (5 changed files): 0 errors, 1 warning  tsc: pre-existing `unknown[]` errors in untouched lines, none new in logic  review: none  qa: manual, headless Chrome against a local API and local Postgres with seeded rows (since removed): `/alerts` cleared rows grey stripe + label + dimmed + no Acknowledge; `/chw` lists only active HIGH/CRITICAL
+tests: no test script in this repo  build: `bun run build` passes with all nine merged  lint: 0 errors, 14 warnings (main: 13), checked with line endings ignored  review: none  qa: not run against a live API; the issues under "Not done" come from reading the code
 
 ## Resume with
-`git log --oneline origin/main..fix/issue-30-cleared-alerts-look-active` to list the commits; the PR is #67 (see Next action)
+/uexel:orient   (then: gh pr list --repo uExel/cryohealth --state open)
