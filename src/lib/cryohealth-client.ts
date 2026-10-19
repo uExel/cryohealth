@@ -59,14 +59,32 @@ export async function fetchProtocols(): Promise<{ protocols: unknown[] }> {
   return { protocols: asArray(await apiFetch("/protocols", { method: "GET" }, token())) };
 }
 
+/** CryoHealth-api sends alerts in camelCase (createdAt, bodyEn, estimatedWindow, ...), but
+ *  the public alert feed reads snake_case (created_at, body_en, ...). Add the snake_case keys
+ *  and keep the originals, so admin.alerts.tsx, which reads camelCase, is unaffected. */
+function withFeedFieldNames(alert: unknown): unknown {
+  const a = alert as Record<string, unknown>;
+  return {
+    ...a,
+    created_at: a.created_at ?? a.createdAt,
+    body_en: a.body_en ?? a.bodyEn ?? a.body,
+    body_ur: a.body_ur ?? a.bodyUr ?? null,
+    estimated_window: a.estimated_window ?? a.estimatedWindow ?? null,
+    affected_population: a.affected_population ?? a.affectedPopulation ?? null,
+  };
+}
+
 export async function fetchAlerts(): Promise<{
   alerts: unknown[];
   total: number;
   hasMore: boolean;
 }> {
   const res = await apiFetch("/alerts?includeCleared=true", { method: "GET" }, token());
-  const alerts =
-    getProp<unknown[]>(res, "items") || getProp<unknown[]>(res, "alerts") || asArray(res);
+  const alerts = (
+    getProp<unknown[]>(res, "items") ||
+    getProp<unknown[]>(res, "alerts") ||
+    asArray(res)
+  ).map(withFeedFieldNames);
   const total = getProp<number>(res, "total") ?? alerts.length;
   return { alerts, total, hasMore: alerts.length < total };
 }
