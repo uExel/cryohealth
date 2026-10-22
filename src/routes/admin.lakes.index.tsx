@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { TierBadge, type Tier } from "@/lib/tier";
 import { fetchDistricts, fetchLakesAdmin, adminRequest } from "@/lib/cryohealth-client";
 import type { LakeCreate } from "@/lib/admin-schemas";
+import { formatPopulation, formatRiskScore } from "@/lib/lake-format";
 import { LakeFormDialog } from "@/components/cryohealth/LakeFormDialog";
 import {
   Table,
@@ -248,10 +249,10 @@ function LakesAdmin() {
                   <TierBadge tier={l.current_tier} />
                 </TableCell>
                 <TableCell className="text-foreground">
-                  {l.current_risk_score != null ? Number(l.current_risk_score).toFixed(0) : "—"}
+                  {formatRiskScore(l.current_risk_score)}
                 </TableCell>
                 <TableCell className="text-foreground">
-                  {l.downstream_population != null ? l.downstream_population.toLocaleString() : "—"}
+                  {formatPopulation(l.downstream_population)}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
                   {l.last_updated ? new Date(l.last_updated).toLocaleDateString() : "—"}

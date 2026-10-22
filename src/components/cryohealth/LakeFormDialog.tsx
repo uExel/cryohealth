@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { lakeCreateSchema, type LakeCreate } from "@/lib/admin-schemas";
 import { TierBadge, type Tier } from "@/lib/tier";
+import { formatRiskScore, parsePopulationInput } from "@/lib/lake-format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -101,7 +102,9 @@ export function LakeFormDialog({
       historicalGlof: initial?.historicalGlof ?? false,
       source: initial?.source ?? "",
       sourceUrl: initial?.sourceUrl ?? undefined,
-      downstream_population: initial?.downstream_population ?? 0,
+      // undefined, not 0: the API reports an unknown population as null, and a key left
+      // undefined is omitted from the request, so saving the form never writes a fake 0.
+      downstream_population: initial?.downstream_population ?? undefined,
       area_km2: initial?.area_km2 != null ? Number(initial.area_km2) : undefined,
       lat: initial?.lat ?? undefined,
       lng: initial?.lng ?? undefined,
@@ -134,10 +137,7 @@ export function LakeFormDialog({
               <div className="flex shrink-0 flex-col items-end gap-1">
                 <TierBadge tier={initial.current_tier} />
                 <span className="text-xs text-muted-foreground">
-                  Risk:{" "}
-                  {initial.current_risk_score != null
-                    ? Number(initial.current_risk_score).toFixed(0)
-                    : "—"}
+                  Risk: {formatRiskScore(initial.current_risk_score)}
                 </span>
               </div>
             </div>
@@ -379,8 +379,8 @@ export function LakeFormDialog({
                   <FormControl>
                     <Input
                       type="number"
-                      value={field.value ?? 0}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(parsePopulationInput(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />

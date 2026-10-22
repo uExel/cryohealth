@@ -14,6 +14,7 @@ import { haversineKm, glacierLakeAssocScore, glacierStatusWeight } from "@/lib/g
 import { BreakdownDetails, DriverBadge, DriverLegend } from "./glaciers.$glacierId";
 import { StatCard } from "@/components/cryohealth/StatCard";
 import { fetchLakeDetail } from "@/lib/cryohealth-client";
+import { formatPopulation, formatRiskScore } from "@/lib/lake-format";
 
 export const Route = createFileRoute("/lakes/$lakeId")({
   head: ({ params }) => ({
@@ -42,14 +43,19 @@ function LakeDetail() {
           elevation_m?: number | null;
           area_km2?: number | null;
           current_tier: string;
-          current_risk_score: number;
-          current_confidence: number;
-          downstream_population: number;
-          last_updated: string;
+          current_risk_score: string | number | null;
+          current_confidence?: number | null;
+          downstream_population: number | null;
+          // The API sends the camelCase columns (updatedAt, district) next to the snake_case
+          // aliases; last_updated and district_name are not always present.
+          last_updated?: string;
+          updatedAt?: string;
+          district?: string | null;
+          stale?: boolean;
           lat: number;
           lng: number;
         };
-        history: { score: number; observed_at: string }[];
+        history: { score: number; confidence?: number | null; observed_at: string }[];
         alerts: {
           id: string;
           title: string;
@@ -78,6 +84,19 @@ function LakeDetail() {
     score: Number(r.score),
   }));
   const alerts = lakeBundle?.alerts ?? [];
+
+  // Show "—" instead of a made-up value when the API has no data for a field.
+  const updatedRaw = lake?.last_updated ?? lake?.updatedAt;
+  const updatedLabel =
+    updatedRaw && !Number.isNaN(new Date(updatedRaw).getTime())
+      ? new Date(updatedRaw).toLocaleDateString()
+      : "—";
+  const confidenceRaw =
+    lake?.current_confidence ?? lakeBundle?.history[lakeBundle.history.length - 1]?.confidence;
+  const confidenceLabel =
+    confidenceRaw != null && Number.isFinite(Number(confidenceRaw))
+      ? `${Math.round(Number(confidenceRaw) * 100)}%`
+      : "—";
 
   const associatedGlaciers = (() => {
     if (!lake?.lat || !lake?.lng) return undefined;
@@ -123,21 +142,25 @@ function LakeDetail() {
         <div>
           <h1 className="text-2xl font-semibold text-foreground">{lake.name}</h1>
           <p className="text-sm text-muted-foreground">
-            {lake.district_name ?? "—"} · {lake.elevation_m ?? "?"} m ·{" "}
-            {Number(lake.area_km2 ?? 0).toFixed(2)} km²
+            {lake.district_name ?? lake.district ?? "—"} · {lake.elevation_m ?? "—"} m ·{" "}
+            {lake.area_km2 != null ? Number(lake.area_km2).toFixed(2) : "—"} km²
           </p>
         </div>
-        <TierBadge tier={lake.current_tier as Tier} solid={lake.current_tier === "CRITICAL"} />
+        <div className="flex items-center gap-1.5">
+          <TierBadge tier={lake.current_tier as Tier} solid={lake.current_tier === "CRITICAL"} />
+          {lake.stale && (
+            <span className="bg-secondary px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
+              Stale
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-4">
-        <StatCard label="Risk score" value={Number(lake.current_risk_score).toFixed(0)} />
-        <StatCard
-          label="Confidence"
-          value={`${Math.round(Number(lake.current_confidence) * 100)}%`}
-        />
-        <StatCard label="Downstream" value={lake.downstream_population.toLocaleString()} />
-        <StatCard label="Updated" value={new Date(lake.last_updated).toLocaleDateString()} />
+        <StatCard label="Risk score" value={formatRiskScore(lake.current_risk_score)} />
+        <StatCard label="Confidence" value={confidenceLabel} />
+        <StatCard label="Downstream" value={formatPopulation(lake.downstream_population)} />
+        <StatCard label="Updated" value={updatedLabel} />
       </div>
 
       <section className="mt-6 rounded-xl border border-border bg-card p-5">

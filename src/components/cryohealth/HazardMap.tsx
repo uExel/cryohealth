@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { tierClasses, type Tier } from "@/lib/tier";
+import { formatPopulation, formatRiskScore } from "@/lib/lake-format";
 
 type Lake = {
   id: string;
@@ -7,9 +8,9 @@ type Lake = {
   lat: number;
   lng: number;
   current_tier: Tier;
-  // Not yet exposed by CryoHealth-api — rendered only when present.
-  current_risk_score?: number;
-  downstream_population?: number;
+  // Rendered only when present; the API sends null while nothing real is known.
+  current_risk_score?: string | number | null;
+  downstream_population?: number | null;
 };
 
 type Facility = {
@@ -157,8 +158,8 @@ export function HazardMap({
           `<div class="space-y-1 text-xs">
             <div class="font-semibold">${escapeHtml(l.name)}</div>
             <div>Tier: ${l.current_tier}</div>
-            ${l.current_risk_score != null ? `<div>Score: ${Number(l.current_risk_score).toFixed(0)}</div>` : ""}
-            ${l.downstream_population != null ? `<div>Downstream: ${Number(l.downstream_population).toLocaleString()}</div>` : ""}
+            ${l.current_risk_score != null ? `<div>Score: ${formatRiskScore(l.current_risk_score)}</div>` : ""}
+            ${l.downstream_population != null ? `<div>Downstream: ${formatPopulation(l.downstream_population)}</div>` : ""}
             <a href="/lakes/${encodeURIComponent(l.id)}" class="text-primary underline">Open lake →</a>
           </div>`,
         )

@@ -13,6 +13,7 @@ import {
   adminRequest,
 } from "@/lib/cryohealth-client";
 import type { LakeCreate } from "@/lib/admin-schemas";
+import { formatConfidence, formatPopulation, formatRiskScore } from "@/lib/lake-format";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
@@ -65,7 +66,7 @@ type LakeRow = {
 type RiskScoreRow = {
   score: string | number;
   tier: string;
-  confidence: string | number;
+  confidence: string | number | null;
   observed_at: string;
 };
 
@@ -196,19 +197,10 @@ function LakeDetailAdmin() {
 
         <TabsContent value="overview">
           <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard
-              label="Risk score"
-              value={
-                lake.current_risk_score != null ? Number(lake.current_risk_score).toFixed(0) : "—"
-              }
-            />
+            <StatCard label="Risk score" value={formatRiskScore(lake.current_risk_score)} />
             <StatCard
               label="Downstream population"
-              value={
-                lake.downstream_population != null
-                  ? lake.downstream_population.toLocaleString()
-                  : "—"
-              }
+              value={formatPopulation(lake.downstream_population)}
             />
             <StatCard
               label="Elevation"
@@ -287,7 +279,7 @@ function LakeDetailAdmin() {
                       </TableCell>
                       <TableCell>{Number(r.score).toFixed(2)}</TableCell>
                       <TableCell>{isTier(r.tier) ? <TierBadge tier={r.tier} /> : r.tier}</TableCell>
-                      <TableCell>{Math.round(Number(r.confidence) * 100)}%</TableCell>
+                      <TableCell>{formatConfidence(r.confidence)}</TableCell>
                     </TableRow>
                   ))}
               </TableBody>
