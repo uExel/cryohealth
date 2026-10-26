@@ -65,6 +65,29 @@ const ENDPOINTS: Endpoint[] = [
   },
   {
     method: "GET",
+    path: "/lakes/{lakeId}/observations",
+    desc: "A lake's satellite water-area readings (Sentinel-2), newest first. Optional query parameters: page (default 1) and pageSize (default 100, maximum 500). The example below is illustrative: all ids and values are made-up placeholders, not real CryoHealth data, and the number formatting shown is not a guarantee.",
+    example: `{
+  "items": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "lakeId": "00000000-0000-4000-8000-000000000002",
+      "capturedAt": "2026-08-08T00:00:00.000Z",
+      "source": "sentinel2",
+      "areaKm2": "0.412300",
+      "cloudFraction": "0.1200",
+      "sceneId": "S2B_MSIL2A_20260808",
+      "runId": "run_2026-08-09",
+      "createdAt": "2026-08-09T04:12:00.000Z"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "pageSize": 100
+}`,
+  },
+  {
+    method: "GET",
     path: "/hot-lakes",
     desc: "Lakes currently at HIGH or CRITICAL tier only, ordered by risk score.",
     example: `{ "lakes": [{ "id": "lk_shishper", "name": "Shishper glacial lake", "current_tier": "HIGH", "current_risk_score": 78, "downstream_population": 4200, "last_updated": "2026-08-09T04:12:00Z" }] }`,
