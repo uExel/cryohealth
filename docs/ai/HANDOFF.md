@@ -1,3 +1,48 @@
+# HANDOFF — cryohealth — 2026-10-26
+
+Session: lake-observations-docs Branch: docs/lake-observations-endpoint PR: #75 Commit: 76c957c (docs change), this file in the next commit
+
+## State
+
+PR #75 documents the existing public `GET /lakes/{lakeId}/observations` endpoint on the Open Data page (`src/routes/data.tsx`). It is documentation only: no route, API or other frontend behavior changed. The entry sits between `/lakes/{lakeId}` and `/hot-lakes` in `ENDPOINTS`. It was written from the CryoHealth-api code (`src/lakes/lakes.service.ts` `listObservations`, `src/lakes/entities/observation.entity.ts`), not from a live response.
+
+What the entry documents:
+
+- Response shape `{ items, total, page, pageSize }`; each item has `id`, `lakeId`, `capturedAt`, `source`, `areaKm2`, `cloudFraction`, `sceneId`, `runId`, `createdAt`.
+- Newest first.
+- Query parameters `page` (default 1) and `pageSize` (default 100, maximum 500).
+- The example uses placeholder UUIDs and made-up values. The entry's description says they are illustrative, not real CryoHealth data, and that the number formatting shown is not a guarantee.
+
+## Done this session
+
+- Added the 23-line `/lakes/{lakeId}/observations` entry to `ENDPOINTS` in `src/routes/data.tsx` (commit 76c957c).
+- Left out any claim that `areaKm2` and `cloudFraction` are decimal strings; that was not verified.
+- Worked in a separate worktree from `origin/main`, so the in-progress work on `fix/issue-20-lake-detail-route` was not touched. `bun run build` regenerated `src/routeTree.gen.ts`; it was restored and is not part of this PR.
+
+## Not done / deferred
+
+- The API and the database were not called or queried. Whether `areaKm2` and `cloudFraction` come back as strings or numbers is unverified, and so is whether the database holds any observation rows.
+- CryoHealth-api `origin/main` has no top-level `GET /observations` route (checked 2026-10-26 against the route decorators in `src/**/*.controller.ts`; only `lakes/:id/observations` and `glaciers/:id/observations` exist), so none is documented here. Whether CryoHealth-api#1 requires a top-level route is an open question for the issue owner.
+- Local lint is not clean (see below); it was not fixed.
+
+## Next action
+
+Commit and push this HANDOFF.md update to `docs/lake-observations-endpoint`, then confirm `uexel-handoff-check / handoff-fresh` passes on PR #75. PR #75 is open and not merged.
+
+## Verification status
+
+- `bun install --frozen-lockfile` passed; `bun.lock` and `package-lock.json` unchanged.
+- `bun run build` passed locally, and the CI `build` check passed on PR #75.
+- `bun run lint` failed locally: 18293 problems, of which 18280 are Prettier "Delete ␍" line-ending errors across 119 files (`core.autocrlf=true` on this Windows checkout; the committed files are LF). The other 13 are warnings in files this PR does not touch. All 243 messages for `src/routes/data.tsx` are the line-ending kind.
+- `uexel-handoff-check / handoff-fresh` failed on the first push because `docs/ai/HANDOFF.md` was not in the PR diff.
+- Not tested: the API, the database, and the rendered `/data` page.
+
+## Resume with
+
+`gh pr view 75 --repo uExel/cryohealth`
+
+---
+
 # HANDOFF — cryohealth — 2026-09-28 13:37 PKT
 
 # HANDOFF — cryohealth — 2026-10-01
