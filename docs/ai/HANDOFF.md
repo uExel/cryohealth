@@ -27,7 +27,7 @@ What the entry documents:
 
 ## Next action
 
-Commit and push this HANDOFF.md update to `docs/lake-observations-endpoint`, then confirm `uexel-handoff-check / handoff-fresh` passes on PR #75. PR #75 is open and not merged.
+The HANDOFF.md commit is ready to push to `docs/lake-observations-endpoint` to update the PR #75 checks; after the push, confirm `uexel-handoff-check / handoff-fresh` passes. PR #75 is open and not merged.
 
 ## Verification status
 
