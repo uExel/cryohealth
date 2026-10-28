@@ -5,7 +5,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { fetchCases, fetchDistricts, fetchAdminUsers, adminRequest } from "@/lib/cryohealth-client";
+import {
+  fetchCases,
+  fetchDistricts,
+  fetchAdminUsers,
+  adminRequest,
+  adminDelete,
+} from "@/lib/cryohealth-client";
 import { caseCreateSchema, type CaseCreate, type CaseUpdate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -176,9 +182,7 @@ function CasesAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const result = await adminRequest(`/admin/cases/${id}?reason=${encodeURIComponent(reason)}`, {
-        method: "DELETE",
-      });
+      const result = await adminDelete(`/admin/cases/${id}`, reason);
       if (!result.ok) throw new Error(result.body.error ?? "Failed to delete case");
       return result.body;
     },
