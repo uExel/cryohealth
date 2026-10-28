@@ -123,9 +123,10 @@ export async function fetchGlacierDetail(glacierId: string): Promise<unknown | n
       { method: "GET" },
       token(),
     );
-    const lakes = await apiFetch("/lakes", { method: "GET" }, token());
-    const lakesList = asArray(lakes);
-    return { glacier, observations, lakes: lakesList, cases: [] };
+    // fetchLakesFromApi() maps the API's camelCase + GeoJSON lakes to the lat/lng and
+    // snake_case fields the glacier page reads (raw /lakes has neither).
+    const lakes = await fetchLakesFromApi();
+    return { glacier, observations, lakes, cases: [] };
   } catch {
     return null;
   }

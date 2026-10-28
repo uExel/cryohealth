@@ -18,6 +18,8 @@ type ApiLake = {
   elevationM: number | null;
   geom: ApiGeomPoint;
   updatedAt: string;
+  currentRiskScore?: number | string | null;
+  downstreamPopulation?: number | null;
 };
 
 export type Lake = {
@@ -28,6 +30,7 @@ export type Lake = {
   current_tier: Tier;
   stale: boolean;
   district_id: string;
+  district_name?: string;
   elevation_m: number | null;
   last_updated: string;
   current_risk_score?: number;
@@ -50,8 +53,13 @@ function toLake(l: ApiLake): Lake {
     current_tier: API_TIER[l.currentTier] ?? "NORMAL",
     stale: l.stale,
     district_id: l.district,
+    district_name: l.district,
     elevation_m: l.elevationM,
     last_updated: l.updatedAt,
+    // The API sends the numeric risk score as a string; the glacier page calls
+    // toLocaleString() on the population, so neither may be missing.
+    current_risk_score: Number(l.currentRiskScore ?? 0),
+    downstream_population: l.downstreamPopulation ?? 0,
   };
 }
 
