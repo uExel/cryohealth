@@ -1,39 +1,59 @@
-# HANDOFF — cryohealth — 2026-10-22
-
-Session: api-13-null-population-score-display Branch: fix/api-13-null-population-score-display PR: #74 Commit: 6f905e2 (code), this file in the next commit
+# HANDOFF — cryohealth — 2026-10-18
+Session: open-frontend-prs-handoff-consolidation  Model: claude-sonnet-5-5  Branch: (shared by PRs #65 to #73)  Goal: none  Task: land the nine open frontend PRs without `HANDOFF.md` conflicts
 
 ## State
+`main` is at fdbd9d9. Nine PRs are open against it, all cut from that commit. None is merged or deployed. This file is identical on all nine branches on purpose, so they can be merged in any order without conflicting on it (see "Why this file looks the same on every branch").
 
-PR #74 is the frontend half of CryoHealth-api#13 (it does not close it). CryoHealth-api PR #26 stops reporting a made-up `0` for a lake's downstream population and risk score and returns `null` instead, plus a real 0–1 hazard score. These pages were written for the old always-present numbers, so with that API they crash on a null population (`downstream_population.toLocaleString()`), print the 0–1 score with `toFixed(0)` (0.43 shows as "0"), show an unknown confidence as "0%", and the lake form turned an unknown population into a stored `0` on every save. Each was reproduced from the exact expression in the code before the fix.
+| PR | Branch | What it does | Session note |
+|---|---|---|---|
+| #65 | `fix/issue-20-lake-detail-route` | `/lakes/$lakeId` renders the detail page instead of the list (#20) | `sessions/2026-10-05-issue-20-lake-detail-route-handoff.md` |
+| #66 | `fix/issue-21-muted-color-naming` | Renames the `--color-muted` primitive to `--color-text-muted` (#21) | `sessions/2026-10-06-issue-21-muted-color-naming-handoff.md` |
+| #67 | `fix/issue-30-cleared-alerts-look-active` | Cleared alerts no longer look active; CHW "Disaster mode" only for active HIGH/CRITICAL (#30) | `sessions/2026-10-07-issue-30-cleared-alerts-handoff.md` |
+| #68 | `fix/issue-22-glacier-badge-dark-mode` | Glacier driver badges use theme tokens so dark mode works (#22) | `sessions/2026-10-08-issue-22-driver-badge-tokens-handoff.md` |
+| #69 | `fix/issue-32-acks-column-loading-state` | Acks column shows "—", not 0, while acks load or fail (#32) | `sessions/2026-10-08-issue-32-acks-loading-state-handoff.md` |
+| #70 | `fix/issue-1-alert-feed-field-names` | Alert feed maps the API's camelCase fields to the names it reads (Refs #1) | `sessions/2026-10-09-issue-1-alert-feed-field-names-handoff.md` |
+| #71 | `fix/issue-1-glacier-page-crash` | Glacier detail page no longer crashes on the API's lake fields (Refs #1) | `sessions/2026-10-09-issue-1-glacier-page-crash-handoff.md` |
+| #72 | `fix/issue-1-dashboard-chw-lake-detail` | `/dashboard`, `/chw` and the lake detail page read the API's real field names (Refs #1) | `sessions/2026-10-12-issue-1-dashboard-chw-lake-detail-handoff.md` |
+| #73 | `fix/issue-3-admin-delete-and-optional-fields` | Delete works from the admin portal; optional contact/phone can be left blank (Refs #3) | `sessions/2026-10-12-issue-3-admin-delete-and-optional-fields-handoff.md` |
+
+Each session's full handoff (what was done, how it was checked, what is left) is kept unedited in the file named in the table. The handoff that was on `main` before this one (account data deletion, 2026-10-01) is `sessions/2026-10-01-account-data-deletion-handoff.md`.
 
 ## Done this session
-
-- Added `src/lib/lake-format.ts` (`formatPopulation`, `formatRiskScore` with two decimals, `formatConfidence`, `parsePopulationInput`): a missing value renders as "—", never 0, and no confidence is invented. 8 unit tests in `src/lib/lake-format.test.ts`; `package.json` gets `"test": "bun test"` and `CLAUDE.md` no longer says there is no test script.
-- Used the helpers in `dashboard`, `HazardMap`, `admin.lakes.index`, `admin.lakes.$lakeId`, `glaciers.$glacierId` and `lakes.$lakeId`; widened the matching types to allow `null` (also `admin.index`, types only).
-- `LakeFormDialog`: an unknown population is `undefined` (left out of the request) and a blank input means "not provided".
-- `src/routes/lakes.$lakeId.tsx` carries PR #72's confidence, updated-date, district, area and stale changes unchanged; ours on top is the import, two types and the Risk score / Downstream StatCards (5 lines).
+- Replaced every PR's `docs/ai/HANDOFF.md` with this shared text and saved each PR's own handoff as its own file under `docs/ai/sessions/`, so nothing was lost. No source file changed.
+- Merged all nine PRs into a scratch copy of `main` in order: the code merges with no conflict, `bun run build` passes, and eslint reports 0 errors (14 warnings; `main` has 13).
+- Tried every ordered pair of the nine PRs: no conflict.
 
 ## Not done / deferred
-
-- **Merge order.** `lakes.$lakeId.tsx` is also edited by #72, and git reports 2 textual conflicts there because the lines are interleaved. Keep this branch's version (it is #72's file plus our 5 lines), or merge #72 first. `/lakes/<id>` renders the list, not the detail page, on `main` until #65 (`lakes.tsx` has no `<Outlet/>`) is merged.
-- `glaciers.$glacierId.tsx` still computes `riskNorm = score / 100` and treats a missing score as 0; the score is 0–1 and changing it changes the glacier ranking, so it needs a team decision.
-- `src/lib/docs/schema.ts` still describes the old NOT NULL defaults; update it after CryoHealth-api#26 is merged.
-- No CI step runs `bun run test` yet.
-- Manual check still needed on the login-gated pages: `/glaciers/<id>` (nearby-lakes line), `/admin` (map popup), `/admin/lakes` (list, detail, edit form: leave population blank, save, and confirm the request has no `downstream_population` key and the API still reports `null`).
+Found by reading the merged code, not by running it against a live API:
+- **`/dashboard` will crash once API PR #26 is deployed.** The hot-lakes list in `src/routes/dashboard.tsx` calls `l.downstream_population.toLocaleString()` on the raw `/hot-lakes` rows. API #26 now returns `null` there for a lake with no known population (today every lake is 0, so every row becomes `null`), and calling `.toLocaleString()` on `null` throws. It also prints `Number(null)` as "0" for a lake with no score. Needs a null check (show "—"). Not changed here.
+- **The fake zeros come back on the glacier page.** `src/lib/cryohealth-api.ts` (from #71) maps a missing risk score or population to `0` (`?? 0`), which re-creates "0 downstream · score 0" that API #26 removes. `LakeFormDialog.tsx` also prefills population as `0`. Not changed here.
+- **Merge order:** #70 before #72 (#72 reuses its helper, and its diff includes #70's commits until then), and #65 before #72 (the lake detail page needs the route fix).
+- **Needs an API PR to be merged and deployed first** (CryoHealth-api, same session): #67 needs API #22 (alert `status` and `cleared_at`, otherwise the lake page still shows cleared alerts as active); the admin "New case" button needs API #25; the district/glacier delete message needs API #24 for the new 409 `dependents` answer.
+- **Before deploying API #26:** the API now reads `CORS_ORIGINS` (it used to ignore it). If the server's `.env` has an old value without `https://cryohealth.io`, browsers will be blocked. Check the server value first.
+- `facility_admin` still sees Edit/Delete/New buttons the API answers 403 for; a human has to decide whether to widen the API roles or hide the buttons (see #73's note).
 
 ## Next action
+Review and merge #65 to #73 (respecting the order above). After the first one merges, GitHub should show the others as mergeable.
 
-Merge CryoHealth-api#26 and #72 (and #65 for the lake detail route) first, then this PR; watch `build` and `uexel-handoff-check / handoff-fresh` on PR #74.
+## Open questions for a human
+- The `uexel-handoff-check` workflow fails any PR that does not change `docs/ai/HANDOFF.md`, so every parallel PR rewrites the same single-state file and they all conflict. Should the check also accept a new file under `docs/ai/sessions/` as proof of a handoff, and `HANDOFF.md` be refreshed on `main` only? The workflow is copied in by `bin/uexel-onboard` from uExel/cryo-harness, so the real fix belongs there. — blocking: no
+- Should the `/dashboard` and glacier-page null handling be fixed inside one of these PRs or in a new one? — blocking: yes for deploying API #26 together with the frontend
+
+## Why this file looks the same on every branch
+Git only reports a conflict when two branches change the same lines in different ways. If both sides make the identical change, the merge is clean. So the nine branches carry exactly this text, and each session's own handoff lives in its own, uniquely named file under `docs/ai/sessions/` (a new file with a new name can never conflict). When you add a session of your own, add a new file there; only touch this file when the branch you are on is the only one open.
+
+## Failed approaches (do not retry)
+- Resolving each PR's `HANDOFF.md` separately by keeping that PR's own text: it works for one merge, but after the first PR lands every other PR conflicts again.
+- `bun run lint` on a Windows checkout reports about 18,000 "Delete `␍`" errors because of CRLF line endings; `main` has the same. Lint with `--rule '{"prettier/prettier":["error",{"endOfLine":"auto"}]}'` to see real problems.
+
+## Loops run
+- none
+
+## Files touched
+docs/ai/HANDOFF.md, docs/ai/sessions/2026-10-01-account-data-deletion-handoff.md, and one `docs/ai/sessions/*-handoff.md` per PR (named in the table above). No source files changed.
 
 ## Verification status
-
-- `bun run test`: 8 pass, 0 fail.
-- `eslint .` with the prettier CRLF rule off (`core.autocrlf=true` here makes plain eslint report `Delete ␍` on every file): 0 errors, 13 warnings, same as `origin/main`.
-- `tsc --noEmit`: 92 errors, the same 92 as `origin/main`, identical per file, none new (type-check is not part of CI).
-- `vite build`: passes.
-- Real browser (headless Chrome, `vite dev` against a mock API that returns what CryoHealth-api#26 returns: population `null`, score `"0.4300"`): `/dashboard` renders `— downstream · score 0.43` with no error. `/lakes/<id>` was tested on a throwaway checkout of `main` plus #65's three route files plus this branch's `lakes.$lakeId.tsx`: heading `— · — m · — km²`, Risk score 0.43, Confidence —, Downstream —, no error and no `NaN`.
-- Not exercised: the login-gated pages listed above.
+tests: no test script in this repo  build: `bun run build` passes with all nine merged  lint: 0 errors, 14 warnings (main: 13), checked with line endings ignored  review: none  qa: not run against a live API; the issues under "Not done" come from reading the code
 
 ## Resume with
-
-`gh pr view 74 --repo uExel/cryohealth`
+/uexel:orient   (then: gh pr list --repo uExel/cryohealth --state open)

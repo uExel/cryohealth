@@ -1,7 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { TierBadge, type Tier } from "@/lib/tier";
-import { fetchKpis, fetchHotLakes, fetchOpenAlerts } from "@/lib/cryohealth-client";
+import {
+  fetchKpis,
+  fetchHotLakes,
+  fetchOpenAlerts,
+  withFeedFieldNames,
+} from "@/lib/cryohealth-client";
 import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
@@ -84,7 +89,8 @@ function Index() {
         estimated_window: string | null;
       }[]
     > => {
-      return (await fetchOpenAlerts()).alerts ?? [];
+      // The API sends camelCase; this list reads snake_case (created_at, estimated_window).
+      return ((await fetchOpenAlerts()).alerts ?? []).map(withFeedFieldNames);
     },
   });
 
