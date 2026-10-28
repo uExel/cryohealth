@@ -81,7 +81,7 @@
   --color-surface: #e6eef4;
   --color-surface-2: #ffffff;
   --color-text: #16232c;
-  --color-muted: #5b6f7c;
+  --color-text-muted: #5b6f7c;
   --color-line: rgba(22, 35, 44, 0.32);
   --color-line-soft: rgba(22, 35, 44, 0.14);
   --color-accent: #0f6ea8;
@@ -168,7 +168,7 @@
   --secondary: var(--color-surface);
   --secondary-foreground: var(--color-text);
   --muted: var(--color-surface);
-  --muted-foreground: var(--color-muted);
+  --muted-foreground: var(--color-text-muted);
   --accent: var(--color-accent-soft);
   --accent-foreground: var(--color-accent-ink);
   /* Deliberately NOT red. Solid red is reserved for the CRITICAL hazard tier
@@ -201,7 +201,7 @@
   --color-surface: #16232c;
   --color-surface-2: #1d2d38;
   --color-text: #e7f0f5;
-  --color-muted: #93a8b5;
+  --color-text-muted: #93a8b5;
   --color-line: rgba(231, 240, 245, 0.34);
   --color-line-soft: rgba(231, 240, 245, 0.14);
   --color-accent: #4aa8dd;
@@ -274,7 +274,7 @@
     line-height: var(--type-label-lh, 14px);
     letter-spacing: var(--type-label-track, 1.2px);
     text-transform: uppercase;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
 
   a {
@@ -318,7 +318,7 @@
   text-transform: uppercase;
 }
 .ch-muted {
-  color: var(--color-muted);
+  color: var(--color-text-muted);
 }
 .ch-rule {
   height: var(--border-rule);
