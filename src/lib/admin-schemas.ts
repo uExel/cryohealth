@@ -142,6 +142,7 @@ export const alertUpdateSchema = z
     body: z.string().trim().min(1, "Body is required").optional(),
     tier: z.enum(ALERT_TIERS).optional(),
     estimatedWindow: z.string().trim().min(1).nullable().optional(),
+    reason: z.string().trim().nullable().optional(),
   })
   .strict();
 export type AlertUpdate = z.infer<typeof alertUpdateSchema>;
@@ -281,6 +282,7 @@ export const userCreateSchema = z
     // neither is created unable to ever sign in.
     lhwId: z.string().trim().min(1).nullable().optional(),
     phone: z.string().trim().min(1).nullable().optional(),
+    email: z.string().trim().email("Enter a valid email address").nullable().optional(),
     facilityId: z.string().uuid().nullable().optional(),
     // Max 72: bcrypt hashes at most 72 bytes and silently ignores the rest, which would
     // make a longer PIN's tail meaningless rather than rejected. Min 4 matches the
@@ -295,15 +297,13 @@ export const userCreateSchema = z
   });
 export type UserCreate = z.infer<typeof userCreateSchema>;
 
-/** Deliberately just `role` and `active` — issue #16 scopes writes on an existing user
- *  to "deactivate" and "change role". name/lhwId/phone/facilityId are create-only here,
- *  and `pin` is absent entirely: there is no PIN-reset action in this task, so allowing
- *  it would be an unaudited credential-change path nothing in the UI drives. `.strict()`
- *  400s on any of them instead of dropping them silently. */
+/** Existing-user edits are limited to role, active status, and email. `.strict()`
+ * rejects unreviewed user fields rather than silently accepting them. */
 export const userUpdateSchema = z
   .object({
     role: z.enum(USER_ROLES).optional(),
     active: z.boolean().optional(),
+    email: z.string().trim().email("Enter a valid email address").nullable().optional(),
   })
   .strict();
 export type UserUpdate = z.infer<typeof userUpdateSchema>;
