@@ -1,3 +1,37 @@
+# HANDOFF — cryohealth — 2026-11-02
+
+Session: issue-2-chw-email  Branch: feat/issue-2-chw-email  PR: #77
+
+## State
+
+PR #77 is open against `main`. It adds admin UI support for assigning CHW email
+addresses and requires a reason when changing an alert tier. API delivery lives
+in CryoHealth-api PR #31.
+
+## Done this session
+
+- Added email editing to the admin user form and validation.
+- Added a required reason field when administrators change an alert tier.
+- Built and verified the dashboard changes.
+
+## Not done / deferred
+
+- Merge PR #77 only after review and checks pass.
+- The end-to-end feature also requires API PR #31, mobile/geo integrations, and
+  production SMTP configuration with real recipient addresses.
+
+## Verification status
+
+Changed-file ESLint and `npm run build` passed. `npm ci` required
+`--legacy-peer-deps` because the existing React 19 / react-leaflet 4 peer range
+conflicts; the production build passed with the repository's locked dependencies.
+
+## Resume with
+
+`gh pr view 77 --repo uExel/cryohealth`
+
+---
+
 # HANDOFF — cryohealth — 2026-09-28 13:37 PKT
 
 # HANDOFF — cryohealth — 2026-10-01
