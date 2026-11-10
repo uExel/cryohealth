@@ -282,8 +282,8 @@ export const userCreateSchema = z
     // neither is created unable to ever sign in.
     lhwId: z.string().trim().min(1).nullable().optional(),
     phone: z.string().trim().min(1).nullable().optional(),
-    email: z.string().trim().email("Enter a valid email address").nullable().optional(),
     facilityId: z.string().uuid().nullable().optional(),
+    email: z.string().trim().email("Enter a valid email address").nullable().optional(),
     // Max 72: bcrypt hashes at most 72 bytes and silently ignores the rest, which would
     // make a longer PIN's tail meaningless rather than rejected. Min 4 matches the
     // 4-digit dev PINs in seed-users.ts; not `.regex(/^\d+$/)` — nothing in the login
