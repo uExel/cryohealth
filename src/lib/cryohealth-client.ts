@@ -45,10 +45,17 @@ export async function fetchHotLakes(): Promise<{ lakes: unknown[] }> {
 }
 
 export async function fetchOpenAlerts(): Promise<{ alerts: unknown[] }> {
-  const res = await apiFetch("/alerts?pageSize=5", { method: "GET" }, token());
+  const res = await apiFetch("/alerts?pageSize=50", { method: "GET" }, token());
   const alerts =
     getProp<unknown[]>(res, "items") || getProp<unknown[]>(res, "alerts") || asArray(res);
-  return { alerts };
+  // Only active HIGH/CRITICAL alerts count as "open" for CHWs; the API tier is lowercase.
+  return {
+    alerts: alerts.filter((a) => {
+      const status = getProp<string>(a, "status");
+      const tier = String(getProp<string>(a, "tier") ?? "").toLowerCase();
+      return status === "active" && (tier === "high" || tier === "critical");
+    }),
+  };
 }
 
 export async function fetchGlaciers(): Promise<{ glaciers: unknown[] }> {
@@ -141,9 +148,10 @@ export async function fetchGlacierDetail(glacierId: string): Promise<unknown | n
       { method: "GET" },
       token(),
     );
-    const lakes = await apiFetch("/lakes", { method: "GET" }, token());
-    const lakesList = asArray(lakes);
-    return { glacier, observations, lakes: lakesList, cases: [] };
+    // fetchLakesFromApi() maps the API's camelCase + GeoJSON lakes to the lat/lng and
+    // snake_case fields the glacier page reads (raw /lakes has neither).
+    const lakes = await fetchLakesFromApi();
+    return { glacier, observations, lakes, cases: [] };
   } catch {
     return null;
   }
