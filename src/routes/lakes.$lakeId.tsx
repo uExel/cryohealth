@@ -13,6 +13,7 @@ import {
 import { haversineKm, glacierLakeAssocScore, glacierStatusWeight } from "@/lib/geo";
 import { BreakdownDetails, DriverBadge, DriverLegend } from "./glaciers.$glacierId";
 import { StatCard } from "@/components/cryohealth/StatCard";
+import { ClearedLabel, isClearedAlert } from "@/components/cryohealth/ClearedLabel";
 import { fetchLakeDetail } from "@/lib/cryohealth-client";
 
 export const Route = createFileRoute("/lakes/$lakeId")({
@@ -54,6 +55,8 @@ function LakeDetail() {
           id: string;
           title: string;
           tier: string;
+          status?: string;
+          cleared_at?: string | null;
           created_at: string;
           estimated_window: string | null;
         }[];
@@ -182,9 +185,13 @@ function LakeDetail() {
         <h2 className="text-sm font-semibold text-foreground">Alerts for this lake</h2>
         <ul className="mt-3 divide-y divide-border text-sm">
           {(alerts ?? []).map((a) => (
-            <li key={a.id} className="flex items-center justify-between py-2">
+            <li
+              key={a.id}
+              className={`flex items-center justify-between py-2 ${isClearedAlert(a.status) ? "opacity-70" : ""}`}
+            >
               <div>
                 <div className="text-foreground">{a.title}</div>
+                {isClearedAlert(a.status) && <ClearedLabel clearedAt={a.cleared_at} />}
                 <div className="text-xs text-muted-foreground">
                   {new Date(a.created_at).toLocaleString()}
                 </div>

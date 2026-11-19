@@ -45,10 +45,17 @@ export async function fetchHotLakes(): Promise<{ lakes: unknown[] }> {
 }
 
 export async function fetchOpenAlerts(): Promise<{ alerts: unknown[] }> {
-  const res = await apiFetch("/alerts?pageSize=5", { method: "GET" }, token());
+  const res = await apiFetch("/alerts?pageSize=50", { method: "GET" }, token());
   const alerts =
     getProp<unknown[]>(res, "items") || getProp<unknown[]>(res, "alerts") || asArray(res);
-  return { alerts };
+  // Only active HIGH/CRITICAL alerts count as "open" for CHWs; the API tier is lowercase.
+  return {
+    alerts: alerts.filter((a) => {
+      const status = getProp<string>(a, "status");
+      const tier = String(getProp<string>(a, "tier") ?? "").toLowerCase();
+      return status === "active" && (tier === "high" || tier === "critical");
+    }),
+  };
 }
 
 export async function fetchGlaciers(): Promise<{ glaciers: unknown[] }> {
