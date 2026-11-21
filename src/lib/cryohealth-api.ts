@@ -33,8 +33,8 @@ export type Lake = {
   district_name?: string;
   elevation_m: number | null;
   last_updated: string;
-  current_risk_score?: number;
-  downstream_population?: number;
+  current_risk_score?: number | null;
+  downstream_population?: number | null;
 };
 
 export function apiBaseUrl(): string {
@@ -56,10 +56,10 @@ function toLake(l: ApiLake): Lake {
     district_name: l.district,
     elevation_m: l.elevationM,
     last_updated: l.updatedAt,
-    // The API sends the numeric risk score as a string; the glacier page calls
-    // toLocaleString() on the population, so neither may be missing.
-    current_risk_score: Number(l.currentRiskScore ?? 0),
-    downstream_population: l.downstreamPopulation ?? 0,
+    // The API sends the numeric risk score as a string. A lake with no score or no known
+    // population stays null (shown as "—" by lake-format.ts), never a fake 0.
+    current_risk_score: l.currentRiskScore == null ? null : Number(l.currentRiskScore),
+    downstream_population: l.downstreamPopulation ?? null,
   };
 }
 

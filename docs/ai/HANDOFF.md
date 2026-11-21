@@ -1,30 +1,30 @@
 # HANDOFF — cryohealth — 2026-11-21
-Session: land-open-frontend-prs  Model: claude-sonnet-5-5  Branch: fix/issue-3-admin-delete-and-optional-fields-v2  Goal: land the open frontend PRs, each independently verified live  Task: re-land #73 (admin delete, optional contact/phone) with 0 new `tsc` errors
+Session: land-open-frontend-prs  Model: claude-sonnet-5-5  Branch: fix/lake-display-followups  Goal: land the open frontend PRs, each independently verified live  Task: fix the three non-blocking UI items the verifiers found
 
 ## State
-`main` is at 9654cc2. #65 to #71, #74 to #77 are merged. #74 carried #72's commits, so #72 has nothing left to add (merging it changes no file). #73 was merged and then reverted by #78 because it added 24 `tsc` errors (`main` went from 92 to 116). This branch re-applies #73 and fixes the cause.
+`main` is at 6bcdb00. Every earlier frontend PR is merged or closed: #65 to #71, #74 to #77 merged; #72 closed as superseded (#74 carried its commits); #73 was merged, reverted (#78) for adding 24 `tsc` errors, and re-landed as #79 with the cause fixed (`blankToNull` is a union, not `z.preprocess`). #74 and #79 each got an independent live PASS+NOTES.
 
-| PR | State | Notes |
-|---|---|---|
-| #72 | open, superseded | Everything in it landed through #74. Close it. |
-| #74 | merged | Null-safe population/score/confidence display. Independent live check on the real API: PASS+NOTES. |
-| #73 | merged, reverted by #78 | Re-landed here. |
+This branch fixes three items from those verifiers' notes:
+- A lake with no known population or score keeps `null` in `src/lib/cryohealth-api.ts` (it was mapped to `0`), so map popups and glacier pages show "—" instead of "Downstream: 0".
+- The lake detail chart's y-axis is 0 to 1 (was 0 to 100) and its tier reference lines are at the documented 0.65 / 0.45 / 0.25 (were 75 / 60 / 35).
+- `blankToNull` also wraps the user form's LHW ID, so a user can be saved with only a phone; CHW phone and facility contact are trimmed.
 
 ## Done this session
-- Reverted #73 (#78), verified #72 (FAIL: crash on null `downstream_population`), merged `main` into #74, verified it live (PASS+NOTES), merged it.
-- This branch: reverted the revert of #73, then fixed the type errors. Cause: `z.preprocess` in `blankToNull` (`src/lib/admin-schemas.ts`) makes each field's input type `unknown`, which no longer matches the form's value type, so zodResolver's generics failed in `admin.chw-profiles.tsx`, `admin.facilities.tsx`, `admin.users.tsx`. `blankToNull` is now a union (blank string transforms to `null`, otherwise the original schema), which keeps the input type. `tsc --noEmit`: 92 errors, 0 new sites against `main`'s 92. New `src/lib/admin-schemas.test.ts` (5 tests); `bun test` 13 pass, 0 fail; build passes; lint 0 real errors.
+- Checked on this branch: `tsc --noEmit` 92 errors against the `main` baseline of 92, 0 new sites; `bun test` 19 pass, 0 fail (new: `src/lib/cryohealth-api.test.ts`, more cases in `src/lib/admin-schemas.test.ts`; putting `?? 0` back makes the mapping tests fail); build passes; lint 0 real errors.
 
 ## Not done / deferred
-- Independent live verification of this branch is pending (admin pages need a login that was not available against a non-local API).
-- The map popups and glacier pages still show "Downstream: 0" for a lake with no population: `src/lib/cryohealth-api.ts` lines 61 to 62 map missing values to `0`. Keep `null` there.
-- Lake detail chart y-axis is 0 to 100 (`domain={[0, 100]}`) while scores are 0 to 1.
+- Independent live verification of this branch is pending.
+- Glacier page, `src/routes/glaciers.$glacierId.tsx` around line 114: `riskNorm = Number(score) / 100`, but scores are 0 to 1, so the risk part of the lake association score is about 100 times too small. Not changed here because it changes the driver badges and lake ordering; needs its own decision.
+- CryoHealth-api `chw-profiles.service.ts:189` does `dto.phone || undefined`, so clearing a CHW phone on edit returns 200 and keeps the old value. Facility contact clears correctly.
+- Facilities, protocols, cases and CHW-profile pages show `body.error` ("Bad Request") instead of the API's `message` for non-409 delete failures.
 - Editing a lake cannot clear an existing population (a blank box is omitted from the update).
 - API data: Ghulkin has score 0.38 but tier HIGH, which disagrees with the documented thresholds.
+- Signed-in `/chw` alert list was never seen rendered against real data.
 - Needs an API change deployed first (CryoHealth-api): admin "New case" needs API #25; district/glacier delete message needs API #24.
 - Before deploying API #26: it now reads `CORS_ORIGINS`; check the server value includes `https://cryohealth.io`.
 
 ## Next action
-Independent live check of this PR; merge if it passes; close #72.
+Independent live check of this PR; merge it if it passes.
 
 ## Open questions for a human
 - The `uexel-handoff-check` workflow fails any PR whose diff does not include `docs/ai/HANDOFF.md`. With one shared file that stops working once the first PR lands. Should it also accept a new `docs/ai/sessions/` file? The workflow comes from uExel/cryo-harness. — blocking: no
@@ -39,10 +39,10 @@ Independent live check of this PR; merge if it passes; close #72.
 - none
 
 ## Files touched
-docs/ai/HANDOFF.md, src/lib/admin-schemas.ts, src/lib/admin-schemas.test.ts, plus the files #73 changed (`admin.*` routes, `cryohealth-client.ts`) restored from the revert.
+docs/ai/HANDOFF.md, src/lib/cryohealth-api.ts, src/lib/cryohealth-api.test.ts, src/lib/admin-schemas.ts, src/lib/admin-schemas.test.ts, src/routes/lakes.$lakeId.tsx.
 
 ## Verification status
-tests: `bun test` 13 pass, 0 fail  build: passes  tsc: 92 vs baseline 92, 0 new sites  lint: 0 real errors  review: none  qa: independent live check pending
+tests: `bun test` 19 pass, 0 fail  build: passes  tsc: 92 vs baseline 92, 0 new sites  lint: 0 real errors  review: none  qa: independent live check pending
 
 ## Resume with
 /uexel:orient   (then: gh pr list --repo uExel/cryohealth --state open)
