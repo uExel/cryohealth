@@ -4,7 +4,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { fetchChwProfiles, fetchDistricts, adminRequest } from "@/lib/cryohealth-client";
+import {
+  fetchChwProfiles,
+  fetchDistricts,
+  adminRequest,
+  adminDelete,
+} from "@/lib/cryohealth-client";
 import { chwProfileCreateSchema, type ChwProfileCreate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -144,10 +149,7 @@ function ChwProfilesAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const { ok, body } = await adminRequest(
-        `/admin/chw-profiles/${id}?reason=${encodeURIComponent(reason)}`,
-        { method: "DELETE" },
-      );
+      const { ok, body } = await adminDelete(`/admin/chw-profiles/${id}`, reason);
       if (!ok) throw new Error(body.error ?? "Failed to delete CHW profile");
       return body;
     },

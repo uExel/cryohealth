@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { fetchDistricts, fetchGlaciers, adminRequest } from "@/lib/cryohealth-client";
+import { fetchDistricts, fetchGlaciers, adminRequest, adminDelete } from "@/lib/cryohealth-client";
 import { glacierCreateSchema, type GlacierCreate } from "@/lib/admin-schemas";
 import { StatusPill } from "@/components/cryohealth/StatCard";
 import {
@@ -170,10 +170,7 @@ function GlaciersAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const { ok, body } = await adminRequest(
-        `/admin/glaciers/${id}?reason=${encodeURIComponent(reason)}`,
-        { method: "DELETE" },
-      );
+      const { ok, body } = await adminDelete(`/admin/glaciers/${id}`, reason);
       if (!ok) {
         throw new Error(
           body.dependents

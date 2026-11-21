@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { fetchProtocols, adminRequest } from "@/lib/cryohealth-client";
+import { fetchProtocols, adminRequest, adminDelete } from "@/lib/cryohealth-client";
 import { protocolCreateSchema, type ProtocolCreate } from "@/lib/admin-schemas";
 import {
   Table,
@@ -117,12 +117,7 @@ function ProtocolsAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const result = await adminRequest(
-        `/admin/protocols/${id}?reason=${encodeURIComponent(reason)}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const result = await adminDelete(`/admin/protocols/${id}`, reason);
       if (!result.ok) throw new Error(result.body.error ?? "Failed to delete protocol");
       return result.body;
     },
