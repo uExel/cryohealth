@@ -178,20 +178,20 @@ function LakeDetail() {
                 className="text-muted-foreground"
               />
               <YAxis
-                domain={[0, 100]}
+                domain={[0, 1]}
                 fontSize={11}
                 stroke="currentColor"
                 className="text-muted-foreground"
               />
               <Tooltip />
               <ReferenceLine
-                y={75}
+                y={0.65}
                 stroke={tierClasses.CRITICAL.hex}
                 strokeDasharray="3 3"
                 label={{ value: "CRITICAL", fontSize: 10, fill: tierClasses.CRITICAL.hex }}
               />
-              <ReferenceLine y={60} stroke={tierClasses.HIGH.hex} strokeDasharray="3 3" />
-              <ReferenceLine y={35} stroke={tierClasses.WATCH.hex} strokeDasharray="3 3" />
+              <ReferenceLine y={0.45} stroke={tierClasses.HIGH.hex} strokeDasharray="3 3" />
+              <ReferenceLine y={0.25} stroke={tierClasses.WATCH.hex} strokeDasharray="3 3" />
               <Line
                 type="monotone"
                 dataKey="score"

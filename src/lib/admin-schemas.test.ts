@@ -31,3 +31,25 @@ test("user phone: blank becomes null, a value is trimmed, and a login id is stil
   assert.equal(userCreateSchema.parse({ ...base, phone: "  0300  " }).phone, "0300");
   assert.equal(userCreateSchema.safeParse({ ...base, phone: "" }).success, false);
 });
+
+test("a CHW phone and a facility contact are trimmed", () => {
+  assert.equal(chwProfileCreateSchema.parse({ ...chw, phone: "  0300 111  " }).phone, "0300 111");
+  assert.equal(facilityCreateSchema.parse({ ...facility, contact: " a@b.c " }).contact, "a@b.c");
+});
+
+test("a user can be saved with only a phone: a blank LHW ID becomes null", () => {
+  const base = { name: "U", role: "chw", pin: "1234" };
+  const parsed = userCreateSchema.parse({ ...base, lhwId: "", phone: "0300" });
+  assert.equal(parsed.lhwId, null);
+  assert.equal(parsed.phone, "0300");
+  assert.equal(userCreateSchema.parse({ ...base, lhwId: "   ", phone: "0300" }).lhwId, null);
+});
+
+test("a user with neither LHW ID nor phone gets the login-id message, not a length error", () => {
+  const base = { name: "U", role: "chw", pin: "1234" };
+  const result = userCreateSchema.safeParse({ ...base, lhwId: "", phone: "" });
+  assert.equal(result.success, false);
+  if (!result.success) {
+    assert.match(result.error.issues.map((i) => i.message).join("|"), /LHW ID or a phone/);
+  }
+});

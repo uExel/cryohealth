@@ -201,7 +201,7 @@ export const facilityCreateSchema = z
     type: z.string().min(1, "Type is required"),
     district: z.string().min(1, "District is required"),
     vulnerability: z.string().min(1, "Vulnerability is required"),
-    contact: blankToNull(z.string().min(1).nullable().optional()),
+    contact: blankToNull(z.string().trim().min(1).nullable().optional()),
     // Plain z.number(), not .coerce -- same rationale as glacierCreateSchema.lat/lng:
     // ST_Y/ST_X always return real JS numbers from postgres.js, never strings, so
     // there's no round-trip case to coerce for, and .coerce would silently turn an
@@ -228,7 +228,7 @@ export const chwProfileCreateSchema = z
   .object({
     full_name: z.string().min(1, "Name is required"),
     district_id: z.string().uuid().nullable().optional(),
-    phone: blankToNull(z.string().min(1).nullable().optional()),
+    phone: blankToNull(z.string().trim().min(1).nullable().optional()),
     language: z.string().min(1, "Language is required"),
   })
   .strict();
@@ -294,7 +294,7 @@ export const userCreateSchema = z
     // Both nullable/optional individually, but .refine below requires at least one:
     // api/auth/login.ts looks users up by `"lhwId" = $1 OR phone = $1`, so a user with
     // neither is created unable to ever sign in.
-    lhwId: z.string().trim().min(1).nullable().optional(),
+    lhwId: blankToNull(z.string().trim().min(1).nullable().optional()),
     phone: blankToNull(z.string().trim().min(1).nullable().optional()),
     facilityId: z.string().uuid().nullable().optional(),
     email: z.string().trim().email("Enter a valid email address").nullable().optional(),
