@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth";
 import { fetchAdminUsers, fetchFacilitiesAdmin, adminRequest } from "@/lib/cryohealth-client";
 import {
   userCreateSchema,
+  userUpdateSchema,
   USER_ROLES,
   type UserCreate,
   type UserUpdate,
@@ -72,6 +73,7 @@ type UserRow = {
   role: (typeof USER_ROLES)[number];
   lhw_id: string | null;
   phone: string | null;
+  email: string | null;
   facility_id: string | null;
   facility_name: string | null;
   active: boolean;
@@ -93,6 +95,7 @@ function UsersAdmin() {
   const [creating, setCreating] = useState(false);
   const [rerolingUser, setRerolingUser] = useState<UserRow | null>(null);
   const [togglingUser, setTogglingUser] = useState<UserRow | null>(null);
+  const [emailUser, setEmailUser] = useState<UserRow | null>(null);
 
   // The API enforces this too (403 from requireRole) -- this only avoids rendering a
   // table that would be empty-with-an-error for a facility_admin who guessed the URL.
@@ -151,6 +154,7 @@ function UsersAdmin() {
       qc.invalidateQueries({ queryKey: ["admin-users"] });
       setRerolingUser(null);
       setTogglingUser(null);
+      setEmailUser(null);
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -193,6 +197,7 @@ function UsersAdmin() {
               <TableHead className="text-xs uppercase text-muted-foreground">Role</TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground">LHW ID</TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground">Phone</TableHead>
+              <TableHead className="text-xs uppercase text-muted-foreground">Email</TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground">Facility</TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground">Status</TableHead>
               <TableHead className="text-xs uppercase text-muted-foreground">Added</TableHead>
@@ -204,14 +209,14 @@ function UsersAdmin() {
           <TableBody className="divide-y divide-border">
             {isLoading && (
               <TableRow className="border-border">
-                <TableCell colSpan={8} className="py-6 text-center text-muted-foreground">
+                <TableCell colSpan={9} className="py-6 text-center text-muted-foreground">
                   Loading…
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && !isError && (users ?? []).length === 0 && (
               <TableRow className="border-border">
-                <TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">
+                <TableCell colSpan={9} className="py-8 text-center text-sm text-muted-foreground">
                   No users yet.
                 </TableCell>
               </TableRow>
@@ -234,6 +239,7 @@ function UsersAdmin() {
                 </TableCell>
                 <TableCell className="text-muted-foreground">{u.lhw_id ?? "—"}</TableCell>
                 <TableCell className="text-muted-foreground">{u.phone ?? "—"}</TableCell>
+                <TableCell className="text-muted-foreground">{u.email ?? "—"}</TableCell>
                 <TableCell className="text-muted-foreground">{u.facility_name ?? "—"}</TableCell>
                 <TableCell>
                   <Badge variant={u.active ? "outline" : "destructive"}>
@@ -245,6 +251,9 @@ function UsersAdmin() {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setEmailUser(u)}>
+                      Set email
+                    </Button>
                     <Button variant="outline" size="sm" onClick={() => setRerolingUser(u)}>
                       Change role
                     </Button>
@@ -274,6 +283,15 @@ function UsersAdmin() {
           isSelf={rerolingUser.id === currentUser?.id}
           onOpenChange={(open) => !open && setRerolingUser(null)}
           onSubmit={(role) => updateMutation.mutate({ id: rerolingUser.id, values: { role } })}
+          isPending={updateMutation.isPending}
+        />
+      )}
+
+      {emailUser && (
+        <UserEmailDialog
+          user={emailUser}
+          onOpenChange={(open) => !open && setEmailUser(null)}
+          onSubmit={(values) => updateMutation.mutate({ id: emailUser.id, values })}
           isPending={updateMutation.isPending}
         />
       )}
@@ -396,7 +414,14 @@ function UserFormDialog({
     resolver: zodResolver(userCreateSchema),
     // `role` is deliberately unset -- a security-sensitive field should be an explicit
     // choice, not whatever the form happened to default to.
-    defaultValues: { name: "", lhwId: "", phone: null, facilityId: null, pin: "" },
+    defaultValues: {
+      name: "",
+      lhwId: "",
+      phone: null,
+      email: null,
+      facilityId: null,
+      pin: "",
+    },
   });
 
   return (
@@ -493,6 +518,30 @@ function UserFormDialog({
             />
             <FormField
               control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email (optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      type="email"
+                      autoComplete="email"
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? null : e.target.value)
+                      }
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    CHWs with an email receive alert notifications at this address.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="facilityId"
               render={({ field }) => (
                 <FormItem>
@@ -537,6 +586,70 @@ function UserFormDialog({
             <DialogFooter>
               <Button type="submit" disabled={isPending}>
                 Create user
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function UserEmailDialog({
+  user,
+  onOpenChange,
+  onSubmit,
+  isPending,
+}: {
+  user: UserRow;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (values: Pick<UserUpdate, "email">) => void;
+  isPending: boolean;
+}) {
+  const form = useForm<Pick<UserUpdate, "email">>({
+    resolver: zodResolver(userUpdateSchema.pick({ email: true })),
+    defaultValues: { email: user.email },
+  });
+
+  return (
+    <Dialog open onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Set email for {user.name}</DialogTitle>
+          <DialogDescription>
+            {user.role === "chw"
+              ? "Alert emails are sent to active CHWs with an email address mapped to the alert's lake."
+              : "This email address is saved to the user account."}
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email address</FormLabel>
+                  <FormControl>
+                    <Input
+                      value={field.value ?? ""}
+                      type="email"
+                      autoComplete="email"
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? null : e.target.value)
+                      }
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Leave blank to remove the address and stop email delivery to this user.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit" disabled={isPending}>
+                Save email
               </Button>
             </DialogFooter>
           </form>
