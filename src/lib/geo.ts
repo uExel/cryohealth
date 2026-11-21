@@ -22,6 +22,14 @@ export const glacierStatusWeight: Record<string, number> = {
   unknown: 0.4,
 };
 
+/** A lake risk score as a 0-1 weight for ranking. The API score is already 0-1 (tier thresholds
+ *  0.25 / 0.45 / 0.65), sent as a number or a numeric string; a missing or non-numeric score
+ *  counts as 0 so it neither crashes nor sorts as NaN. */
+export function lakeRiskNorm(score: string | number | null | undefined): number {
+  const n = Number(score ?? 0);
+  return Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : 0;
+}
+
 // Composite "association score": closer + more hazardous = higher.
 // distanceKm: 0 → 1, falls off with a 25 km soft radius.
 export function glacierLakeAssocScore(
