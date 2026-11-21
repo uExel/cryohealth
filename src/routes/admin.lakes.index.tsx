@@ -6,6 +6,7 @@ import { TierBadge, type Tier } from "@/lib/tier";
 import { fetchDistricts, fetchLakesAdmin, adminRequest } from "@/lib/cryohealth-client";
 import type { LakeCreate } from "@/lib/admin-schemas";
 import { LakeFormDialog } from "@/components/cryohealth/LakeFormDialog";
+import { useAuth } from "@/lib/auth";
 import {
   Table,
   TableHeader,
@@ -56,7 +57,10 @@ function dependentsMessage(dependents: Record<string, number>): string {
   return `Cannot delete: still referenced by ${parts}.`;
 }
 
+const WRITE_GATED_HINT = "Only a CryoHealth admin can create, edit or delete lakes.";
+
 function LakesAdmin() {
+  const { isCryoHealthAdmin } = useAuth();
   const qc = useQueryClient();
   const [tierFilter, setTierFilter] = useState<"ALL" | Tier>("ALL");
   const [districtFilter, setDistrictFilter] = useState<string>("ALL");
@@ -145,7 +149,14 @@ function LakesAdmin() {
             page for the audit trail, not editable here
           </p>
         </div>
-        <Button onClick={() => setCreating(true)}>New lake</Button>
+        <div className="text-right">
+          <Button disabled={!isCryoHealthAdmin} onClick={() => setCreating(true)}>
+            New lake
+          </Button>
+          {!isCryoHealthAdmin && (
+            <p className="mt-1 max-w-xs text-xs text-muted-foreground">{WRITE_GATED_HINT}</p>
+          )}
+        </div>
       </header>
 
       {isError && (
@@ -257,7 +268,12 @@ function LakesAdmin() {
                   {l.last_updated ? new Date(l.last_updated).toLocaleDateString() : "—"}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="outline" size="sm" onClick={() => setDeletingLake(l)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!isCryoHealthAdmin}
+                    onClick={() => setDeletingLake(l)}
+                  >
                     Delete
                   </Button>
                 </TableCell>

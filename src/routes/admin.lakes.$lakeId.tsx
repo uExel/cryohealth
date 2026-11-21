@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AdminPlaceholder } from "@/components/cryohealth/AdminPlaceholder";
 import { StatCard } from "@/components/cryohealth/StatCard";
 import { LakeFormDialog } from "@/components/cryohealth/LakeFormDialog";
+import { useAuth } from "@/lib/auth";
 import { TierBadge, type Tier } from "@/lib/tier";
 import {
   fetchLakeDetail,
@@ -85,8 +86,11 @@ type HazardScoresResponse = {
   hasMore: boolean;
 };
 
+const WRITE_GATED_HINT = "Only a CryoHealth admin can create, edit or delete lakes.";
+
 function LakeDetailAdmin() {
   const { lakeId } = Route.useParams();
+  const { isCryoHealthAdmin } = useAuth();
   const qc = useQueryClient();
   const [editing, setEditing] = useState(false);
 
@@ -181,9 +185,19 @@ function LakeDetailAdmin() {
         </div>
         <div className="flex items-center gap-3">
           <TierBadge tier={lake.current_tier} solid={lake.current_tier === "CRITICAL"} />
-          <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
-            Edit lake
-          </Button>
+          <div className="text-right">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!isCryoHealthAdmin}
+              onClick={() => setEditing(true)}
+            >
+              Edit lake
+            </Button>
+            {!isCryoHealthAdmin && (
+              <p className="mt-1 max-w-xs text-xs text-muted-foreground">{WRITE_GATED_HINT}</p>
+            )}
+          </div>
         </div>
       </header>
 
