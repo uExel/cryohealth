@@ -1,9 +1,18 @@
 import { z } from "zod";
 
 /** An untouched optional text input is "" in these forms. Treat it as "no value" (null)
- *  so a blank optional field passes validation instead of failing `.min(1)`. */
-const blankToNull = <T extends z.ZodTypeAny>(schema: T) =>
-  z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? null : v), schema);
+ *  so a blank optional field passes validation instead of failing `.min(1)`.
+ *  A union, not `z.preprocess`: preprocess makes the field's input type `unknown`, which no
+ *  longer matches the form's value type and breaks zodResolver's generics. */
+export const blankToNull = <T extends z.ZodTypeAny>(schema: T) =>
+  z.union([
+    z
+      .string()
+      .trim()
+      .max(0)
+      .transform(() => null),
+    schema,
+  ]);
 
 /**
  * Per-resource zod schemas for the admin CRUD API (tasks #10-#19). Empty `.strict()`
