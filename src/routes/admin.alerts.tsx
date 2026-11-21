@@ -185,7 +185,9 @@ function AlertsAdmin() {
   });
   const isError = alertsError || acksError;
 
-  const ackCount = (alertId: string) => (acks ?? []).filter((a) => a.alert_id === alertId).length;
+  // `acks` is undefined while loading or after a failed fetch; show "—" then, not a false 0.
+  const ackCount = (alertId: string) =>
+    acks === undefined ? "—" : acks.filter((a) => a.alert_id === alertId).length;
 
   const filteredAlerts = (alerts ?? []).filter((a) => {
     if (tierFilter !== "ALL" && a.tier !== tierFilter) return false;
@@ -430,7 +432,28 @@ function AlertEditDialog({
           <DialogTitle>Edit alert</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit((values) => {
+              const tierChanged = values.tier !== alert.tier.toLowerCase();
+              const reason = values.reason?.trim();
+              if (tierChanged && !reason) {
+                form.setError("reason", {
+                  type: "manual",
+                  message: "A reason is required when changing the tier.",
+                });
+                return;
+              }
+              const submitValues = { ...values };
+              if (!tierChanged) {
+                delete submitValues.tier;
+                delete submitValues.reason;
+              } else {
+                submitValues.reason = reason;
+              }
+              onSubmit(submitValues);
+            })}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="body"
@@ -464,6 +487,19 @@ function AlertEditDialog({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="reason"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Reason for tier change (required when changing tier)</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
