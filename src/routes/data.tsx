@@ -35,32 +35,59 @@ const ENDPOINTS: Endpoint[] = [
   {
     method: "GET",
     path: "/lakes",
-    desc: "All monitored glacial lakes with current risk tier, location, and last update time.",
+    desc: "All monitored glacial lakes with current risk tier, location, and last update time. Optional query parameters: page (default 1) and pageSize (default 50). Each item carries more fields than shown (boundary, source, population estimate, confidence); the example is trimmed and its ids and values are made-up placeholders.",
     example: `{
-  "lakes": [
+  "items": [
     {
-      "id": "lk_shishper",
+      "id": "00000000-0000-4000-8000-000000000002",
+      "slug": "shishper",
       "name": "Shishper glacial lake",
-      "lat": 36.32,
-      "lng": 74.65,
-      "current_tier": "WATCH",
+      "valley": "Hunza",
+      "district": "Hunza",
+      "geom": { "type": "Point", "coordinates": [74.65, 36.32] },
+      "elevationM": 3100,
+      "currentTier": "watch",
       "stale": false,
-      "district_id": "hunza",
-      "elevation_m": 3100,
-      "last_updated": "2026-08-09T04:12:00Z"
+      "currentRiskScore": 0.38,
+      "downstreamPopulation": 4200,
+      "currentScore": { "score": 0.38, "tier": "watch", "computedAt": "2026-08-09T04:12:00.000Z" },
+      "updatedAt": "2026-08-09T04:12:00.000Z"
     }
-  ]
+  ],
+  "total": 1,
+  "page": 1,
+  "pageSize": 50
 }`,
   },
   {
     method: "GET",
-    path: "/lakes/{lakeId}",
-    desc: "A single lake's detail: current state, risk score history, alerts issued for it, and nearby glaciers.",
+    path: "/lakes/{lakeId}/detail",
+    desc: "A single lake's detail: current state, risk score history (oldest first, up to 120 rows, empty until scores have been computed), the lake's latest alerts, and the glacier inventory. The example is trimmed; its ids and values are made-up placeholders, and the risk score is sent as a string.",
     example: `{
-  "lake": { "id": "lk_shishper", "name": "Shishper glacial lake", "current_tier": "WATCH" },
-  "history": [{ "score": 0.38, "tier": "WATCH", "confidence": 0.81, "observed_at": "2026-08-08" }],
-  "alerts": [{ "id": "al_204", "title": "Watch: Shishper", "tier": "WATCH" }],
-  "glaciers": [ ]
+  "lake": {
+    "id": "00000000-0000-4000-8000-000000000002",
+    "name": "Shishper glacial lake",
+    "district_name": "Hunza",
+    "lat": 36.32,
+    "lng": 74.65,
+    "current_tier": "WATCH",
+    "current_risk_score": "0.3800",
+    "downstream_population": 4200,
+    "stale": false
+  },
+  "history": [{ "score": "0.3800", "tier": "WATCH", "confidence": "0.81", "observed_at": "2026-08-08T00:00:00.000Z" }],
+  "alerts": [
+    {
+      "id": "00000000-0000-4000-8000-000000000003",
+      "title": "Shishper glacial lake: tier now WATCH",
+      "tier": "WATCH",
+      "status": "active",
+      "cleared_at": null,
+      "created_at": "2026-08-09T04:12:00.000Z",
+      "estimated_window": "next 24h"
+    }
+  ],
+  "glaciers": [{ "id": "00000000-0000-4000-8000-000000000004", "name": "Shishper Glacier", "rgi_id": "RGI2000-v7.0-G-14-00000", "area_km2": "15.4000", "status": "surging" }]
 }`,
   },
   {
@@ -89,8 +116,17 @@ const ENDPOINTS: Endpoint[] = [
   {
     method: "GET",
     path: "/hot-lakes",
-    desc: "Lakes currently at HIGH or CRITICAL tier only, ordered by risk score.",
-    example: `{ "lakes": [{ "id": "lk_shishper", "name": "Shishper glacial lake", "current_tier": "CRITICAL", "current_risk_score": 0.78, "downstream_population": 4200, "last_updated": "2026-08-09T04:12:00Z" }] }`,
+    desc: "Lakes currently at HIGH or CRITICAL tier only, highest risk score first. The response is a bare array, and the risk score (0 to 1) is sent as a string.",
+    example: `[
+  {
+    "id": "00000000-0000-4000-8000-000000000002",
+    "name": "Shishper glacial lake",
+    "current_tier": "CRITICAL",
+    "current_risk_score": "0.7800",
+    "downstream_population": 4200,
+    "last_updated": "2026-08-09T04:12:00.000Z"
+  }
+]`,
   },
   {
     method: "GET",
@@ -182,7 +218,7 @@ function DataPage() {
         {ENDPOINTS.map((e) => (
           <li key={e.path} className="rounded-xl border border-border bg-card p-4">
             <a
-              href={`${apiBaseUrl()}${e.path.replace(/\{[^}]+\}/, "")}`}
+              href={`${apiBaseUrl()}${e.path.replace(/\/\{[^}]+\}.*$/, "")}`}
               target="_blank"
               rel="noreferrer"
               className="font-mono text-sm text-primary hover:underline"
