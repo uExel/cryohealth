@@ -1,50 +1,48 @@
 # HANDOFF — cryohealth — 2026-11-21
-Session: land-open-frontend-prs  Model: claude-sonnet-5-5  Branch: fix/api-13-null-population-score-display (#74)  Goal: land the open frontend PRs, each independently verified live  Task: get #74 (which contains #72) verified and merged, then re-land #73 without new type errors
+Session: land-open-frontend-prs  Model: claude-sonnet-5-5  Branch: fix/issue-3-admin-delete-and-optional-fields-v2  Goal: land the open frontend PRs, each independently verified live  Task: re-land #73 (admin delete, optional contact/phone) with 0 new `tsc` errors
 
 ## State
-`main` is at ff860ef. #65 to #71 and #75 to #77 are merged. #73 was merged and then reverted by #78: it added 24 `tsc` errors (zod / react-hook-form resolver types in `admin.chw-profiles.tsx`, `admin.facilities.tsx`, `admin.users.tsx`; `main` went from 92 to 116). `main` is back at the 92-error baseline.
+`main` is at 9654cc2. #65 to #71, #74 to #77 are merged. #74 carried #72's commits, so #72 has nothing left to add (merging it changes no file). #73 was merged and then reverted by #78 because it added 24 `tsc` errors (`main` went from 92 to 116). This branch re-applies #73 and fixes the cause.
 
 | PR | State | Notes |
 |---|---|---|
-| #72 | open | `/dashboard`, `/chw` and the lake detail page read the API's real field names. Independent live check (real API, headless Chrome) said FAIL: `/dashboard` and `/lakes/<id>` still crash with `TypeError: Cannot read properties of null (reading 'toLocaleString')` because `downstream_population` is `null` for every lake. |
-| #74 | open | This branch. Contains #72's commits plus the null-population and score fix (CryoHealth-api#13). `main` was merged in on 2026-11-21; the one conflict (`withFeedFieldNames` stays exported) is resolved. Needs its own independent live check before it lands. |
-| #73 | merged, reverted by #78 | Re-landing needs a fix for the 24 type errors first. |
-
-Each session's full handoff is kept unedited under `docs/ai/sessions/`.
+| #72 | open, superseded | Everything in it landed through #74. Close it. |
+| #74 | merged | Null-safe population/score/confidence display. Independent live check on the real API: PASS+NOTES. |
+| #73 | merged, reverted by #78 | Re-landed here. |
 
 ## Done this session
-- Reverted #73 (#78); `main`'s tree equals the commit before #73.
-- Ran an independent verifier on #72 against the real API: FAIL (see table).
-- Merged `main` into this branch and resolved the conflict in `src/lib/cryohealth-client.ts`. Static checks on the merge: `bun run build` passes, `tsc --noEmit` reports 92 errors against a 92-error baseline (same sites; two messages changed because the row type now allows `null`), lint has 0 real errors.
+- Reverted #73 (#78), verified #72 (FAIL: crash on null `downstream_population`), merged `main` into #74, verified it live (PASS+NOTES), merged it.
+- This branch: reverted the revert of #73, then fixed the type errors. Cause: `z.preprocess` in `blankToNull` (`src/lib/admin-schemas.ts`) makes each field's input type `unknown`, which no longer matches the form's value type, so zodResolver's generics failed in `admin.chw-profiles.tsx`, `admin.facilities.tsx`, `admin.users.tsx`. `blankToNull` is now a union (blank string transforms to `null`, otherwise the original schema), which keeps the input type. `tsc --noEmit`: 92 errors, 0 new sites against `main`'s 92. New `src/lib/admin-schemas.test.ts` (5 tests); `bun test` 13 pass, 0 fail; build passes; lint 0 real errors.
 
 ## Not done / deferred
-- Independent live verification of this branch (real API, browser) has not run yet.
-- #72's signed-in `/chw` alert list was never seen rendered (no credentials for a non-local API).
-- #73 follow-up: fix the resolver types so it adds 0 `tsc` errors over 92.
-- The risk score shows as "1" or "0": the API sends `current_risk_score` as a 0 to 1 string such as "0.7925".
-- `src/lib/cryohealth-api.ts` maps a missing risk score or population to `0` (`?? 0`) on the glacier page, and `LakeFormDialog.tsx` prefills population as `0`.
-- **Needs an API change deployed first** (CryoHealth-api): the admin "New case" button needs API #25; the district/glacier delete message needs API #24.
-- Before deploying API #26: the API now reads `CORS_ORIGINS`. Check the server value includes `https://cryohealth.io`.
+- Independent live verification of this branch is pending (admin pages need a login that was not available against a non-local API).
+- The map popups and glacier pages still show "Downstream: 0" for a lake with no population: `src/lib/cryohealth-api.ts` lines 61 to 62 map missing values to `0`. Keep `null` there.
+- Lake detail chart y-axis is 0 to 100 (`domain={[0, 100]}`) while scores are 0 to 1.
+- Editing a lake cannot clear an existing population (a blank box is omitted from the update).
+- API data: Ghulkin has score 0.38 but tier HIGH, which disagrees with the documented thresholds.
+- Needs an API change deployed first (CryoHealth-api): admin "New case" needs API #25; district/glacier delete message needs API #24.
+- Before deploying API #26: it now reads `CORS_ORIGINS`; check the server value includes `https://cryohealth.io`.
 
 ## Next action
-Run the independent live verifier on #74. If it passes, merge #74 (`gh pr merge 74 --merge --match-head-commit <verified head>`), then close #72 as superseded or merge `main` into it.
+Independent live check of this PR; merge if it passes; close #72.
 
 ## Open questions for a human
-- The `uexel-handoff-check` workflow fails any PR whose diff does not include `docs/ai/HANDOFF.md`. With one shared file that stops working as soon as the first PR lands, which is why this file is rewritten here. Should the check also accept a new `docs/ai/sessions/` file? The workflow comes from uExel/cryo-harness. — blocking: no
+- The `uexel-handoff-check` workflow fails any PR whose diff does not include `docs/ai/HANDOFF.md`. With one shared file that stops working once the first PR lands. Should it also accept a new `docs/ai/sessions/` file? The workflow comes from uExel/cryo-harness. — blocking: no
 
 ## Failed approaches (do not retry)
-- A linear `git rebase origin/main` of #74: its history contains a merge of #72, so rebase replays its own commits before #72's and redoes conflicts the merge already resolved. Merge `main` in instead.
-- Checking a PR with `git fetch origin main pull/N/head` then `git checkout FETCH_HEAD`: `FETCH_HEAD` is `main`, so it tests `main`. Fetch into a named ref (`+pull/N/head:refs/pr/N`).
-- `bun run lint` on a Windows checkout reports about 18,000 "Delete `␍`" errors because of CRLF line endings; `main` has the same. Ignore that rule to see real problems.
+- A linear `git rebase origin/main` of a branch that contains a merge: it replays commits in the wrong order and redoes resolved conflicts. Merge `main` in instead.
+- Checking a PR with `git fetch origin main pull/N/head` then `git checkout FETCH_HEAD`: `FETCH_HEAD` is `main`. Fetch into a named ref (`+pull/N/head:refs/pr/N`).
+- `z.preprocess` on a form field: input type becomes `unknown` and breaks `zodResolver` typing. Use a union.
+- `bun run lint` on a Windows checkout reports about 18,000 "Delete `␍`" errors because of CRLF; `main` has the same.
 
 ## Loops run
 - none
 
 ## Files touched
-docs/ai/HANDOFF.md, `src/lib/cryohealth-client.ts` (conflict resolution only).
+docs/ai/HANDOFF.md, src/lib/admin-schemas.ts, src/lib/admin-schemas.test.ts, plus the files #73 changed (`admin.*` routes, `cryohealth-client.ts`) restored from the revert.
 
 ## Verification status
-tests: no test script on `main`; this branch adds `lake-format.test.ts` (`bun test`), not yet run by an independent verifier  build: passes  tsc: 92 vs baseline 92  lint: 0 real errors  review: none  qa: independent live check pending
+tests: `bun test` 13 pass, 0 fail  build: passes  tsc: 92 vs baseline 92, 0 new sites  lint: 0 real errors  review: none  qa: independent live check pending
 
 ## Resume with
 /uexel:orient   (then: gh pr list --repo uExel/cryohealth --state open)

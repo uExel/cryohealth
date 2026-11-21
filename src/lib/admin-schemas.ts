@@ -1,5 +1,19 @@
 import { z } from "zod";
 
+/** An untouched optional text input is "" in these forms. Treat it as "no value" (null)
+ *  so a blank optional field passes validation instead of failing `.min(1)`.
+ *  A union, not `z.preprocess`: preprocess makes the field's input type `unknown`, which no
+ *  longer matches the form's value type and breaks zodResolver's generics. */
+export const blankToNull = <T extends z.ZodTypeAny>(schema: T) =>
+  z.union([
+    z
+      .string()
+      .trim()
+      .max(0)
+      .transform(() => null),
+    schema,
+  ]);
+
 /**
  * Per-resource zod schemas for the admin CRUD API (tasks #10-#19). Empty `.strict()`
  * stubs for now — `.strict()` rejects any payload until a CRUD task fills in real
@@ -187,7 +201,7 @@ export const facilityCreateSchema = z
     type: z.string().min(1, "Type is required"),
     district: z.string().min(1, "District is required"),
     vulnerability: z.string().min(1, "Vulnerability is required"),
-    contact: z.string().min(1).nullable().optional(),
+    contact: blankToNull(z.string().min(1).nullable().optional()),
     // Plain z.number(), not .coerce -- same rationale as glacierCreateSchema.lat/lng:
     // ST_Y/ST_X always return real JS numbers from postgres.js, never strings, so
     // there's no round-trip case to coerce for, and .coerce would silently turn an
@@ -214,7 +228,7 @@ export const chwProfileCreateSchema = z
   .object({
     full_name: z.string().min(1, "Name is required"),
     district_id: z.string().uuid().nullable().optional(),
-    phone: z.string().min(1).nullable().optional(),
+    phone: blankToNull(z.string().min(1).nullable().optional()),
     language: z.string().min(1, "Language is required"),
   })
   .strict();
@@ -281,7 +295,7 @@ export const userCreateSchema = z
     // api/auth/login.ts looks users up by `"lhwId" = $1 OR phone = $1`, so a user with
     // neither is created unable to ever sign in.
     lhwId: z.string().trim().min(1).nullable().optional(),
-    phone: z.string().trim().min(1).nullable().optional(),
+    phone: blankToNull(z.string().trim().min(1).nullable().optional()),
     facilityId: z.string().uuid().nullable().optional(),
     email: z.string().trim().email("Enter a valid email address").nullable().optional(),
     // Max 72: bcrypt hashes at most 72 bytes and silently ignores the rest, which would
