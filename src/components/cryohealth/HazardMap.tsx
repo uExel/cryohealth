@@ -158,8 +158,8 @@ export function HazardMap({
           `<div class="space-y-1 text-xs">
             <div class="font-semibold">${escapeHtml(l.name)}</div>
             <div>Tier: ${l.current_tier}</div>
-            ${l.current_risk_score != null ? `<div>Score: ${formatRiskScore(l.current_risk_score)}</div>` : ""}
-            ${l.downstream_population != null ? `<div>Downstream: ${formatPopulation(l.downstream_population)}</div>` : ""}
+            <div>Score: ${formatRiskScore(l.current_risk_score)}</div>
+            <div>Downstream: ${formatPopulation(l.downstream_population)}</div>
             <a href="/lakes/${encodeURIComponent(l.id)}" class="text-primary underline">Open lake →</a>
           </div>`,
         )

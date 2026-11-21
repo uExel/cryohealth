@@ -11,7 +11,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { TierBadge, type Tier } from "@/lib/tier";
-import { haversineKm, glacierLakeAssocScore } from "@/lib/geo";
+import { haversineKm, glacierLakeAssocScore, lakeRiskNorm } from "@/lib/geo";
 import { glacierStatusWeight } from "@/lib/geo";
 import { StatCard, StatusPill } from "@/components/cryohealth/StatCard";
 import { fetchGlacierDetail } from "@/lib/cryohealth-client";
@@ -108,10 +108,10 @@ function GlacierDetail() {
           { lat: glacier.lat, lng: glacier.lng },
           { lat: l.lat, lng: l.lng },
         );
-        // proximity weighted by lake risk score (0-100)
+        // proximity weighted by the lake risk score (0-1)
         const proximity = 1 / (1 + distanceKm / 25);
         const base = glacierLakeAssocScore(distanceKm, glacier.status);
-        const riskNorm = Number(l.current_risk_score ?? 0) / 100;
+        const riskNorm = lakeRiskNorm(l.current_risk_score);
         const assoc = base * 0.5 + riskNorm * 0.5;
         const hazard = glacierStatusWeight[glacier.status ?? "unknown"] ?? 0.4;
         const contributions = {
@@ -515,11 +515,11 @@ function RankFormula({ variant }: { variant: "glacier" | "lake" }) {
                 <span className="text-foreground">base</span> = proximity × 0.6 + hazard × 0.4
               </div>
               <div>
-                <span className="text-foreground">rank</span> = base × 0.5 + (lake_risk / 100) × 0.5
+                <span className="text-foreground">rank</span> = base × 0.5 + lake_risk × 0.5
               </div>
               <div className="mt-1 text-muted-foreground/80">
                 Driver contributions: distance ≈ proximity × 0.30 · status ≈ hazard × 0.20 · risk ≈
-                lake_risk/100 × 0.50
+                lake_risk × 0.50 (lake_risk is the 0–1 score)
               </div>
             </>
           ) : (
