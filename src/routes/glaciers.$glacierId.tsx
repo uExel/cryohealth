@@ -15,6 +15,7 @@ import { haversineKm, glacierLakeAssocScore } from "@/lib/geo";
 import { glacierStatusWeight } from "@/lib/geo";
 import { StatCard, StatusPill } from "@/components/cryohealth/StatCard";
 import { fetchGlacierDetail } from "@/lib/cryohealth-client";
+import { formatPopulation, formatRiskScore } from "@/lib/lake-format";
 
 export const Route = createFileRoute("/glaciers/$glacierId")({
   head: ({ params }) => ({
@@ -84,8 +85,8 @@ function GlacierDetail() {
           id: string;
           name: string;
           current_tier: string;
-          current_risk_score: number;
-          downstream_population: number;
+          current_risk_score: string | number | null;
+          downstream_population: number | null;
           lat: number;
           lng: number;
           district_name: string | null;
@@ -333,8 +334,8 @@ function GlacierDetail() {
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {l.distanceKm.toFixed(1)} km · {l.district_name ?? "—"} ·{" "}
-                    {l.downstream_population.toLocaleString()} downstream · score{" "}
-                    {Number(l.current_risk_score).toFixed(0)}
+                    {formatPopulation(l.downstream_population)} downstream · score{" "}
+                    {formatRiskScore(l.current_risk_score)}
                   </div>
                   <BreakdownDetails defaultOpen={idx === 0} rank={l.assoc}>
                     <span

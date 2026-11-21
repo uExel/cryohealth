@@ -42,8 +42,8 @@ function CryosphereInventory() {
         lat: number;
         lng: number;
         current_tier: string;
-        current_risk_score: number;
-        downstream_population: number;
+        current_risk_score: string | number | null;
+        downstream_population: number | null;
         last_updated: string;
         district_id: string | null;
       }[]

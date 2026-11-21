@@ -14,11 +14,12 @@ bun install
 bun dev               # vite dev
 bun run build         # vite build
 bun run lint          # eslint .
+bun run test          # bun test — unit tests for pure helpers in src/lib/*.test.ts
 bun run format        # prettier --write .
 ```
 
-No test script defined in this repo. Deploys as a Cloudflare Worker (`wrangler.jsonc`,
-`main: src/server.ts`).
+Tests are limited to pure helpers (no component or route tests yet). Deploys as a
+Cloudflare Worker (`wrangler.jsonc`, `main: src/server.ts`).
 
 ## Map
 

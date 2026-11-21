@@ -1,11 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { TierBadge, type Tier } from "@/lib/tier";
-import { fetchKpis, fetchHotLakes, fetchOpenAlerts } from "@/lib/cryohealth-client";
+import {
+  fetchKpis,
+  fetchHotLakes,
+  fetchOpenAlerts,
+  withFeedFieldNames,
+} from "@/lib/cryohealth-client";
 import { ArrowRight, Activity, Mountain, Bell, Users, Github, Scale } from "lucide-react";
 import heroImage from "@/assets/glacial-hero.jpg";
 import { FreshnessStamp } from "@/components/cryohealth/FreshnessStamp";
 import { StatCard } from "@/components/cryohealth/StatCard";
+import { formatPopulation, formatRiskScore } from "@/lib/lake-format";
 
 const GITHUB_REPO_URL = "https://github.com/uExel/cryohealth";
 const SITE_URL = "https://cryohealth.io";
@@ -63,8 +69,8 @@ function Index() {
         id: string;
         name: string;
         current_tier: string;
-        current_risk_score: number;
-        downstream_population: number;
+        current_risk_score: string | number | null;
+        downstream_population: number | null;
         last_updated: string;
       }[]
     > => {
@@ -83,7 +89,8 @@ function Index() {
         estimated_window: string | null;
       }[]
     > => {
-      return (await fetchOpenAlerts()).alerts ?? [];
+      // The API sends camelCase; this list reads snake_case (created_at, estimated_window).
+      return ((await fetchOpenAlerts()).alerts ?? []).map(withFeedFieldNames);
     },
   });
 
@@ -155,8 +162,8 @@ function Index() {
                     {l.name}
                   </Link>
                   <div className="text-xs text-muted-foreground">
-                    {l.downstream_population.toLocaleString()} downstream · score{" "}
-                    {Number(l.current_risk_score).toFixed(0)}
+                    {formatPopulation(l.downstream_population)} downstream · score{" "}
+                    {formatRiskScore(l.current_risk_score)}
                   </div>
                 </div>
                 <TierBadge tier={l.current_tier as Tier} />
