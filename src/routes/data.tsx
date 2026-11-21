@@ -58,7 +58,7 @@ const ENDPOINTS: Endpoint[] = [
     desc: "A single lake's detail: current state, risk score history, alerts issued for it, and nearby glaciers.",
     example: `{
   "lake": { "id": "lk_shishper", "name": "Shishper glacial lake", "current_tier": "WATCH" },
-  "history": [{ "score": 62, "tier": "WATCH", "confidence": 0.81, "observed_at": "2026-08-08" }],
+  "history": [{ "score": 0.38, "tier": "WATCH", "confidence": 0.81, "observed_at": "2026-08-08" }],
   "alerts": [{ "id": "al_204", "title": "Watch: Shishper", "tier": "WATCH" }],
   "glaciers": [ ]
 }`,
@@ -90,7 +90,7 @@ const ENDPOINTS: Endpoint[] = [
     method: "GET",
     path: "/hot-lakes",
     desc: "Lakes currently at HIGH or CRITICAL tier only, ordered by risk score.",
-    example: `{ "lakes": [{ "id": "lk_shishper", "name": "Shishper glacial lake", "current_tier": "HIGH", "current_risk_score": 78, "downstream_population": 4200, "last_updated": "2026-08-09T04:12:00Z" }] }`,
+    example: `{ "lakes": [{ "id": "lk_shishper", "name": "Shishper glacial lake", "current_tier": "CRITICAL", "current_risk_score": 0.78, "downstream_population": 4200, "last_updated": "2026-08-09T04:12:00Z" }] }`,
   },
   {
     method: "GET",
